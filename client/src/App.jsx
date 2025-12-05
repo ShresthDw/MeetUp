@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { io } from 'socket.io-client'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000'
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '')
+const SOCKET_URL = (import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000').replace(/\/+$/, '')
+const SOCKET_TRANSPORT = import.meta.env.VITE_SOCKET_TRANSPORT || 'polling'
 
 const iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -25,7 +26,10 @@ function AuthScreen({ onAuthenticated }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      const data = await response.json()
+      const contentType = response.headers.get('content-type') || ''
+      const data = contentType.includes('application/json')
+        ? await response.json()
+        : { message: `Server returned ${response.status} instead of JSON. Check VITE_API_URL and the Render service root directory.` }
       if (!response.ok) throw new Error(data.message || 'Something went wrong.')
       localStorage.setItem('omagle-token', data.token)
       onAuthenticated(data.user)
@@ -64,7 +68,12 @@ function AuthScreen({ onAuthenticated }) {
 }
 
 function VideoRoom({ user, onLogout }) {
-  const socket = useMemo(() => io(SOCKET_URL, { autoConnect: true }), [])
+  const socket = useMemo(() => io(SOCKET_URL, {
+    autoConnect: true,
+    // Polling avoids failed WebSocket upgrades behind local proxies and some hosts.
+    transports: [SOCKET_TRANSPORT],
+    upgrade: SOCKET_TRANSPORT !== 'polling',
+  }), [])
 
   const [status, setStatus] = useState('disconnected')
   const [roomId, setRoomId] = useState('')
