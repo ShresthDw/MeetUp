@@ -7,6 +7,16 @@ function registerSocketHandlers(io, redis) {
 
   const isAllowedMessage = (text) => !blockedTerms.some((pattern) => pattern.test(text))
 
+  const broadcastLiveStats = () => {
+    const onlineCount = io.engine?.clientsCount || io.sockets.sockets.size || 1
+    const inRoomsCount = socketToRoom.size
+    io.emit('online-stats', {
+      onlineCount,
+      inRoomsCount,
+      timestamp: Date.now(),
+    })
+  }
+
   const getPartnerSocketId = (roomId, socketId) => {
     const room = io.sockets.adapter.rooms.get(roomId)
     if (!room) return null
@@ -37,6 +47,7 @@ function registerSocketHandlers(io, redis) {
 
     socketA.emit('match-found', { roomId: match.roomId, role: 'initiator', partnerSocketId: socketB.id })
     socketB.emit('match-found', { roomId: match.roomId, role: 'receiver', partnerSocketId: socketA.id })
+    broadcastLiveStats()
   }
 
   async function leaveCurrentRoom(socket, requeue = false) {
@@ -56,11 +67,32 @@ function registerSocketHandlers(io, redis) {
       io.sockets.sockets.get(partnerId)?.leave(roomId)
     }
 
+    broadcastLiveStats()
     if (requeue) await joinQueue(socket)
   }
 
   io.on('connection', (socket) => {
     console.log('Socket connected:', socket.id)
+
+    // Send immediate real-time stats to the newly connected socket
+    const currentOnline = io.engine?.clientsCount || io.sockets.sockets.size || 1
+    socket.emit('online-stats', {
+      onlineCount: currentOnline,
+      inRoomsCount: socketToRoom.size,
+      timestamp: Date.now(),
+    })
+
+    // Broadcast updated count to all other clients
+    broadcastLiveStats()
+
+    socket.on('get-stats', () => {
+      const liveCount = io.engine?.clientsCount || io.sockets.sockets.size || 1
+      socket.emit('online-stats', {
+        onlineCount: liveCount,
+        inRoomsCount: socketToRoom.size,
+        timestamp: Date.now(),
+      })
+    })
 
     socket.on('join-queue', async () => {
       await removeFromQueue(redis, socket.id)
@@ -97,6 +129,7 @@ function registerSocketHandlers(io, redis) {
       await removeFromQueue(redis, socket.id)
       await leaveCurrentRoom(socket)
       console.log('Socket disconnected:', socket.id)
+      broadcastLiveStats()
     })
   })
 }

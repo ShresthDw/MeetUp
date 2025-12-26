@@ -39,7 +39,7 @@ const POPULAR_TAGS = [
   'Late Night',
 ]
 
-export default function HomePage({ user, onStartChat, onOpenAuth }) {
+export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAuth }) {
   const [mode, setMode] = useState('video') // 'video' | 'text'
   const [selectedTags, setSelectedTags] = useState(['Gaming', 'Music'])
   const [customTagInput, setCustomTagInput] = useState('')
@@ -172,8 +172,8 @@ export default function HomePage({ user, onStartChat, onOpenAuth }) {
             <div className="flex items-center gap-2 pb-0.5">
               <div className="flex items-center gap-2 rounded-full border border-[#243c47] bg-[#1a2d36]/80 px-3 py-1 text-xs text-slate-300 shadow-inner">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-mono font-bold text-emerald-400">14,830+</span>
-                <span className="text-slate-400">strangers online</span>
+                <span className="font-mono font-bold text-emerald-400">{Number(onlineCount).toLocaleString()}</span>
+                <span className="text-slate-400">{onlineCount === 1 ? 'stranger online' : 'strangers online'}</span>
               </div>
             </div>
           </div>
@@ -380,9 +380,9 @@ export default function HomePage({ user, onStartChat, onOpenAuth }) {
             <div className="space-y-1">
               <div className="font-display text-2xl sm:text-3xl font-extrabold text-white flex items-center justify-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>14,830+</span>
+                <span>{Number(onlineCount).toLocaleString()}</span>
               </div>
-              <div className="text-xs text-slate-400 font-medium">Online Strangers</div>
+              <div className="text-xs text-slate-400 font-medium">{onlineCount === 1 ? 'Online Stranger' : 'Online Strangers'}</div>
             </div>
             <div className="space-y-1 pt-4 md:pt-0">
               <div className="font-display text-2xl sm:text-3xl font-extrabold text-[#E09800]">&lt; 0.8s</div>

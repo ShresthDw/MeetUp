@@ -20,6 +20,10 @@ app.use(cors({
 app.use(express.json())
 
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
+app.get('/api/stats', (_, res) => {
+  const onlineCount = io?.engine?.clientsCount || io?.sockets?.sockets?.size || 0
+  res.json({ onlineCount, timestamp: Date.now() })
+})
 app.use('/api/auth', authRoutes)
 
 const server = http.createServer(app)

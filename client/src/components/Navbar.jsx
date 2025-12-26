@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Sparkles, Video, User, LogOut, Shield, Zap, Globe, MessageSquare } from 'lucide-react'
 
-export default function Navbar({ user, onLogout, onOpenAuth, onNavigate }) {
+export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, onNavigate }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -29,14 +29,14 @@ export default function Navbar({ user, onLogout, onOpenAuth, onNavigate }) {
           </div>
         </div>
 
-        {/* Live Traffic Badge */}
+        {/* Live Traffic Badge - Real Socket Count */}
         <div className="hidden md:flex items-center gap-2 rounded-full border border-[#223640] bg-[#1a2d36]/80 px-3.5 py-1.5 text-xs text-slate-300 shadow-inner">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
           </span>
-          <span className="font-mono font-bold text-emerald-400">14,830+</span>
-          <span className="text-slate-400">strangers online</span>
+          <span className="font-mono font-bold text-emerald-400">{Number(onlineCount).toLocaleString()}</span>
+          <span className="text-slate-400">{onlineCount === 1 ? 'stranger online' : 'strangers online'}</span>
         </div>
 
         {/* Action Controls & Auth */}

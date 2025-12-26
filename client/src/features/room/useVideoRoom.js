@@ -27,6 +27,8 @@ export function useVideoRoom() {
   const [partnerDisconnected, setPartnerDisconnected] = useState(false)
   const [connectedTime, setConnectedTime] = useState(0)
   const [streamReady, setStreamReady] = useState(0)
+  const [onlineCount, setOnlineCount] = useState(1)
+  const [inRoomsCount, setInRoomsCount] = useState(0)
 
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
@@ -301,6 +303,15 @@ export function useVideoRoom() {
       }
     })
 
+    socket.on('online-stats', (payload) => {
+      if (typeof payload?.onlineCount === 'number') {
+        setOnlineCount(payload.onlineCount)
+      }
+      if (typeof payload?.inRoomsCount === 'number') {
+        setInRoomsCount(payload.inRoomsCount)
+      }
+    })
+
     socket.on('chat-message', (payload) => {
       setMessages((current) => [...current, payload])
     })
@@ -373,6 +384,8 @@ export function useVideoRoom() {
     isScreenSharing,
     partnerDisconnected,
     connectedTime,
+    onlineCount,
+    inRoomsCount,
     localVideoRef,
     remoteVideoRef,
     localStream: localStreamRef.current,

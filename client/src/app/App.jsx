@@ -65,6 +65,7 @@ export default function App() {
       {currentView === 'home' && (
         <Navbar
           user={user}
+          onlineCount={room.onlineCount}
           onLogout={handleLogout}
           onOpenAuth={handleOpenAuth}
           onNavigate={(v) => setCurrentView(v)}
@@ -75,6 +76,7 @@ export default function App() {
       {currentView === 'home' ? (
         <HomePage
           user={user}
+          onlineCount={room.onlineCount}
           onStartChat={handleStartChat}
           onOpenAuth={handleOpenAuth}
         />
