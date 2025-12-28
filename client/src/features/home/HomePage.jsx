@@ -181,8 +181,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
           {/* Interactive Windows Grid (Mockup Browser Frames Style) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
             
-            {/* Left Frame: Interests & Matching Topics */}
-            <div className="lg:col-span-7 flex flex-col">
+            {/* Frame: Interests & Matching Topics (Below Video on Mobile, Left on Desktop) */}
+            <div className="order-2 lg:order-1 lg:col-span-7 flex flex-col">
               {/* Browser Window Mockup Frame */}
               <div className="rounded-2xl border border-[#243c47] bg-[#1a2d36]/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex-1 flex flex-col">
                 {/* Browser Window Top Bar */}
@@ -266,8 +266,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
               </div>
             </div>
 
-            {/* Right Frame: Live Camera Preview & Start Button Mockup */}
-            <div className="lg:col-span-5 flex flex-col">
+            {/* Frame: Live Camera Preview & Start Button (Above Interests on Mobile, Right on Desktop) */}
+            <div className="order-1 lg:order-2 lg:col-span-5 flex flex-col">
               {/* Browser Window Mockup Frame */}
               <div className="rounded-2xl border border-[#243c47] bg-[#1a2d36]/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex-1 flex flex-col">
                 {/* Browser Window Top Bar */}
