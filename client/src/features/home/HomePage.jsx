@@ -149,16 +149,16 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
       <div className="pointer-events-none absolute -top-40 right-10 h-[500px] w-[600px] rounded-full bg-gradient-to-br from-[#E09800]/15 via-[#1e3844]/40 to-transparent blur-[130px]" />
       <div className="pointer-events-none absolute top-1/2 -left-40 h-[450px] w-[550px] rounded-full bg-[#1c3642]/60 blur-[120px]" />
 
-      <main className="relative mx-auto max-w-7xl px-4 pt-2 sm:pt-3 pb-16 sm:px-6 lg:px-8">
+      <main className="relative mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pt-2 sm:pt-3 pb-16">
         
         {/* Hero Section: Leo Cerso Editorial Architecture */}
         <section className="pt-0 sm:pt-1 pb-6 space-y-3 sm:space-y-4">
           
           {/* Top Editorial Headline Block (Leo Cerso Template) */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 sm:gap-3 pt-1">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-slate-400">
                   P2P Encrypted • High Definition WebRTC
                 </span>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#E09800]" />
@@ -169,7 +169,7 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
               </h1>
             </div>
 
-            <div className="flex items-center gap-2 pb-0.5">
+            <div className="flex items-center gap-2 pb-0.5 self-start sm:self-auto">
               <div className="flex items-center gap-2 rounded-full border border-[#243c47] bg-[#1a2d36]/80 px-3 py-1 text-xs text-slate-300 shadow-inner">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="font-mono font-bold text-emerald-400">{Number(onlineCount).toLocaleString()}</span>
@@ -179,20 +179,20 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
           </div>
 
           {/* Interactive Windows Grid (Mockup Browser Frames Style) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
             
             {/* Left Frame: Interests & Matching Topics */}
             <div className="lg:col-span-7 flex flex-col">
               {/* Browser Window Mockup Frame */}
               <div className="rounded-2xl border border-[#243c47] bg-[#1a2d36]/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex-1 flex flex-col">
                 {/* Browser Window Top Bar */}
-                <div className="flex items-center justify-between border-b border-[#243c47] bg-[#15252e] px-3.5 py-2">
+                <div className="flex items-center justify-between border-b border-[#243c47] bg-[#15252e] px-3 sm:px-3.5 py-2">
                   <div className="flex items-center gap-1.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
                   </div>
-                  <div className="rounded-md bg-[#101e25] border border-[#243c47] px-2.5 py-0.5 text-[10px] font-mono text-slate-400">
+                  <div className="rounded-md bg-[#101e25] border border-[#243c47] px-2.5 py-0.5 text-[10px] font-mono text-slate-400 truncate max-w-[160px] sm:max-w-none">
                     meetup.live/match-topics
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
@@ -202,7 +202,7 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                 </div>
 
                 {/* Console Content */}
-                <div className="p-4 sm:p-5 space-y-3.5 flex-1 flex flex-col justify-between">
+                <div className="p-3.5 sm:p-5 space-y-3.5 flex-1 flex flex-col justify-between">
                   {/* Interests & Topic Matching */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -243,11 +243,11 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                         value={customTagInput}
                         onChange={(e) => setCustomTagInput(e.target.value)}
                         placeholder="Add custom topic (e.g. Formula1, Art, Tech)..."
-                        className="flex-1 rounded-lg border border-[#243c47] bg-[#101e25] px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-[#E09800] focus:ring-1 focus:ring-[#E09800] transition"
+                        className="flex-1 min-w-0 rounded-lg border border-[#243c47] bg-[#101e25] px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-[#E09800] focus:ring-1 focus:ring-[#E09800] transition"
                       />
                       <button
                         type="submit"
-                        className="flex items-center gap-1 rounded-lg border border-[#243c47] bg-[#122027] hover:bg-[#1a2d36] hover:border-[#E09800]/40 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white transition cursor-pointer"
+                        className="flex items-center gap-1 shrink-0 rounded-lg border border-[#243c47] bg-[#122027] hover:bg-[#1a2d36] hover:border-[#E09800]/40 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white transition cursor-pointer"
                       >
                         <Plus className="h-3 w-3 text-[#E09800]" />
                         <span>Add</span>

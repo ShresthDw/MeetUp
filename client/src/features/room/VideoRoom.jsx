@@ -201,56 +201,58 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   }
 
   return (
-    <div className="relative flex h-screen w-screen flex-col bg-[#142229] text-slate-100 overflow-hidden select-none">
+    <div className="relative flex h-screen h-[100dvh] w-screen flex-col bg-[#142229] text-slate-100 overflow-hidden select-none">
       
       {/* Top Floating Header - Leo Cerso Style */}
-      <header className="z-30 flex h-14 items-center justify-between border-b border-[#243c47] bg-[#101e25]/95 px-4 backdrop-blur-xl">
+      <header className="z-30 flex h-13 sm:h-14 items-center justify-between border-b border-[#243c47] bg-[#101e25]/95 px-2.5 sm:px-4 backdrop-blur-xl shrink-0">
         {/* Left: Brand & Room status */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={handleExit}
-            className="flex items-center gap-2 rounded-xl bg-[#1a2d36] border border-[#243c47] px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:border-[#E09800]/50 transition cursor-pointer"
+            className="flex items-center gap-1 sm:gap-2 rounded-xl bg-[#1a2d36] border border-[#243c47] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:border-[#E09800]/50 transition cursor-pointer"
           >
-            ← Exit to Lobby
+            <span>←</span>
+            <span className="hidden sm:inline">Exit to Lobby</span>
+            <span className="sm:hidden">Exit</span>
           </button>
 
-          <div className="hidden sm:flex items-center gap-2 border-l border-[#243c47] pl-3">
+          <div className="flex items-center gap-2 border-l border-[#243c47] pl-2 sm:pl-3">
             {status === 'connected' ? (
-              <div className="flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs text-emerald-400 font-medium">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Connected with Stranger</span>
-                <span className="font-mono text-slate-400">({formatTime(connectedTime)})</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-emerald-400 font-medium">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="hidden sm:inline">Connected</span>
+                <span className="font-mono text-emerald-300 font-bold">{formatTime(connectedTime)}</span>
               </div>
             ) : status === 'matching' ? (
-              <div className="flex items-center gap-2 rounded-full bg-[#E09800]/15 border border-[#E09800]/40 px-3 py-1 text-xs text-[#E09800] font-medium">
-                <span className="h-2 w-2 rounded-full bg-[#E09800] animate-ping" />
-                <span>Looking for a stranger…</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#E09800]/15 border border-[#E09800]/40 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-[#E09800] font-medium">
+                <span className="h-2 w-2 rounded-full bg-[#E09800] animate-ping shrink-0" />
+                <span>Matching…</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 rounded-full bg-[#1a2d36] px-3 py-1 text-xs text-slate-400 border border-[#243c47]">
-                <span className="h-2 w-2 rounded-full bg-slate-600" />
-                <span>Disconnected</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#1a2d36] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-400 border border-[#243c47]">
+                <span className="h-2 w-2 rounded-full bg-slate-600 shrink-0" />
+                <span>Idle</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Right: Quick Next, Mobile Chat & Report actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Mobile Chat Toggle Button */}
           <button
             type="button"
             onClick={() => setIsMobileChatOpen(!isMobileChatOpen)}
-            className={`md:hidden flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+            className={`md:hidden flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
               isMobileChatOpen
                 ? 'border-[#E09800] bg-[#E09800]/20 text-[#E09800]'
                 : 'border-[#243c47] bg-[#1a2d36] text-slate-300'
             }`}
           >
             <MessageSquare className="h-3.5 w-3.5 text-[#E09800]" />
-            <span>Chat</span>
+            <span className="hidden xs:inline">Chat</span>
             {messages.length > 0 && (
-              <span className="rounded-full bg-[#E09800] text-[10px] text-white px-1.5 py-0.2 font-black leading-tight">
+              <span className="rounded-full bg-[#E09800] text-[9px] text-white px-1.5 py-0.2 font-black leading-tight">
                 {messages.length}
               </span>
             )}
@@ -259,7 +261,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           {status === 'connected' && (
             <button
               onClick={() => setReportModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-xl border border-[#243c47] bg-[#1a2d36] px-3 py-1.5 text-xs text-slate-400 hover:text-red-400 hover:border-red-500/30 transition cursor-pointer"
+              className="flex items-center gap-1 rounded-xl border border-[#243c47] bg-[#1a2d36] px-2.5 sm:px-3 py-1.5 text-xs text-slate-400 hover:text-red-400 hover:border-red-500/30 transition cursor-pointer"
               title="Report User"
             >
               <Flag className="h-3.5 w-3.5" />
@@ -270,7 +272,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           <button
             onClick={nextPeer}
             style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-            className="btn-yellow-primary flex items-center gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-3.5 sm:px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
+            className="btn-yellow-primary flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-3 sm:px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
           >
             <RotateCw className="h-3.5 w-3.5 text-white" />
             <span className="text-white font-bold">Next</span>
@@ -301,7 +303,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 !isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-40 h-28 w-40 sm:h-36 sm:w-52 md:h-40 md:w-60 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-105'
+                  : 'absolute bottom-16 right-2 sm:bottom-4 sm:right-4 z-40 h-24 w-36 sm:h-36 sm:w-52 md:h-40 md:w-60 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-105'
               }`}
             >
               {/* Remote Stranger Video Stream */}
@@ -320,26 +322,26 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {status === 'matching' && (
                 isSwapped ? (
                   /* Compact Mini PiP Overlay */
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none">
-                    <div className="relative mb-1 flex h-8 w-8 items-center justify-center rounded-xl bg-[#E09800] shadow-md shadow-[#E09800]/40 text-white">
-                      <Sparkles className="h-4 w-4 fill-white animate-pulse" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-1.5 sm:p-2 text-center select-none">
+                    <div className="relative mb-1 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-[#E09800] shadow-md shadow-[#E09800]/40 text-white">
+                      <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-white animate-pulse" />
                       <span className="absolute -inset-1 rounded-xl border border-[#E09800]/60 animate-ping opacity-30 pointer-events-none" />
                     </div>
-                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-white">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-white">
                       Searching…
                     </span>
-                    <span className="text-[9px] text-slate-400">
+                    <span className="text-[8px] sm:text-[9px] text-slate-400">
                       Tap to enlarge
                     </span>
                   </div>
                 ) : (
                   /* Full Stage Overlay */
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 backdrop-blur-md p-4 sm:p-6 text-center space-y-3 sm:space-y-4">
-                    <div className="relative flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center aspect-square">
+                    <div className="relative flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center aspect-square">
                       <div className="absolute inset-0 rounded-full border border-[#E09800]/30 animate-radar" />
                       <div className="absolute inset-0 rounded-full border border-[#E09800]/50 animate-radar-delayed-1" />
-                      <div className="relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#E09800] shadow-xl shadow-[#E09800]/35 text-white">
-                        <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 fill-white animate-pulse" />
+                      <div className="relative flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#E09800] shadow-xl shadow-[#E09800]/35 text-white">
+                        <Sparkles className="h-5 w-5 sm:h-7 sm:w-7 fill-white animate-pulse" />
                       </div>
                     </div>
 
@@ -368,12 +370,12 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {/* Partner Left Overlay */}
               {partnerDisconnected && (
                 isSwapped ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none">
-                    <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-xl bg-red-500/15 text-red-400 border border-red-500/30">
-                      <PhoneOff className="h-3.5 w-3.5" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-1.5 sm:p-2 text-center select-none">
+                    <div className="mb-1 flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-xl bg-red-500/15 text-red-400 border border-red-500/30">
+                      <PhoneOff className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </div>
-                    <span className="text-[10px] font-bold text-red-400">Disconnected</span>
-                    <span className="text-[9px] text-slate-400">Tap to find next</span>
+                    <span className="text-[9px] sm:text-[10px] font-bold text-red-400">Disconnected</span>
+                    <span className="text-[8px] sm:text-[9px] text-slate-400">Tap for next</span>
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/90 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
@@ -402,12 +404,12 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {/* Idle Overlay */}
               {status === 'idle' && (
                 isSwapped ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none">
-                    <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/30">
-                      <Users className="h-3.5 w-3.5" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-1.5 sm:p-2 text-center select-none">
+                    <div className="mb-1 flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/30">
+                      <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </div>
-                    <span className="text-[10px] font-bold text-white">Ready</span>
-                    <span className="text-[9px] text-slate-400">Tap to start</span>
+                    <span className="text-[9px] sm:text-[10px] font-bold text-white">Ready</span>
+                    <span className="text-[8px] sm:text-[9px] text-slate-400">Tap to start</span>
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/90 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
@@ -435,12 +437,12 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
               {/* Badges on Remote Stranger */}
               {!isSwapped ? (
-                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-[#101e25]/85 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-white border border-white/10">
-                  <span className="h-2 w-2 rounded-full bg-[#E09800] animate-pulse" />
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-[#101e25]/85 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
+                  <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#E09800] animate-pulse" />
                   <span>Stranger</span>
                 </div>
               ) : (
-                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
+                <div className="absolute top-1.5 left-1.5 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
                   <span>Stranger</span>
                 </div>
               )}
@@ -456,13 +458,13 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-40 h-28 w-40 sm:h-36 sm:w-52 md:h-40 md:w-60 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-105'
+                  : 'absolute bottom-16 right-2 sm:bottom-4 sm:right-4 z-40 h-24 w-36 sm:h-36 sm:w-52 md:h-40 md:w-60 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-105'
               }`}
             >
               {isCameraOff && !isScreenSharing ? (
                 <div className="flex h-full w-full flex-col items-center justify-center bg-[#15252e] text-slate-500 p-2">
-                  <CameraOff className={isSwapped ? "h-10 w-10 sm:h-12 sm:w-12 mb-2 text-slate-400" : "h-5 w-5 mb-1 text-slate-400"} />
-                  <span className={isSwapped ? "text-xs sm:text-sm font-medium" : "text-[10px] font-medium"}>Camera Off</span>
+                  <CameraOff className={isSwapped ? "h-10 w-10 sm:h-12 sm:w-12 mb-2 text-slate-400" : "h-4 w-4 sm:h-5 sm:w-5 mb-1 text-slate-400"} />
+                  <span className={isSwapped ? "text-xs sm:text-sm font-medium" : "text-[9px] sm:text-[10px] font-medium"}>Camera Off</span>
                 </div>
               ) : (
                 <video
@@ -482,21 +484,21 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
               {/* Badges on Local User Feed */}
               {isSwapped ? (
-                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-[#101e25]/85 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-white border border-white/10">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-[#101e25]/85 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
+                  <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400" />
                   <span>{isScreenSharing ? 'Your Screen' : 'You'}</span>
                   {isMicMuted && <MicOff className="h-3 w-3 text-red-400 ml-1" />}
                 </div>
               ) : (
-                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
+                <div className="absolute top-1.5 left-1.5 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
                   <span>{isScreenSharing ? 'Your Screen' : 'You'}</span>
-                  {isMicMuted && <MicOff className="h-2.5 w-2.5 text-red-400" />}
+                  {isMicMuted && <MicOff className="h-2 w-2 text-red-400" />}
                 </div>
               )}
             </div>
 
             {/* Floating In-Room Media Controls Bar */}
-            <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-[#243c47] bg-[#101e25]/95 p-1.5 shadow-2xl backdrop-blur-xl">
+            <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-[#243c47] bg-[#101e25]/95 p-1 sm:p-1.5 shadow-2xl backdrop-blur-xl">
               <button
                 type="button"
                 onClick={toggleMic}

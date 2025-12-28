@@ -6,26 +6,26 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#223640]/80 bg-[#142229]/90 backdrop-blur-xl transition-all">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* Brand - Leo Cerso Style with Iconic Yellow Dot */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate?.('home')}>
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#E09800] shadow-lg shadow-[#E09800]/30">
-            <Video className="h-5 w-5 text-white" />
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+        <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => onNavigate?.('home')}>
+          <div className="relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#E09800] shadow-md sm:shadow-lg shadow-[#E09800]/30">
+            <Video className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
+              <span className="relative inline-flex h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-emerald-500"></span>
             </span>
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-display text-xl font-black tracking-tight text-white uppercase">
+              <span className="font-display text-lg sm:text-xl font-black tracking-tight text-white uppercase">
                 MeetUp<span className="text-[#E09800]">.</span>
               </span>
-              <span className="rounded-full bg-[#E09800]/15 px-2 py-0.5 text-[10px] font-bold text-[#E09800] border border-[#E09800]/40">
+              <span className="rounded-full bg-[#E09800]/15 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-[#E09800] border border-[#E09800]/40">
                 LIVE
               </span>
             </div>
-            <p className="text-[10px] tracking-wide text-slate-400 uppercase hidden sm:block font-medium">1-on-1 Video Chat</p>
+            <p className="text-[9px] sm:text-[10px] tracking-wide text-slate-400 uppercase hidden sm:block font-medium">1-on-1 Video Chat</p>
           </div>
         </div>
 
@@ -40,11 +40,11 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
         </div>
 
         {/* Action Controls & Auth */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {user ? (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2.5 rounded-full border border-[#223640] bg-[#1a2d36]/80 px-3 py-1.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#E09800] text-xs font-bold text-white shadow-sm">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 rounded-full border border-[#223640] bg-[#1a2d36]/80 px-2.5 sm:px-3 py-1 sm:py-1.5">
+                <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-[#E09800] text-xs font-bold text-white shadow-sm">
                   {user.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
                 <div className="text-left hidden sm:block">
@@ -56,13 +56,13 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
               <button
                 onClick={onLogout}
                 title="Log out"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#223640] bg-[#1a2d36] text-slate-400 hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 transition"
+                className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-[#223640] bg-[#1a2d36] text-slate-400 hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 transition cursor-pointer"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5 sm:gap-2.5">
               <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 px-2.5 py-1 rounded-full bg-[#1a2d36]/60 border border-[#223640]">
                 <Zap className="h-3 w-3 text-[#E09800]" />
                 <span>Guest Mode Active</span>
@@ -70,7 +70,7 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
 
               <button
                 onClick={() => onOpenAuth('login')}
-                className="rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-[#1a2d36] transition"
+                className="rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-[#1a2d36] transition cursor-pointer"
               >
                 Sign In
               </button>
@@ -78,10 +78,11 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
               <button
                 onClick={() => onOpenAuth('register')}
                 style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-                className="btn-yellow-primary flex items-center gap-1.5 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-4 py-2 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
+                className="btn-yellow-primary flex items-center gap-1 sm:gap-1.5 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
               >
-                <Sparkles className="h-3.5 w-3.5 fill-white text-white" />
-                <span className="text-white font-bold">Sign Up Free</span>
+                <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-white text-white" />
+                <span className="text-white font-bold">Sign Up</span>
+                <span className="hidden sm:inline text-white font-bold">Free</span>
               </button>
             </div>
           )}
