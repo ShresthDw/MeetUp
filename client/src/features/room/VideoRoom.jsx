@@ -288,10 +288,10 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
       <div className="relative flex flex-1 overflow-hidden">
         
         {/* Video Stage Area */}
-        <div className="relative flex flex-1 flex-col items-center justify-center p-2 sm:p-4 overflow-hidden bg-[#142229]">
+        <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-[#142229]">
           
-          {/* Main Stage Container (Browser Frame Style) */}
-          <div className="relative flex h-full w-full max-w-5xl items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#1a2d36] shadow-2xl">
+          {/* Main Stage Container (Vertical Portrait on Mobile, Wide on Desktop) */}
+          <div className="relative flex h-full w-full max-w-md sm:max-w-5xl items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#1a2d36] shadow-2xl">
             
             {/* ========================================================================= */}
             {/* WRAPPER 1: REMOTE STRANGER (Never unmounted, smoothly swaps position)      */}
@@ -303,7 +303,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 !isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-2 sm:bottom-4 sm:right-4 z-40 h-24 w-36 sm:h-36 sm:w-52 md:h-40 md:w-60 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-105'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 h-48 w-34 sm:h-44 sm:w-60 md:h-48 md:w-64 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {/* Remote Stranger Video Stream */}
@@ -312,7 +312,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 autoPlay
                 playsInline
                 className={`h-full w-full bg-[#0d171d] ${
-                  !isSwapped ? 'object-contain' : 'object-cover'
+                  !isSwapped ? 'object-cover sm:object-contain' : 'object-cover'
                 } transition-opacity duration-300 ${
                   status === 'connected' && !partnerDisconnected ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -322,15 +322,15 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {status === 'matching' && (
                 isSwapped ? (
                   /* Compact Mini PiP Overlay */
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-1.5 sm:p-2 text-center select-none">
-                    <div className="relative mb-1 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-[#E09800] shadow-md shadow-[#E09800]/40 text-white">
-                      <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-white animate-pulse" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
+                    <div className="relative mb-0.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#E09800] shadow-md shadow-[#E09800]/40 text-white">
+                      <Sparkles className="h-4.5 w-4.5 sm:h-5 sm:w-5 fill-white animate-pulse" />
                       <span className="absolute -inset-1 rounded-xl border border-[#E09800]/60 animate-ping opacity-30 pointer-events-none" />
                     </div>
-                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-white">
+                    <span className="text-xs font-black uppercase tracking-wider text-white">
                       Searching…
                     </span>
-                    <span className="text-[8px] sm:text-[9px] text-slate-400">
+                    <span className="text-[10px] text-slate-400">
                       Tap to enlarge
                     </span>
                   </div>
@@ -370,12 +370,12 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {/* Partner Left Overlay */}
               {partnerDisconnected && (
                 isSwapped ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-1.5 sm:p-2 text-center select-none">
-                    <div className="mb-1 flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-xl bg-red-500/15 text-red-400 border border-red-500/30">
-                      <PhoneOff className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
+                    <div className="mb-0.5 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-red-500/15 text-red-400 border border-red-500/30">
+                      <PhoneOff className="h-4 w-4" />
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-red-400">Disconnected</span>
-                    <span className="text-[8px] sm:text-[9px] text-slate-400">Tap for next</span>
+                    <span className="text-[11px] font-bold text-red-400">Disconnected</span>
+                    <span className="text-[10px] text-slate-400">Tap for next</span>
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/90 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
@@ -404,12 +404,12 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {/* Idle Overlay */}
               {status === 'idle' && (
                 isSwapped ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-1.5 sm:p-2 text-center select-none">
-                    <div className="mb-1 flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/30">
-                      <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
+                    <div className="mb-0.5 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/30">
+                      <Users className="h-4 w-4" />
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-white">Ready</span>
-                    <span className="text-[8px] sm:text-[9px] text-slate-400">Tap to start</span>
+                    <span className="text-[11px] font-bold text-white">Ready</span>
+                    <span className="text-[10px] text-slate-400">Tap to start</span>
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/90 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
@@ -442,7 +442,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   <span>Stranger</span>
                 </div>
               ) : (
-                <div className="absolute top-1.5 left-1.5 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
+                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
                   <span>Stranger</span>
                 </div>
               )}
@@ -458,13 +458,13 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-2 sm:bottom-4 sm:right-4 z-40 h-24 w-36 sm:h-36 sm:w-52 md:h-40 md:w-60 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-105'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 h-48 w-34 sm:h-44 sm:w-60 md:h-48 md:w-64 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {isCameraOff && !isScreenSharing ? (
                 <div className="flex h-full w-full flex-col items-center justify-center bg-[#15252e] text-slate-500 p-2">
-                  <CameraOff className={isSwapped ? "h-10 w-10 sm:h-12 sm:w-12 mb-2 text-slate-400" : "h-4 w-4 sm:h-5 sm:w-5 mb-1 text-slate-400"} />
-                  <span className={isSwapped ? "text-xs sm:text-sm font-medium" : "text-[9px] sm:text-[10px] font-medium"}>Camera Off</span>
+                  <CameraOff className={isSwapped ? "h-10 w-10 sm:h-12 sm:w-12 mb-2 text-slate-400" : "h-6 w-6 mb-1 text-slate-400"} />
+                  <span className={isSwapped ? "text-xs sm:text-sm font-medium" : "text-xs font-medium"}>Camera Off</span>
                 </div>
               ) : (
                 <video
@@ -490,9 +490,9 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   {isMicMuted && <MicOff className="h-3 w-3 text-red-400 ml-1" />}
                 </div>
               ) : (
-                <div className="absolute top-1.5 left-1.5 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
+                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
                   <span>{isScreenSharing ? 'Your Screen' : 'You'}</span>
-                  {isMicMuted && <MicOff className="h-2 w-2 text-red-400" />}
+                  {isMicMuted && <MicOff className="h-2.5 w-2.5 text-red-400" />}
                 </div>
               )}
             </div>
