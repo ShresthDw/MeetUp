@@ -144,10 +144,26 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
   return (
     <div className="relative min-h-screen bg-[#142229] text-slate-100 overflow-hidden">
-      {/* Background Decorative Mesh & Radial Atmospheric Glow (Leo Cerso Deep Teal & Gold) */}
-      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-25" />
-      <div className="pointer-events-none absolute -top-40 right-10 h-[500px] w-[600px] rounded-full bg-gradient-to-br from-[#E09800]/15 via-[#1e3844]/40 to-transparent blur-[130px]" />
-      <div className="pointer-events-none absolute top-1/2 -left-40 h-[450px] w-[550px] rounded-full bg-[#1c3642]/60 blur-[120px]" />
+      {/* Background Animated Decorative Mesh & Radial Atmospheric Glowing Orbs */}
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-40 animate-grid-drift" />
+      
+      {/* Dynamic Animated Floating Glow Orbs (Aurora Effect - High Visibility) */}
+      <div className="pointer-events-none absolute -top-32 right-[5%] h-[600px] w-[600px] rounded-full bg-gradient-to-br from-[#E09800]/45 via-[#d97706]/25 to-transparent blur-[85px] animate-orb-1" />
+      <div className="pointer-events-none absolute top-[15%] -left-32 h-[550px] w-[550px] rounded-full bg-gradient-to-tr from-[#0284c7]/45 via-[#0369a1]/30 to-transparent blur-[80px] animate-orb-2" />
+      <div className="pointer-events-none absolute top-[35%] left-[25%] h-[500px] w-[500px] rounded-full bg-gradient-to-br from-[#E09800]/30 via-[#10b981]/25 to-transparent blur-[75px] animate-orb-3" />
+      <div className="pointer-events-none absolute bottom-[10%] right-[15%] h-[450px] w-[450px] rounded-full bg-gradient-to-tl from-[#0284c7]/35 via-[#E09800]/25 to-transparent blur-[80px] animate-orb-1" />
+
+      {/* Floating Vibrant Luminous Particles */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <span className="absolute top-[18%] left-[12%] h-2.5 w-2.5 rounded-full bg-[#E09800] shadow-[0_0_14px_4px_rgba(224,152,0,0.9)] animate-particle-1" />
+        <span className="absolute top-[28%] right-[22%] h-3 w-3 rounded-full bg-[#38bdf8] shadow-[0_0_16px_4px_rgba(56,189,248,0.9)] animate-particle-2" />
+        <span className="absolute top-[48%] left-[38%] h-2 w-2 rounded-full bg-[#E09800] shadow-[0_0_12px_3px_rgba(224,152,0,0.85)] animate-particle-3" />
+        <span className="absolute top-[14%] right-[38%] h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_14px_4px_rgba(52,211,153,0.9)] animate-particle-4" />
+        <span className="absolute top-[65%] left-[18%] h-3 w-3 rounded-full bg-[#E09800] shadow-[0_0_16px_4px_rgba(224,152,0,0.9)] animate-particle-5" />
+        <span className="absolute top-[58%] right-[10%] h-2.5 w-2.5 rounded-full bg-[#38bdf8] shadow-[0_0_14px_4px_rgba(56,189,248,0.9)] animate-particle-6" />
+        <span className="absolute top-[75%] left-[45%] h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_3px_rgba(52,211,153,0.85)] animate-particle-7" />
+        <span className="absolute top-[35%] left-[8%] h-2.5 w-2.5 rounded-full bg-[#E09800] shadow-[0_0_14px_4px_rgba(224,152,0,0.85)] animate-particle-8" />
+      </div>
 
       <main className="relative mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pt-2 sm:pt-3 pb-16">
         
@@ -192,9 +208,6 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
                   </div>
-                  <div className="rounded-md bg-[#101e25] border border-[#243c47] px-2.5 py-0.5 text-[10px] font-mono text-slate-400 truncate max-w-[160px] sm:max-w-none">
-                    meetup.live/match-topics
-                  </div>
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     <span>READY</span>
@@ -225,16 +238,38 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                             type="button"
                             onClick={() => handleToggleTag(tag)}
                             style={isSelected ? { backgroundColor: '#E09800', color: '#ffffff', borderColor: '#FFB82E' } : {}}
-                            className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all duration-150 cursor-pointer ${
+                            className={`group rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5 select-none ${
                               isSelected
                                 ? 'bg-[#E09800] text-white shadow-sm shadow-[#E09800]/30 border border-[#FFB82E] scale-102'
                                 : 'bg-[#122027] text-slate-300 hover:bg-[#1a2d36] hover:text-white border border-[#243c47]'
                             }`}
                           >
-                            #{tag}
+                            <Plus
+                              className={`h-3 w-3 shrink-0 transition-transform duration-150 ${
+                                isSelected ? 'text-white' : 'text-[#E09800] group-hover:text-white group-hover:scale-110'
+                              }`}
+                            />
+                            <span>{tag}</span>
                           </button>
                         )
                       })}
+
+                      {/* User Custom Added Tags (if any outside POPULAR_TAGS) */}
+                      {selectedTags
+                        .filter((tag) => !POPULAR_TAGS.includes(tag))
+                        .map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => handleToggleTag(tag)}
+                            style={{ backgroundColor: '#E09800', color: '#ffffff', borderColor: '#FFB82E' }}
+                            className="rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-[#E09800] text-white shadow-sm shadow-[#E09800]/30 border border-[#FFB82E] scale-102 select-none"
+                          >
+                            <Plus className="h-3 w-3 shrink-0 text-white" />
+                            <span>{tag}</span>
+                            <span className="ml-1 text-white/70 hover:text-white font-mono text-xs">×</span>
+                          </button>
+                        ))}
                     </div>
 
                     {/* Custom Topic Input */}
@@ -276,9 +311,6 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
-                  </div>
-                  <div className="rounded-md bg-[#101e25] border border-[#243c47] px-2.5 py-0.5 text-[10px] font-mono text-slate-400">
-                    meetup.live/camera-preview
                   </div>
                   <div className="flex items-center gap-1 text-[10px] font-mono text-emerald-400">
                     <span>HD 1080p</span>
