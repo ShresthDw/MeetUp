@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Video,
   MessageSquare,
-  Sparkles,
   Mic,
   MicOff,
   Camera,
@@ -208,10 +207,6 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>READY</span>
-                  </div>
                 </div>
 
                 {/* Console Content */}
@@ -220,7 +215,7 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                        <Tag className="h-3.5 w-3.5 text-[#E09800]" />
+                        <Tag className="h-3.5 w-3.5 text-slate-400" />
                         <span>Match by Interests (Optional)</span>
                       </label>
                       <span className="text-[10px] text-slate-400 font-mono">
@@ -282,9 +277,9 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                       />
                       <button
                         type="submit"
-                        className="flex items-center gap-1 shrink-0 rounded-lg border border-[#243c47] bg-[#122027] hover:bg-[#1a2d36] hover:border-[#E09800]/40 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white transition cursor-pointer"
+                        className="flex items-center gap-1 shrink-0 rounded-lg border border-[#243c47] bg-[#122027] hover:bg-[#1a2d36] px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white transition cursor-pointer"
                       >
-                        <Plus className="h-3 w-3 text-[#E09800]" />
+                        <Plus className="h-3 w-3 text-slate-400" />
                         <span>Add</span>
                       </button>
                     </form>
@@ -312,8 +307,9 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
                     <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] font-mono text-emerald-400">
-                    <span>HD 1080p</span>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>READY</span>
                   </div>
                 </div>
 
@@ -389,11 +385,11 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                   {/* Security & Info Line */}
                   <div className="space-y-0.5">
                     <div className="flex items-center justify-between text-xs text-slate-300">
-                      <span className="flex items-center gap-1 text-[10px] font-semibold text-[#E09800]">
-                        <Shield className="h-3 w-3 text-[#E09800]" />
+                      <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-300">
+                        <Shield className="h-3 w-3 text-slate-400" />
                         Direct WebRTC Encryption
                       </span>
-                      <span className="text-emerald-400 font-mono text-[10px]">30-60 FPS</span>
+                      <span className="text-slate-400 font-mono text-[10px]">30-60 FPS</span>
                     </div>
 
                     <p className="text-[10px] text-slate-400 leading-tight">
@@ -434,8 +430,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
         {/* Bento Grid Feature Showcase */}
         <section className="mb-14 space-y-6">
           <div className="text-center space-y-1.5 max-w-xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-[#E09800]/15 border border-[#E09800]/40 px-3 py-1 text-xs font-bold text-[#E09800]">
-              <Sparkles className="h-3.5 w-3.5 fill-[#E09800]" />
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-[#15252e] border border-[#243c47] px-3 py-1 text-xs font-semibold text-slate-300">
+              <Zap className="h-3.5 w-3.5 text-slate-400" />
               <span className="uppercase tracking-wider">Editorial Architecture</span>
             </div>
             <h2 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
@@ -448,8 +444,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <div className="rounded-3xl border border-[#243c47] bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/40 shadow-inner">
-                <Zap className="h-5 w-5 fill-[#E09800]" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#122027] text-slate-200 border border-[#243c47]">
+                <Zap className="h-5 w-5 text-slate-200" />
               </div>
               <h3 className="font-display text-base font-bold text-white">Instant Matching</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -458,8 +454,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
             </div>
 
             <div className="rounded-3xl border border-[#243c47] bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/40 shadow-inner">
-                <Lock className="h-5 w-5" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#122027] text-slate-200 border border-[#243c47]">
+                <Lock className="h-5 w-5 text-slate-200" />
               </div>
               <h3 className="font-display text-base font-bold text-white">Direct WebRTC</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -468,8 +464,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
             </div>
 
             <div className="rounded-3xl border border-[#243c47] bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/40 shadow-inner">
-                <Compass className="h-5 w-5" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#122027] text-slate-200 border border-[#243c47]">
+                <Compass className="h-5 w-5 text-slate-200" />
               </div>
               <h3 className="font-display text-base font-bold text-white">Topic Filters</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -478,8 +474,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
             </div>
 
             <div className="rounded-3xl border border-[#243c47] bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-inner">
-                <Shield className="h-5 w-5" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#122027] text-slate-200 border border-[#243c47]">
+                <Shield className="h-5 w-5 text-slate-200" />
               </div>
               <h3 className="font-display text-base font-bold text-white">Instant Skip & Safety</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -498,8 +494,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
               </h3>
               <p className="text-xs text-slate-400 mt-1">Keep MeetUp friendly, welcoming, and safe for everyone.</p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full self-start">
-              <Shield className="h-4 w-4" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 bg-[#122027] border border-[#243c47] px-3.5 py-1.5 rounded-full self-start">
+              <Shield className="h-4 w-4 text-slate-400" />
               <span>Moderated Platform</span>
             </div>
           </div>

@@ -8,7 +8,8 @@ import {
   RotateCw,
   PhoneOff,
   MessageSquare,
-  Sparkles,
+  Lightbulb,
+  Radio,
   Send,
   Flag,
   Users,
@@ -218,18 +219,18 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
           <div className="flex items-center gap-2 border-l border-[#243c47] pl-2 sm:pl-3">
             {status === 'connected' ? (
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-emerald-400 font-medium">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                <span className="hidden sm:inline">Connected</span>
-                <span className="font-mono text-emerald-300 font-bold">{formatTime(connectedTime)}</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#122027] border border-[#243c47] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-300 font-medium">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="hidden sm:inline text-slate-400">Connected</span>
+                <span className="font-mono text-white font-bold">{formatTime(connectedTime)}</span>
               </div>
             ) : status === 'matching' ? (
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#E09800]/15 border border-[#E09800]/40 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-[#E09800] font-medium">
-                <span className="h-2 w-2 rounded-full bg-[#E09800] animate-ping shrink-0" />
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#122027] border border-[#243c47] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-300 font-medium">
+                <span className="h-2 w-2 rounded-full bg-slate-400 animate-ping shrink-0" />
                 <span>Matching…</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#1a2d36] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-400 border border-[#243c47]">
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#122027] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-400 border border-[#243c47]">
                 <span className="h-2 w-2 rounded-full bg-slate-600 shrink-0" />
                 <span>Idle</span>
               </div>
@@ -245,11 +246,11 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             onClick={() => setIsMobileChatOpen(!isMobileChatOpen)}
             className={`md:hidden flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
               isMobileChatOpen
-                ? 'border-[#E09800] bg-[#E09800]/20 text-[#E09800]'
-                : 'border-[#243c47] bg-[#1a2d36] text-slate-300'
+                ? 'border-[#243c47] bg-[#1a2d36] text-white'
+                : 'border-[#243c47] bg-[#122027] text-slate-300'
             }`}
           >
-            <MessageSquare className="h-3.5 w-3.5 text-[#E09800]" />
+            <MessageSquare className="h-3.5 w-3.5 text-slate-400" />
             <span className="hidden xs:inline">Chat</span>
             {messages.length > 0 && (
               <span className="rounded-full bg-[#E09800] text-[9px] text-white px-1.5 py-0.2 font-black leading-tight">
@@ -323,9 +324,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 isSwapped ? (
                   /* Compact Mini PiP Overlay */
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
-                    <div className="relative mb-0.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#E09800] shadow-md shadow-[#E09800]/40 text-white">
-                      <Sparkles className="h-4.5 w-4.5 sm:h-5 sm:w-5 fill-white animate-pulse" />
-                      <span className="absolute -inset-1 rounded-xl border border-[#E09800]/60 animate-ping opacity-30 pointer-events-none" />
+                    <div className="relative mb-0.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#E09800] text-white">
+                      <Radio className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" />
                     </div>
                     <span className="text-xs font-black uppercase tracking-wider text-white">
                       Searching…
@@ -340,8 +340,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                     <div className="relative flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center aspect-square">
                       <div className="absolute inset-0 rounded-full border border-[#E09800]/30 animate-radar" />
                       <div className="absolute inset-0 rounded-full border border-[#E09800]/50 animate-radar-delayed-1" />
-                      <div className="relative flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#E09800] shadow-xl shadow-[#E09800]/35 text-white">
-                        <Sparkles className="h-5 w-5 sm:h-7 sm:w-7 fill-white animate-pulse" />
+                      <div className="relative flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#E09800] text-white">
+                        <Radio className="h-5 w-5 sm:h-7 sm:w-7 text-white" />
                       </div>
                     </div>
 
@@ -405,7 +405,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {status === 'idle' && (
                 isSwapped ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
-                    <div className="mb-0.5 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/30">
+                    <div className="mb-0.5 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#15252e] text-slate-200 border border-[#243c47]">
                       <Users className="h-4 w-4" />
                     </div>
                     <span className="text-[11px] font-bold text-white">Ready</span>
@@ -413,7 +413,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/90 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E09800]/15 text-[#E09800] border border-[#E09800]/30">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#15252e] text-slate-200 border border-[#243c47]">
                       <Users className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
@@ -576,17 +576,17 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           {/* Chat Header */}
           <div className="flex h-14 items-center justify-between border-b border-[#243c47] px-4">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-[#E09800]" />
+              <MessageSquare className="h-4 w-4 text-slate-400" />
               <span className="text-xs font-bold text-slate-200">Encrypted Chat</span>
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 onClick={handleInsertIcebreaker}
-                className="flex items-center gap-1 rounded-lg border border-[#E09800]/40 bg-[#E09800]/15 px-2.5 py-1 text-[11px] font-bold text-[#E09800] hover:bg-[#E09800]/25 transition cursor-pointer"
+                className="flex items-center gap-1.5 rounded-lg border border-[#243c47] bg-[#122027] hover:bg-[#1a2d36] hover:text-white px-2.5 py-1 text-[11px] font-semibold text-slate-300 transition cursor-pointer"
                 title="Generate a random conversation topic"
               >
-                <Sparkles className="h-3 w-3 fill-[#E09800]" />
+                <Lightbulb className="h-3 w-3 text-slate-400" />
                 <span>Icebreaker</span>
               </button>
 
@@ -702,8 +702,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               className={`flex h-8 w-8 items-center justify-center rounded-xl border transition ${
                 showEmojiPicker
-                  ? 'border-[#E09800] bg-[#E09800]/20 text-[#E09800]'
-                  : 'border-[#243c47] bg-[#1a2d36] text-slate-400 hover:text-white'
+                  ? 'border-[#243c47] bg-[#1a2d36] text-white'
+                  : 'border-[#243c47] bg-[#122027] text-slate-400 hover:text-white'
               }`}
               title="Toggle Emoji Drawer"
             >
@@ -741,7 +741,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             </p>
 
             {reportedSuccess ? (
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-400 text-center font-semibold">
+              <div className="rounded-xl bg-[#122027] border border-[#243c47] p-3 text-xs text-slate-300 text-center font-medium">
                 Report submitted. Finding a new match…
               </div>
             ) : (

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Mail, Lock, User, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react'
+import { X, Mail, Lock, User, UserPlus, ArrowRight, ShieldCheck } from 'lucide-react'
 import { AUTH_TOKEN_KEY } from '../../config/env'
 import { authenticate } from './authApi'
 
@@ -53,8 +53,8 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
 
         {/* Modal Header */}
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E09800] shadow-lg shadow-[#E09800]/30 text-white">
-            <Sparkles className="h-6 w-6 fill-white" />
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E09800] text-white">
+            {mode === 'login' ? <User className="h-6 w-6 text-white" /> : <UserPlus className="h-6 w-6 text-white" />}
           </div>
           <h2 className="font-display text-2xl font-black tracking-tight text-white uppercase">
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}<span className="text-[#E09800]">.</span>
