@@ -48,8 +48,9 @@
 
 .glass-card-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(224, 152, 0, 0.4);
-  box-shadow: 0 16px 35px -10px rgba(224, 152, 0, 0.2);
+  border-color: #355363;
+  background-color: rgba(26, 45, 54, 0.95);
+  box-shadow: 0 16px 35px -10px rgba(0, 0, 0, 0.6);
 }
 
 /* High-Contrast Bulletproof Button - #E09800 */

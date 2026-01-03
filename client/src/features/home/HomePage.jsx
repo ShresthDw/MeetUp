@@ -200,13 +200,10 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
             <div className="order-2 lg:order-1 lg:col-span-7 flex flex-col">
               {/* Browser Window Mockup Frame */}
               <div className="rounded-2xl border border-[#243c47] bg-[#1a2d36]/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex-1 flex flex-col">
-                {/* Browser Window Top Bar */}
+                {/* Top Bar */}
                 <div className="flex items-center justify-between border-b border-[#243c47] bg-[#15252e] px-3 sm:px-3.5 py-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
-                  </div>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Match Settings</span>
+                  <span className="text-[10px] text-slate-400 font-mono">{selectedTags.length}/8 active</span>
                 </div>
 
                 {/* Console Content */}
@@ -300,13 +297,9 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
             <div className="order-1 lg:order-2 lg:col-span-5 flex flex-col">
               {/* Browser Window Mockup Frame */}
               <div className="rounded-2xl border border-[#243c47] bg-[#1a2d36]/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex-1 flex flex-col">
-                {/* Browser Window Top Bar */}
+                {/* Top Bar */}
                 <div className="flex items-center justify-between border-b border-[#243c47] bg-[#15252e] px-3.5 py-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
-                  </div>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Live Camera</span>
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     <span>READY</span>
