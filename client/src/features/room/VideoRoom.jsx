@@ -6,7 +6,7 @@ import {
   CameraOff,
   ScreenShare,
   RotateCw,
-  PhoneOff,
+  X,
   MessageSquare,
   Lightbulb,
   Radio,
@@ -291,8 +291,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
         {/* Video Stage Area */}
         <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-[#142229]">
           
-          {/* Main Stage Container (Vertical Portrait on Mobile, Wide on Desktop) */}
-          <div className="relative flex h-full w-full max-w-md sm:max-w-5xl items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#1a2d36] shadow-2xl">
+          {/* Main Stage Container */}
+          <div className="relative flex w-full h-full max-w-md sm:max-w-5xl aspect-[4/3] sm:aspect-video max-h-[calc(100vh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#0d171d] shadow-2xl">
             
             {/* ========================================================================= */}
             {/* WRAPPER 1: REMOTE STRANGER (Never unmounted, smoothly swaps position)      */}
@@ -304,7 +304,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 !isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 h-48 w-34 sm:h-44 sm:w-60 md:h-48 md:w-64 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-36 sm:w-60 md:w-72 aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {/* Remote Stranger Video Stream */}
@@ -312,9 +312,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className={`h-full w-full bg-[#0d171d] ${
-                  !isSwapped ? 'object-cover sm:object-contain' : 'object-cover'
-                } transition-opacity duration-300 ${
+                className={`h-full w-full bg-[#0d171d] object-cover transition-opacity duration-300 ${
                   status === 'connected' && !partnerDisconnected ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -371,16 +369,16 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {partnerDisconnected && (
                 isSwapped ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
-                    <div className="mb-0.5 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-red-500/15 text-red-400 border border-red-500/30">
-                      <PhoneOff className="h-4 w-4" />
+                    <div className="mb-0.5 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#15252e] text-slate-300 border border-[#243c47]">
+                      <X className="h-4 w-4" />
                     </div>
-                    <span className="text-[11px] font-bold text-red-400">Disconnected</span>
+                    <span className="text-[11px] font-bold text-slate-300">Disconnected</span>
                     <span className="text-[10px] text-slate-400">Tap for next</span>
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/90 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-400 border border-red-500/20">
-                      <PhoneOff className="h-6 w-6" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#15252e] text-slate-300 border border-[#243c47]">
+                      <X className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
                       <h4 className="font-display text-sm sm:text-base font-bold text-white">Stranger disconnected</h4>
@@ -458,7 +456,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 h-48 w-34 sm:h-44 sm:w-60 md:h-48 md:w-64 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-[#E09800] bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-36 sm:w-60 md:w-72 aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {isCameraOff && !isScreenSharing ? (
@@ -473,11 +471,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   muted
                   playsInline
                   className={`h-full w-full bg-[#0d171d] ${
-                    isScreenSharing
-                      ? 'object-contain'
-                      : isSwapped
-                      ? 'object-contain sm:object-cover'
-                      : 'object-cover'
+                    isScreenSharing ? 'object-contain' : 'object-cover'
                   } ${!isScreenSharing ? '-scale-x-100' : ''}`}
                 />
               )}
@@ -559,7 +553,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 title="End Call (Esc)"
                 className="flex h-9 sm:h-10 items-center gap-1.5 rounded-xl bg-red-600 px-3 sm:px-3.5 text-xs font-bold text-white hover:bg-red-500 transition shadow-md shadow-red-600/20 cursor-pointer"
               >
-                <PhoneOff className="h-3.5 w-3.5" />
+                <X className="h-4 w-4 stroke-[2.5]" />
                 <span className="hidden sm:inline">End</span>
               </button>
             </div>

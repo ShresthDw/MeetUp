@@ -308,8 +308,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
                 {/* Preview Content */}
                 <div className="p-3.5 sm:p-4 space-y-3 flex-1 flex flex-col justify-between">
-                  {/* Vertical Portrait Video Window for Mobile, Horizontal for Desktop */}
-                  <div className="relative aspect-[3/4] sm:aspect-[16/9] lg:aspect-[16/10] max-h-[460px] w-full overflow-hidden rounded-xl bg-[#0e191f] border border-[#243c47] shadow-lg flex items-center justify-center group">
+                  {/* 16:9 Widescreen Video Window matching camera stream */}
+                  <div className="relative aspect-video max-h-[460px] w-full overflow-hidden rounded-xl bg-[#0e191f] border border-[#243c47] shadow-lg flex items-center justify-center group">
                     {cameraActive ? (
                       <video
                         ref={previewVideoRef}
