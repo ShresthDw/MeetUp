@@ -13,6 +13,7 @@ import {
   Lock,
   ArrowRight,
   Plus,
+  Minus,
   Check,
   CheckCircle2,
   Compass,
@@ -203,7 +204,6 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                 {/* Top Bar */}
                 <div className="flex items-center justify-between border-b border-[#243c47] bg-[#15252e] px-3 sm:px-3.5 py-2">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Match Settings</span>
-                  <span className="text-[10px] text-slate-400 font-mono">{selectedTags.length}/8 active</span>
                 </div>
 
                 {/* Console Content */}
@@ -236,11 +236,13 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                                 : 'bg-[#122027] text-slate-300 hover:bg-[#1a2d36] hover:text-white border border-[#243c47]'
                             }`}
                           >
-                            <Plus
-                              className={`h-3 w-3 shrink-0 transition-transform duration-150 ${
-                                isSelected ? 'text-white' : 'text-[#E09800] group-hover:text-white group-hover:scale-110'
-                              }`}
-                            />
+                            {isSelected ? (
+                              <Minus className="h-3 w-3 shrink-0 text-white transition-transform duration-150" />
+                            ) : (
+                              <Plus
+                                className="h-3 w-3 shrink-0 text-[#E09800] group-hover:text-white group-hover:scale-110 transition-transform duration-150"
+                              />
+                            )}
                             <span>{tag}</span>
                           </button>
                         )
@@ -257,9 +259,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                             style={{ backgroundColor: '#E09800', color: '#ffffff', borderColor: '#FFB82E' }}
                             className="rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-[#E09800] text-white shadow-sm shadow-[#E09800]/30 border border-[#FFB82E] scale-102 select-none"
                           >
-                            <Plus className="h-3 w-3 shrink-0 text-white" />
+                            <Minus className="h-3 w-3 shrink-0 text-white" />
                             <span>{tag}</span>
-                            <span className="ml-1 text-white/70 hover:text-white font-mono text-xs">×</span>
                           </button>
                         ))}
                     </div>
