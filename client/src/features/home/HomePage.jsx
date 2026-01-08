@@ -220,9 +220,12 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                       </span>
                     </div>
 
-                    {/* Popular Tags Wrap */}
+                    {/* Dynamic Tags Wrap (Selected tags move to front in selection order) */}
                     <div className="flex flex-wrap gap-1.5 mb-2.5">
-                      {POPULAR_TAGS.map((tag) => {
+                      {[
+                        ...selectedTags,
+                        ...POPULAR_TAGS.filter((tag) => !selectedTags.includes(tag)),
+                      ].map((tag) => {
                         const isSelected = selectedTags.includes(tag)
                         return (
                           <button
@@ -247,22 +250,6 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
                           </button>
                         )
                       })}
-
-                      {/* User Custom Added Tags (if any outside POPULAR_TAGS) */}
-                      {selectedTags
-                        .filter((tag) => !POPULAR_TAGS.includes(tag))
-                        .map((tag) => (
-                          <button
-                            key={tag}
-                            type="button"
-                            onClick={() => handleToggleTag(tag)}
-                            style={{ backgroundColor: '#E09800', color: '#ffffff', borderColor: '#FFB82E' }}
-                            className="rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-[#E09800] text-white shadow-sm shadow-[#E09800]/30 border border-[#FFB82E] scale-102 select-none"
-                          >
-                            <Minus className="h-3 w-3 shrink-0 text-white" />
-                            <span>{tag}</span>
-                          </button>
-                        ))}
                     </div>
 
                     {/* Custom Topic Input */}
