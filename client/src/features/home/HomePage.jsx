@@ -56,8 +56,13 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
     async function initPreview() {
       try {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+        const videoConstraints = isMobile
+          ? { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } }
+          : { facingMode: 'user', width: { ideal: 1280, min: 640 }, height: { ideal: 720, min: 480 } }
+
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280, min: 640 }, height: { ideal: 720, min: 480 }, facingMode: 'user' },
+          video: videoConstraints,
           audio: true,
         })
         if (!active) {
@@ -296,8 +301,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
                 {/* Preview Content */}
                 <div className="p-3.5 sm:p-4 space-y-3 flex-1 flex flex-col justify-between">
-                  {/* 16:9 Widescreen Video Window matching camera stream */}
-                  <div className="relative aspect-video max-h-[460px] w-full overflow-hidden rounded-xl bg-[#0e191f] border border-[#243c47] shadow-lg flex items-center justify-center group">
+                  {/* Vertical Portrait Video Window for Mobile (3:4 / 9:16), Horizontal for Desktop (16:9) */}
+                  <div className="relative aspect-[3/4] sm:aspect-video lg:aspect-[16/10] max-h-[460px] w-full overflow-hidden rounded-xl bg-[#0e191f] border border-[#243c47] shadow-lg flex items-center justify-center group">
                     {cameraActive ? (
                       <video
                         ref={previewVideoRef}
