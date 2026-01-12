@@ -291,8 +291,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
         {/* Video Stage Area */}
         <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-[#142229]">
           
-          {/* Main Stage Container (Vertical Portrait on Mobile, Wide on Desktop) */}
-          <div className="relative flex w-full h-full max-w-md sm:max-w-5xl aspect-[9/16] sm:aspect-video max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#0d171d] shadow-2xl">
+          {/* Main Stage Container (Natural 3:4 on Mobile, 16:9 on Desktop) */}
+          <div className="relative flex w-full h-full max-w-md sm:max-w-5xl aspect-[3/4] sm:aspect-video max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#0d171d] shadow-2xl">
             
             {/* ========================================================================= */}
             {/* WRAPPER 1: REMOTE STRANGER (Never unmounted, smoothly swaps position)      */}
@@ -304,7 +304,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 !isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-28 sm:w-60 md:w-72 aspect-[9/16] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-32 sm:w-60 md:w-72 aspect-[3/4] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {/* Remote Stranger Video Stream */}
@@ -456,7 +456,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-28 sm:w-60 md:w-72 aspect-[9/16] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-32 sm:w-60 md:w-72 aspect-[3/4] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {isCameraOff && !isScreenSharing ? (
