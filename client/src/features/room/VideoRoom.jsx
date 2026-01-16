@@ -266,22 +266,9 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               title="Report User"
             >
               <Flag className="h-3.5 w-3.5" />
-              <span className="hidden md:inline">Report</span>
+              <span className="hidden sm:inline">Report</span>
             </button>
           )}
-
-          <button
-            onClick={nextPeer}
-            style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-            className="btn-yellow-primary flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-3 sm:px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
-          >
-            <RotateCw className="h-3.5 w-3.5 text-white" />
-            <span className="text-white font-bold">Next</span>
-            <span className="hidden sm:inline text-white font-bold">Stranger</span>
-            <span className="hidden sm:inline-block rounded bg-black/20 px-1.5 py-0.5 text-[10px] font-mono text-white">
-              Space
-            </span>
-          </button>
         </div>
       </header>
 
@@ -307,12 +294,14 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-32 sm:w-60 md:w-72 aspect-[3/4] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
-              {/* Remote Stranger Video Stream */}
+              {/* Remote Stranger Video Stream (Preserves native uncropped aspect ratio) */}
               <video
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                className={`h-full w-full bg-[#0d171d] object-cover transition-opacity duration-300 ${
+                className={`h-full w-full bg-[#080e12] ${
+                  !isSwapped ? 'object-contain' : 'object-cover'
+                } transition-opacity duration-300 ${
                   status === 'connected' && !partnerDisconnected ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -470,8 +459,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   autoPlay
                   muted
                   playsInline
-                  className={`h-full w-full bg-[#0d171d] ${
-                    isScreenSharing ? 'object-contain' : 'object-cover'
+                  className={`h-full w-full bg-[#080e12] ${
+                    isScreenSharing || isSwapped ? 'object-contain' : 'object-cover'
                   } ${!isScreenSharing ? '-scale-x-100' : ''}`}
                 />
               )}
@@ -493,6 +482,23 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
             {/* Floating In-Room Media Controls Bar */}
             <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-[#243c47] bg-[#101e25]/95 p-1 sm:p-1.5 shadow-2xl backdrop-blur-xl">
+              {/* Next Button */}
+              <button
+                type="button"
+                onClick={nextPeer}
+                style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
+                className="btn-yellow-primary flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-3 sm:px-4 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
+                title="Next (Space)"
+              >
+                <RotateCw className="h-3.5 w-3.5 text-white" />
+                <span className="text-white font-bold">Next</span>
+                <span className="hidden md:inline-block rounded bg-black/25 px-1.5 py-0.5 text-[10px] font-mono text-white">
+                  Space
+                </span>
+              </button>
+
+              <div className="h-5 w-px bg-[#243c47]" />
+
               <button
                 type="button"
                 onClick={toggleMic}
