@@ -112,19 +112,13 @@ export function useVideoRoom() {
     try {
       const isMobile = typeof window !== 'undefined' && (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768)
 
-      // Natural Camera Constraints (Prevents artificial zoom-in cropping on mobile portrait & desktop landscape)
+      // Natural Camera Constraints (Preserves native sensor aspect ratio without forced digital crop zoom)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: isMobile
-          ? {
-              facingMode: 'user',
-              width: { ideal: 720 },
-              height: { ideal: 1280 },
-            }
-          : {
-              facingMode: 'user',
-              width: { ideal: 1280, min: 640 },
-              height: { ideal: 720, min: 480 },
-            },
+        video: {
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       })
       localStreamRef.current = stream

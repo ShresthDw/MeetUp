@@ -454,14 +454,11 @@
 video {
   max-width: 100%;
   max-height: 100%;
+  object-fit: contain !important;
 }
 
 .object-contain {
   object-fit: contain !important;
-}
-
-.object-cover {
-  object-fit: cover !important;
 }
 
 

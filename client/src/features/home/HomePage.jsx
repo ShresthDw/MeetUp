@@ -46,6 +46,7 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
   const [cameraActive, setCameraActive] = useState(true)
   const [micActive, setMicActive] = useState(true)
   const [mediaError, setMediaError] = useState('')
+  const [previewAspectRatio, setPreviewAspectRatio] = useState(null)
 
   const previewVideoRef = useRef(null)
   const previewStreamRef = useRef(null)
@@ -56,11 +57,8 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
     async function initPreview() {
       try {
-        const isMobile = typeof window !== 'undefined' && (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768)
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: isMobile
-            ? { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } }
-            : { facingMode: 'user', width: { ideal: 1280, min: 640 }, height: { ideal: 720, min: 480 } },
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: true,
         })
         if (!active) {
@@ -91,6 +89,27 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
       active = false
       if (previewStreamRef.current) {
         previewStreamRef.current.getTracks().forEach((track) => track.stop())
+      }
+    }
+  }, [cameraActive])
+
+  // Track preview stream aspect ratio to adapt container size dynamically
+  useEffect(() => {
+    const previewEl = previewVideoRef.current
+    const updateRatio = () => {
+      if (previewEl && previewEl.videoWidth && previewEl.videoHeight) {
+        setPreviewAspectRatio(previewEl.videoWidth / previewEl.videoHeight)
+      }
+    }
+    if (previewEl) {
+      previewEl.addEventListener('loadedmetadata', updateRatio)
+      previewEl.addEventListener('resize', updateRatio)
+      updateRatio()
+    }
+    return () => {
+      if (previewEl) {
+        previewEl.removeEventListener('loadedmetadata', updateRatio)
+        previewEl.removeEventListener('resize', updateRatio)
       }
     }
   }, [cameraActive])
@@ -299,15 +318,28 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
                 {/* Preview Content */}
                 <div className="p-3.5 sm:p-4 space-y-3 flex-1 flex flex-col justify-between">
-                  {/* Vertical Portrait Video Window for Mobile (3:4 / 9:16), Horizontal for Desktop (16:9) */}
-                  <div className="relative aspect-[3/4] sm:aspect-video lg:aspect-[16/10] max-h-[460px] w-full overflow-hidden rounded-xl bg-[#0e191f] border border-[#243c47] shadow-lg flex items-center justify-center group">
+                  {/* Natural Aspect Ratio Video Window that adapts to camera feed */}
+                  <div
+                    style={{
+                      aspectRatio: previewAspectRatio ? `${previewAspectRatio}` : undefined,
+                    }}
+                    className={`relative ${
+                      !previewAspectRatio ? 'aspect-[3/4] sm:aspect-video lg:aspect-[16/10]' : ''
+                    } max-h-[460px] w-full overflow-hidden rounded-xl bg-[#0e191f] border border-[#243c47] shadow-lg flex items-center justify-center group mx-auto transition-all`}
+                  >
                     {cameraActive ? (
                       <video
                         ref={previewVideoRef}
                         autoPlay
                         muted
                         playsInline
-                        className="h-full w-full object-cover -scale-x-100"
+                        onLoadedMetadata={(e) => {
+                          if (e.target.videoWidth && e.target.videoHeight) {
+                            setPreviewAspectRatio(e.target.videoWidth / e.target.videoHeight)
+                          }
+                        }}
+                        style={{ objectFit: 'contain' }}
+                        className="h-full w-full object-contain -scale-x-100"
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center gap-2 text-slate-500 py-4">

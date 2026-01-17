@@ -50,6 +50,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   const [reportModalOpen, setReportModalOpen] = useState(false)
   const [reportedSuccess, setReportedSuccess] = useState(false)
   const [isSwapped, setIsSwapped] = useState(false) // false: Remote is Big, Local is Small | true: Local is Big, Remote is Small
+  const [remoteAspectRatio, setRemoteAspectRatio] = useState(null)
+  const [localAspectRatio, setLocalAspectRatio] = useState(null)
   const [flyingEmojis, setFlyingEmojis] = useState([])
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false)
@@ -124,6 +126,61 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
       localVideoRef.current.play().catch(() => {})
     }
   }, [localStream, streamReady, attachLocalStream, localVideoRef])
+
+  // Dynamically listen to video metadata and resize events to fit container strictly to feed
+  useEffect(() => {
+    const remoteEl = remoteVideoRef.current
+    const localEl = localVideoRef.current
+
+    const updateRemoteRatio = () => {
+      if (remoteEl && remoteEl.videoWidth && remoteEl.videoHeight) {
+        setRemoteAspectRatio(remoteEl.videoWidth / remoteEl.videoHeight)
+      }
+    }
+
+    const updateLocalRatio = () => {
+      if (localEl && localEl.videoWidth && localEl.videoHeight) {
+        setLocalAspectRatio(localEl.videoWidth / localEl.videoHeight)
+      }
+    }
+
+    if (remoteEl) {
+      remoteEl.addEventListener('loadedmetadata', updateRemoteRatio)
+      remoteEl.addEventListener('resize', updateRemoteRatio)
+      updateRemoteRatio()
+    }
+
+    if (localEl) {
+      localEl.addEventListener('loadedmetadata', updateLocalRatio)
+      localEl.addEventListener('resize', updateLocalRatio)
+      updateLocalRatio()
+    }
+
+    return () => {
+      if (remoteEl) {
+        remoteEl.removeEventListener('loadedmetadata', updateRemoteRatio)
+        remoteEl.removeEventListener('resize', updateRemoteRatio)
+      }
+      if (localEl) {
+        localEl.removeEventListener('loadedmetadata', updateLocalRatio)
+        localEl.removeEventListener('resize', updateLocalRatio)
+      }
+    }
+  }, [remoteVideoRef, localVideoRef, localStream, status, streamReady])
+
+  // Determine active aspect ratio for stage and PiP
+  const isMobileView = typeof window !== 'undefined' && window.innerWidth < 640
+  const defaultRatio = isMobileView ? 3 / 4 : 16 / 9
+
+  const activeMainRatio = isSwapped
+    ? (localAspectRatio || defaultRatio)
+    : (status === 'connected' && !partnerDisconnected && remoteAspectRatio
+        ? remoteAspectRatio
+        : (localAspectRatio || defaultRatio))
+
+  const activePipRatio = isSwapped
+    ? (remoteAspectRatio || defaultRatio)
+    : (localAspectRatio || defaultRatio)
 
   // Handle hotkeys (Space for next peer, M for mic, V for cam)
   useEffect(() => {
@@ -278,8 +335,15 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
         {/* Video Stage Area */}
         <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-[#142229]">
           
-          {/* Main Stage Container (Natural 3:4 on Mobile, 16:9 on Desktop) */}
-          <div className="relative flex w-full h-full max-w-md sm:max-w-5xl aspect-[3/4] sm:aspect-video max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#0d171d] shadow-2xl">
+          {/* Main Stage Container (Dynamically matches video feed aspect ratio to prevent top/bottom/side empty space) */}
+          <div
+            style={{
+              aspectRatio: `${activeMainRatio}`,
+              maxHeight: 'calc(100dvh - 120px)',
+              maxWidth: `min(100%, calc((100dvh - 120px) * ${activeMainRatio}))`,
+            }}
+            className="relative flex w-full h-auto max-w-5xl items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#0d171d] shadow-2xl transition-all duration-300 mx-auto"
+          >
             
             {/* ========================================================================= */}
             {/* WRAPPER 1: REMOTE STRANGER (Never unmounted, smoothly swaps position)      */}
@@ -288,10 +352,11 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               onClick={() => {
                 if (isSwapped) setIsSwapped(false)
               }}
+              style={isSwapped ? { aspectRatio: `${activePipRatio}` } : undefined}
               className={`transition-all duration-300 ${
                 !isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-32 sm:w-60 md:w-72 aspect-[3/4] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-28 sm:w-48 md:w-56 max-h-40 sm:max-h-52 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {/* Remote Stranger Video Stream (Preserves native uncropped aspect ratio) */}
@@ -299,10 +364,13 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                style={{ objectFit: !isSwapped ? 'contain' : 'cover' }}
-                className={`h-full w-full bg-[#080e12] ${
-                  !isSwapped ? 'object-contain' : 'object-cover'
-                } transition-opacity duration-300 ${
+                onLoadedMetadata={(e) => {
+                  if (e.target.videoWidth && e.target.videoHeight) {
+                    setRemoteAspectRatio(e.target.videoWidth / e.target.videoHeight)
+                  }
+                }}
+                style={{ objectFit: 'contain' }}
+                className={`h-full w-full bg-[#080e12] object-contain transition-opacity duration-300 ${
                   status === 'connected' && !partnerDisconnected ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -443,10 +511,11 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               onClick={() => {
                 if (!isSwapped) setIsSwapped(true)
               }}
+              style={!isSwapped ? { aspectRatio: `${activePipRatio}` } : undefined}
               className={`transition-all duration-300 ${
                 isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#0d171d] flex items-center justify-center z-10'
-                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-32 sm:w-60 md:w-72 aspect-[3/4] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute bottom-16 right-3 sm:bottom-4 sm:right-4 z-40 w-28 sm:w-48 md:w-56 max-h-40 sm:max-h-52 overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-400 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {isCameraOff && !isScreenSharing ? (
@@ -460,10 +529,15 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   autoPlay
                   muted
                   playsInline
-                  style={{ objectFit: (isSwapped || isScreenSharing) ? 'contain' : 'cover' }}
-                  className={`h-full w-full bg-[#080e12] ${
-                    isScreenSharing || isSwapped ? 'object-contain' : 'object-cover'
-                  } ${!isScreenSharing ? '-scale-x-100' : ''}`}
+                  onLoadedMetadata={(e) => {
+                    if (e.target.videoWidth && e.target.videoHeight) {
+                      setLocalAspectRatio(e.target.videoWidth / e.target.videoHeight)
+                    }
+                  }}
+                  style={{ objectFit: 'contain' }}
+                  className={`h-full w-full bg-[#080e12] object-contain ${
+                    !isScreenSharing ? '-scale-x-100' : ''
+                  }`}
                 />
               )}
 
