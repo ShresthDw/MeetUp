@@ -36,12 +36,23 @@ export function useVideoRoom() {
   const screenStreamRef = useRef(null)
   const peerRef = useRef(null)
   const roomIdRef = useRef('')
+  const statusRef = useRef('idle')
   const timerRef = useRef(null)
+
+  useEffect(() => {
+    statusRef.current = status
+  }, [status])
 
   const closePeer = useCallback(() => {
     if (peerRef.current) {
+      peerRef.current.onicecandidate = null
+      peerRef.current.ontrack = null
+      peerRef.current.onnegotiationneeded = null
       peerRef.current.close()
       peerRef.current = null
+    }
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null
     }
   }, [])
 
@@ -286,6 +297,11 @@ export function useVideoRoom() {
     })
 
     socket.on('match-found', async ({ roomId: matchedRoomId, role: matchedRole }) => {
+      if (statusRef.current === 'idle') {
+        socket.emit('leave-room')
+        return
+      }
+
       setRoomId(matchedRoomId)
       roomIdRef.current = matchedRoomId
       setRole(matchedRole)

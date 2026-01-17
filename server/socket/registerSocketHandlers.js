@@ -51,6 +51,7 @@ function registerSocketHandlers(io, redis) {
   }
 
   async function leaveCurrentRoom(socket, requeue = false) {
+    await removeFromQueue(redis, socket.id)
     const roomId = socketToRoom.get(socket.id)
     if (!roomId) {
       if (requeue) await joinQueue(socket)
