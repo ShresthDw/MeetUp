@@ -299,6 +299,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
+                style={{ objectFit: !isSwapped ? 'contain' : 'cover' }}
                 className={`h-full w-full bg-[#080e12] ${
                   !isSwapped ? 'object-contain' : 'object-cover'
                 } transition-opacity duration-300 ${
@@ -459,6 +460,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   autoPlay
                   muted
                   playsInline
+                  style={{ objectFit: (isSwapped || isScreenSharing) ? 'contain' : 'cover' }}
                   className={`h-full w-full bg-[#080e12] ${
                     isScreenSharing || isSwapped ? 'object-contain' : 'object-cover'
                   } ${!isScreenSharing ? '-scale-x-100' : ''}`}

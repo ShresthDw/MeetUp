@@ -450,4 +450,19 @@
   animation: ticker-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Explicit Video Display & Aspect Ratio Safeguards */
+video {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.object-contain {
+  object-fit: contain !important;
+}
+
+.object-cover {
+  object-fit: cover !important;
+}
+
+
 

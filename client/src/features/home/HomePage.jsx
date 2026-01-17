@@ -56,8 +56,11 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
     async function initPreview() {
       try {
+        const isMobile = typeof window !== 'undefined' && (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768)
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user', width: { ideal: 1280, min: 640 }, height: { ideal: 720, min: 480 } },
+          video: isMobile
+            ? { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } }
+            : { facingMode: 'user', width: { ideal: 1280, min: 640 }, height: { ideal: 720, min: 480 } },
           audio: true,
         })
         if (!active) {
