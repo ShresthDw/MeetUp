@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { AUTH_TOKEN_KEY } from '../config/env'
 import { getCurrentUser } from '../features/auth/authApi'
+import { ThemeProvider } from '../context/ThemeContext'
 import Navbar from '../components/Navbar'
 import AuthModal from '../features/auth/AuthModal'
 import HomePage from '../features/home/HomePage'
 import VideoRoom from '../features/room/VideoRoom'
 import { useVideoRoom } from '../features/room/useVideoRoom'
 
-export default function App() {
+function AppContent() {
   const [user, setUser] = useState(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const [currentView, setCurrentView] = useState('home') // 'home' | 'room'
@@ -60,7 +61,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#142229] text-slate-900 dark:text-slate-100 flex flex-col font-sans">
       {/* Navbar is visible on Home view */}
       {currentView === 'home' && (
         <Navbar
@@ -100,5 +101,13 @@ export default function App() {
         }}
       />
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   )
 }

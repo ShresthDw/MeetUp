@@ -37,12 +37,8 @@ const io = new Server(server, {
 
 registerSocketHandlers(io, redis)
 
-server.listen(port, async () => {
-  await connectMongo()
-  try {
-    await redis.del(WAITING_QUEUE_KEY)
-  } catch (err) {
-    // silent
-  }
+server.listen(port, () => {
   console.log(`Server listening on port ${port}`)
+  connectMongo()
+  redis.del(WAITING_QUEUE_KEY).catch(() => {})
 })

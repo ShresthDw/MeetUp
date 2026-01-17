@@ -14,18 +14,10 @@ import {
   Flag,
   Users,
   Shield,
-  Clock,
-  ArrowRight,
-  Maximize2,
-  Minimize2,
-  HelpCircle,
-  Zap,
-  ThumbsUp,
-  Heart,
   Smile,
-  Flame,
-  Rocket
+  Zap,
 } from 'lucide-react'
+import PendantThemeToggle from '../../components/PendantThemeToggle'
 
 const ICEBREAKERS = [
   "What's the best movie or show you've watched recently?",
@@ -128,7 +120,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   // Handle hotkeys (Space for next peer, M for mic, V for cam)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't trigger if user is typing in an input
       if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return
 
       if (e.code === 'Space') {
@@ -156,7 +147,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
     e.preventDefault()
     if (!inputText.trim()) return
     if (sendMessage(inputText)) {
-      // If user typed a short emoji message, fly it too
       if (inputText.trim().length <= 6) {
         triggerFlyEmoji(inputText.trim(), false)
       }
@@ -194,7 +184,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
     }, 1000)
   }
 
-  // Format seconds to mm:ss
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60).toString().padStart(2, '0')
     const s = (secs % 60).toString().padStart(2, '0')
@@ -202,55 +191,61 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   }
 
   return (
-    <div className="relative flex h-screen h-[100dvh] w-screen flex-col bg-[#142229] text-slate-100 overflow-hidden select-none">
-      
-      {/* Top Floating Header - Leo Cerso Style */}
-      <header className="z-30 flex h-13 sm:h-14 items-center justify-between border-b border-[#243c47] bg-[#101e25]/95 px-2.5 sm:px-4 backdrop-blur-xl shrink-0">
-        {/* Left: Brand & Room status */}
+    <div className="relative flex h-screen h-[100dvh] w-screen flex-col bg-slate-100 dark:bg-[#142229] text-slate-900 dark:text-slate-100 overflow-hidden select-none">
+      {/* Top Floating Header */}
+      <header className="z-30 flex h-13 sm:h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/95 dark:bg-[#101e25]/95 px-2.5 sm:px-4 backdrop-blur-xl shrink-0">
+        {/* Left: Exit & Room status */}
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={handleExit}
-            className="flex items-center gap-1 sm:gap-2 rounded-xl bg-[#1a2d36] border border-[#243c47] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:border-[#E09800]/50 transition cursor-pointer"
+            className="flex items-center gap-1 sm:gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#1a2d36] border border-slate-200 dark:border-[#243c47] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer"
           >
             <span>←</span>
             <span className="hidden sm:inline">Exit to Lobby</span>
             <span className="sm:hidden">Exit</span>
           </button>
 
-          <div className="flex items-center gap-2 border-l border-[#243c47] pl-2 sm:pl-3">
+          <div className="flex items-center gap-2 border-l border-slate-200 dark:border-[#243c47] pl-2 sm:pl-3">
             {status === 'connected' ? (
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#122027] border border-[#243c47] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-300 font-medium">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                <span className="hidden sm:inline text-slate-400">Connected</span>
-                <span className="font-mono text-white font-bold">{formatTime(connectedTime)}</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-slate-100 dark:bg-[#122027] border border-slate-200 dark:border-[#243c47] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-700 dark:text-slate-300 font-medium">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="hidden sm:inline text-slate-500 dark:text-slate-400">Connected</span>
+                <span className="font-mono text-slate-900 dark:text-white font-bold">{formatTime(connectedTime)}</span>
               </div>
             ) : status === 'matching' ? (
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#122027] border border-[#243c47] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-300 font-medium">
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-slate-100 dark:bg-[#122027] border border-slate-200 dark:border-[#243c47] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-700 dark:text-slate-300 font-medium">
                 <span className="h-2 w-2 rounded-full bg-slate-400 animate-ping shrink-0" />
                 <span>Matching…</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#122027] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-400 border border-[#243c47]">
-                <span className="h-2 w-2 rounded-full bg-slate-600 shrink-0" />
+              <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-slate-100 dark:bg-[#122027] px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-[#243c47]">
+                <span className="h-2 w-2 rounded-full bg-slate-400 dark:bg-slate-600 shrink-0" />
                 <span>Idle</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Right: Quick Next, Mobile Chat & Report actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Right: Theme Toggle, Quick Next, Mobile Chat & Report actions */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Murano Glass Orb Pendant Theme Switcher */}
+          <div className="flex items-center px-1">
+            <PendantThemeToggle />
+          </div>
+
+          <div className="h-4 w-px bg-slate-200 dark:bg-[#243c47]" />
+
           {/* Mobile Chat Toggle Button */}
           <button
             type="button"
             onClick={() => setIsMobileChatOpen(!isMobileChatOpen)}
             className={`md:hidden flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-bold transition cursor-pointer ${
               isMobileChatOpen
-                ? 'border-[#243c47] bg-[#1a2d36] text-white'
-                : 'border-[#243c47] bg-[#122027] text-slate-300'
+                ? 'border-slate-300 dark:border-[#243c47] bg-slate-200 dark:bg-[#1a2d36] text-slate-900 dark:text-white'
+                : 'border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300'
             }`}
           >
-            <MessageSquare className="h-3.5 w-3.5 text-slate-400" />
+            <MessageSquare className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
             <span className="hidden xs:inline">Chat</span>
             {messages.length > 0 && (
               <span className="rounded-full bg-[#E09800] text-[9px] text-white px-1.5 py-0.2 font-black leading-tight">
@@ -262,7 +257,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           {status === 'connected' && (
             <button
               onClick={() => setReportModalOpen(true)}
-              className="flex items-center gap-1 rounded-xl border border-[#243c47] bg-[#1a2d36] px-2.5 sm:px-3 py-1.5 text-xs text-slate-400 hover:text-red-400 hover:border-red-500/30 transition cursor-pointer"
+              className="flex items-center gap-1 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#1a2d36] px-2.5 sm:px-3 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:border-red-500/30 transition cursor-pointer"
               title="Report User"
             >
               <Flag className="h-3.5 w-3.5" />
@@ -274,16 +269,11 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
       {/* Main Split Layout: Video Area + Real-Time Chat */}
       <div className="relative flex flex-1 overflow-hidden">
-        
         {/* Video Stage Area */}
-        <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-[#142229]">
-          
-          {/* Main Stage Container (Spacious HD stage with seamless uncropped video display) */}
-          <div className="relative flex flex-1 w-full max-w-5xl h-full max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-[#243c47] bg-[#080e12] shadow-2xl">
-            
-            {/* ========================================================================= */}
-            {/* WRAPPER 1: REMOTE STRANGER (Never unmounted, smoothly swaps position)      */}
-            {/* ========================================================================= */}
+        <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-slate-100 dark:bg-[#142229]">
+          {/* Main Stage Container */}
+          <div className="relative flex flex-1 w-full max-w-5xl h-full max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#080e12] shadow-2xl">
+            {/* WRAPPER 1: REMOTE STRANGER */}
             <div
               onClick={() => {
                 if (isSwapped) setIsSwapped(false)
@@ -291,10 +281,9 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 !isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#080e12] flex items-center justify-center z-10'
-                  : 'absolute top-3 right-3 sm:top-4 sm:right-4 z-40 w-28 xs:w-36 sm:w-48 md:w-56 aspect-[4/3] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-300 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute top-3 right-3 sm:top-4 sm:right-4 z-40 w-28 xs:w-36 sm:w-48 md:w-56 aspect-[4/3] sm:aspect-video overflow-hidden rounded-2xl border-2 border-slate-300 dark:border-[#243c47] hover:border-white bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
-              {/* Remote Stranger Video Stream (Preserves native uncropped aspect ratio) */}
               <video
                 ref={remoteVideoRef}
                 autoPlay
@@ -305,23 +294,16 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 }`}
               />
 
-              {/* Status Overlay on Stranger Feed when NOT connected */}
               {status === 'matching' && (
                 isSwapped ? (
-                  /* Compact Mini PiP Overlay */
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
                     <div className="relative mb-0.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#E09800] text-white">
                       <Radio className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" />
                     </div>
-                    <span className="text-xs font-black uppercase tracking-wider text-white">
-                      Searching…
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      Tap to enlarge
-                    </span>
+                    <span className="text-xs font-black uppercase tracking-wider text-white">Searching…</span>
+                    <span className="text-[10px] text-slate-400">Tap to enlarge</span>
                   </div>
                 ) : (
-                  /* Full Stage Overlay */
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 backdrop-blur-md p-4 sm:p-6 text-center space-y-3 sm:space-y-4">
                     <div className="relative flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center aspect-square">
                       <div className="absolute inset-0 rounded-full border border-[#E09800]/30 animate-radar" />
@@ -345,7 +327,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                         e.stopPropagation()
                         handleExit()
                       }}
-                      className="rounded-xl border border-[#243c47] bg-[#1a2d36] hover:bg-[#243c47] px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white transition cursor-pointer"
+                      className="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white transition cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -353,7 +335,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 )
               )}
 
-              {/* Partner Left Overlay */}
               {partnerDisconnected && (
                 isSwapped ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
@@ -387,7 +368,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 )
               )}
 
-              {/* Idle Overlay */}
               {status === 'idle' && (
                 isSwapped ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
@@ -421,22 +401,19 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 )
               )}
 
-              {/* Badges on Remote Stranger */}
               {!isSwapped ? (
-                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-[#101e25]/85 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
                   <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#E09800] animate-pulse" />
                   <span>Stranger</span>
                 </div>
               ) : (
-                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
+                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-black/75 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
                   <span>Stranger</span>
                 </div>
               )}
             </div>
 
-            {/* ========================================================================= */}
-            {/* WRAPPER 2: LOCAL USER / SCREEN (Never unmounted, smoothly swaps position)   */}
-            {/* ========================================================================= */}
+            {/* WRAPPER 2: LOCAL USER / SCREEN */}
             <div
               onClick={() => {
                 if (!isSwapped) setIsSwapped(true)
@@ -444,11 +421,11 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               className={`transition-all duration-300 ${
                 isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#080e12] flex items-center justify-center z-10'
-                  : 'absolute top-3 right-3 sm:top-4 sm:right-4 z-40 w-28 xs:w-36 sm:w-48 md:w-56 aspect-[4/3] sm:aspect-video overflow-hidden rounded-2xl border-2 border-[#243c47] hover:border-slate-300 bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : 'absolute top-3 right-3 sm:top-4 sm:right-4 z-40 w-28 xs:w-36 sm:w-48 md:w-56 aspect-[4/3] sm:aspect-video overflow-hidden rounded-2xl border-2 border-slate-300 dark:border-[#243c47] hover:border-white bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
               }`}
             >
               {isCameraOff && !isScreenSharing ? (
-                <div className="flex h-full w-full flex-col items-center justify-center bg-[#15252e] text-slate-500 p-2">
+                <div className="flex h-full w-full flex-col items-center justify-center bg-slate-900 text-slate-500 p-2">
                   <CameraOff className={isSwapped ? "h-10 w-10 sm:h-12 sm:w-12 mb-2 text-slate-400" : "h-6 w-6 mb-1 text-slate-400"} />
                   <span className={isSwapped ? "text-xs sm:text-sm font-medium" : "text-xs font-medium"}>Camera Off</span>
                 </div>
@@ -465,15 +442,14 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 />
               )}
 
-              {/* Badges on Local User Feed */}
               {isSwapped ? (
-                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-[#101e25]/85 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
                   <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400" />
                   <span>{isScreenSharing ? 'Your Screen' : 'You'}</span>
                   {isMicMuted && <MicOff className="h-3 w-3 text-red-400 ml-1" />}
                 </div>
               ) : (
-                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-[#101e25]/85 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
+                <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-black/75 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
                   <span>{isScreenSharing ? 'Your Screen' : 'You'}</span>
                   {isMicMuted && <MicOff className="h-2.5 w-2.5 text-red-400" />}
                 </div>
@@ -481,8 +457,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             </div>
 
             {/* Floating In-Room Media Controls Bar */}
-            <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-[#243c47] bg-[#101e25]/95 p-1 sm:p-1.5 shadow-2xl backdrop-blur-xl whitespace-nowrap">
-              {/* Next Button */}
+            <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-slate-300 dark:border-[#243c47] bg-white/95 dark:bg-[#101e25]/95 p-1 sm:p-1.5 shadow-2xl backdrop-blur-xl whitespace-nowrap">
               <button
                 type="button"
                 onClick={nextPeer}
@@ -497,7 +472,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 </span>
               </button>
 
-              <div className="h-5 w-px bg-[#243c47]" />
+              <div className="h-5 w-px bg-slate-200 dark:bg-[#243c47]" />
 
               <button
                 type="button"
@@ -505,8 +480,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 title={isMicMuted ? 'Unmute Mic (M)' : 'Mute Mic (M)'}
                 className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl transition cursor-pointer ${
                   !isMicMuted
-                    ? 'bg-[#1a2d36] text-white hover:bg-[#243c47]'
-                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    ? 'bg-slate-100 dark:bg-[#1a2d36] text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-[#243c47]'
+                    : 'bg-red-500/20 text-red-500 dark:text-red-400 border border-red-500/30'
                 }`}
               >
                 {!isMicMuted ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
@@ -518,8 +493,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 title={isCameraOff ? 'Turn Camera On (V)' : 'Turn Camera Off (V)'}
                 className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl transition cursor-pointer ${
                   !isCameraOff
-                    ? 'bg-[#1a2d36] text-white hover:bg-[#243c47]'
-                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    ? 'bg-slate-100 dark:bg-[#1a2d36] text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-[#243c47]'
+                    : 'bg-red-500/20 text-red-500 dark:text-red-400 border border-red-500/30'
                 }`}
               >
                 {!isCameraOff ? <Camera className="h-4 w-4" /> : <CameraOff className="h-4 w-4" />}
@@ -532,7 +507,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 className={`hidden sm:flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl transition cursor-pointer ${
                   isScreenSharing
                     ? 'bg-[#E09800] text-white font-bold shadow-lg shadow-[#E09800]/30'
-                    : 'bg-[#1a2d36] text-slate-300 hover:bg-[#243c47] hover:text-white'
+                    : 'bg-slate-100 dark:bg-[#1a2d36] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#243c47] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <ScreenShare className="h-4 w-4" />
@@ -545,13 +520,13 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 className={`md:hidden flex h-9 w-9 items-center justify-center rounded-xl transition cursor-pointer ${
                   isMobileChatOpen
                     ? 'bg-[#E09800] text-white font-bold'
-                    : 'bg-[#1a2d36] text-slate-300'
+                    : 'bg-slate-100 dark:bg-[#1a2d36] text-slate-700 dark:text-slate-300'
                 }`}
               >
                 <MessageSquare className="h-4 w-4" />
               </button>
 
-              <div className="h-5 w-px bg-[#243c47]" />
+              <div className="h-5 w-px bg-slate-200 dark:bg-[#243c47]" />
 
               <button
                 type="button"
@@ -566,34 +541,34 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
         </div>
 
-        {/* Real-Time Live Chat Sidebar (Desktop Side-by-Side, Mobile Slide-Up / Overlay Drawer) */}
+        {/* Real-Time Live Chat Sidebar */}
         <div className={`${
           isMobileChatOpen
             ? 'flex fixed inset-x-0 bottom-0 top-14 z-50'
             : 'hidden md:flex'
-        } w-full md:w-80 lg:w-96 flex-col border-l border-[#243c47] bg-[#101e25]/98 backdrop-blur-2xl transition-all duration-300 shadow-2xl`}>
+        } w-full md:w-80 lg:w-96 flex-col border-l border-slate-200 dark:border-[#243c47] bg-white/98 dark:bg-[#101e25]/98 backdrop-blur-2xl transition-all duration-300 shadow-2xl`}>
           
           {/* Chat Header */}
-          <div className="flex h-14 items-center justify-between border-b border-[#243c47] px-4">
+          <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] px-4">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-slate-400" />
-              <span className="text-xs font-bold text-slate-200">Encrypted Chat</span>
+              <MessageSquare className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Encrypted Chat</span>
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 onClick={handleInsertIcebreaker}
-                className="flex items-center gap-1.5 rounded-lg border border-[#243c47] bg-[#122027] hover:bg-[#1a2d36] hover:text-white px-2.5 py-1 text-[11px] font-semibold text-slate-300 transition cursor-pointer"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-100 hover:bg-slate-200 dark:bg-[#122027] dark:hover:bg-[#1a2d36] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2.5 py-1 text-[11px] font-semibold transition cursor-pointer"
                 title="Generate a random conversation topic"
               >
-                <Lightbulb className="h-3 w-3 text-slate-400" />
+                <Lightbulb className="h-3 w-3 text-amber-500 dark:text-slate-400" />
                 <span>Icebreaker</span>
               </button>
 
               {isMobileChatOpen && (
                 <button
                   onClick={() => setIsMobileChatOpen(false)}
-                  className="md:hidden flex h-7 w-7 items-center justify-center rounded-lg bg-[#1a2d36] text-slate-400 hover:text-white transition cursor-pointer"
+                  className="md:hidden flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#1a2d36] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
                   title="Close Chat"
                 >
                   ✕
@@ -603,7 +578,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
 
           {/* Message Log */}
-          <div className="relative flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="relative flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-transparent">
             {/* Flying Emojis Overlay */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden z-30">
               {flyingEmojis.map((item) => (
@@ -624,8 +599,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             </div>
 
             {messages.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-center text-slate-500 p-4 space-y-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1a2d36] text-slate-400 border border-[#243c47]">
+              <div className="flex h-full flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 p-4 space-y-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-[#1a2d36] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-[#243c47]">
                   <Shield className="h-5 w-5" />
                 </div>
                 <p className="text-xs font-medium">Say hello! Messages are peer-to-peer and filtered for safety.</p>
@@ -638,14 +613,14 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                     key={`${item.createdAt}-${idx}`}
                     className={`flex flex-col ${isYou ? 'items-end' : 'items-start'}`}
                   >
-                    <span className="text-[10px] text-slate-500 mb-1 px-1">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 mb-1 px-1">
                       {isYou ? 'You' : 'Stranger'}
                     </span>
                     <div
-                      className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed shadow-sm break-words ${
+                      className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed shadow-xs break-words ${
                         isYou
                           ? 'bg-[#E09800] text-white font-medium rounded-br-none'
-                          : 'bg-[#1a2d36] text-slate-100 rounded-bl-none border border-[#243c47]'
+                          : 'bg-slate-100 text-slate-800 rounded-bl-none border border-slate-200 dark:bg-[#1a2d36] dark:text-slate-100 dark:border-[#243c47]'
                       }`}
                     >
                       {item.text}
@@ -657,15 +632,15 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Emoji Reaction Bar (Flying Emojis) */}
-          <div className="flex items-center justify-between border-t border-[#243c47] bg-[#122027] px-2 py-1.5 overflow-x-auto no-scrollbar">
+          {/* Quick Emoji Reaction Bar */}
+          <div className="flex items-center justify-between border-t border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-2 py-1.5 overflow-x-auto no-scrollbar">
             <div className="flex items-center gap-1 w-full justify-between">
               {EMOJI_REACTIONS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
                   onClick={() => handleEmojiClick(emoji)}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl text-lg hover:scale-130 hover:bg-[#1a2d36] active:scale-95 transition-all duration-150 cursor-pointer"
+                  className="flex h-8 w-8 items-center justify-center rounded-xl text-lg hover:scale-130 hover:bg-slate-200 dark:hover:bg-[#1a2d36] active:scale-95 transition-all duration-150 cursor-pointer"
                   title={`Send ${emoji} (Flies above!)`}
                 >
                   <span className="leading-none select-none">{emoji}</span>
@@ -676,7 +651,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
           {/* Emoji Picker Popover */}
           {showEmojiPicker && (
-            <div className="border-t border-[#243c47] bg-[#15252e] p-2 backdrop-blur-xl">
+            <div className="border-t border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#15252e] p-2 backdrop-blur-xl">
               <div className="grid grid-cols-5 gap-1 max-h-36 overflow-y-auto p-1">
                 {EXPANDED_EMOJIS.map((emoji) => (
                   <button
@@ -686,7 +661,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                       setInputText((prev) => prev + emoji)
                       triggerFlyEmoji(emoji, false)
                     }}
-                    className="flex h-8 items-center justify-center rounded-lg text-lg hover:bg-[#1a2d36] hover:scale-120 active:scale-95 transition cursor-pointer"
+                    className="flex h-8 items-center justify-center rounded-lg text-lg hover:bg-slate-200 dark:hover:bg-[#1a2d36] hover:scale-120 active:scale-95 transition cursor-pointer"
                   >
                     {emoji}
                   </button>
@@ -696,14 +671,14 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           )}
 
           {/* Chat Input Form */}
-          <form onSubmit={handleSendMessage} className="border-t border-[#243c47] p-3 flex gap-2 items-center bg-[#101e25]">
+          <form onSubmit={handleSendMessage} className="border-t border-slate-200 dark:border-[#243c47] p-3 flex gap-2 items-center bg-white dark:bg-[#101e25]">
             <button
               type="button"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               className={`flex h-8 w-8 items-center justify-center rounded-xl border transition ${
                 showEmojiPicker
-                  ? 'border-[#243c47] bg-[#1a2d36] text-white'
-                  : 'border-[#243c47] bg-[#122027] text-slate-400 hover:text-white'
+                  ? 'border-slate-300 dark:border-[#243c47] bg-slate-200 dark:bg-[#1a2d36] text-slate-900 dark:text-white'
+                  : 'border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#122027] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
               title="Toggle Emoji Drawer"
             >
@@ -714,7 +689,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Type message here..."
               disabled={status !== 'connected'}
-              className="flex-1 rounded-xl border border-[#243c47] bg-[#122027] px-3.5 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-[#E09800] disabled:opacity-40 transition"
+              className="flex-1 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] disabled:opacity-40 transition"
             />
             <button
               type="submit"
@@ -730,18 +705,18 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
       {/* Safety Report Modal */}
       {reportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
-          <div className="w-full max-w-sm rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl space-y-4">
-            <h3 className="font-display text-lg font-bold text-white flex items-center gap-2">
-              <Flag className="h-5 w-5 text-red-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
+          <div className="w-full max-w-sm rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
+            <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Flag className="h-5 w-5 text-red-500 dark:text-red-400" />
               <span>Report Stranger</span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600 dark:text-slate-400">
               Please select the reason for reporting this user. You will be automatically disconnected and matched with a new stranger.
             </p>
 
             {reportedSuccess ? (
-              <div className="rounded-xl bg-[#122027] border border-[#243c47] p-3 text-xs text-slate-300 text-center font-medium">
+              <div className="rounded-xl bg-slate-100 dark:bg-[#122027] border border-slate-200 dark:border-[#243c47] p-3 text-xs text-slate-700 dark:text-slate-300 text-center font-medium">
                 Report submitted. Finding a new match…
               </div>
             ) : (
@@ -751,7 +726,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                     key={reason}
                     type="button"
                     onClick={() => handleReport(reason)}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2.5 text-left text-xs font-medium text-slate-300 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-300 transition"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-2.5 text-left text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-600 dark:hover:text-red-300 transition cursor-pointer"
                   >
                     {reason}
                   </button>
@@ -762,7 +737,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             <button
               type="button"
               onClick={() => setReportModalOpen(false)}
-              className="w-full rounded-xl border border-slate-800 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
             >
               Cancel
             </button>
