@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { io } from 'socket.io-client'
 
 import { SOCKET_TRANSPORT, SOCKET_URL } from '../../config/env'
+import { useTheme } from '../../context/ThemeContext'
 
 const iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -10,6 +11,8 @@ const iceServers = [
 ]
 
 export function useVideoRoom() {
+  const { setTheme, registerThemeBroadcaster } = useTheme()
+
   const socket = useMemo(() => io(SOCKET_URL, {
     autoConnect: true,
     transports: [SOCKET_TRANSPORT],
@@ -368,6 +371,12 @@ export function useVideoRoom() {
       }
     })
 
+    socket.on('theme-synced', ({ theme: incomingTheme }) => {
+      if (incomingTheme === 'dark' || incomingTheme === 'light') {
+        setTheme(incomingTheme, { broadcast: false })
+      }
+    })
+
     return () => {
       mounted = false
       socket.removeAllListeners()
@@ -377,7 +386,17 @@ export function useVideoRoom() {
       screenStreamRef.current?.getTracks().forEach((track) => track.stop())
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [socket, closePeer, ensurePeer, initializeMedia])
+  }, [socket, closePeer, ensurePeer, initializeMedia, setTheme])
+
+  // Sync theme changes with partner when in an active connected room
+  useEffect(() => {
+    if (status === 'connected' && roomId) {
+      const unregister = registerThemeBroadcaster((newTheme) => {
+        socket.emit('sync-theme', { roomId, theme: newTheme })
+      })
+      return () => unregister()
+    }
+  }, [status, roomId, registerThemeBroadcaster, socket])
 
   // Timer counter for active call
   useEffect(() => {

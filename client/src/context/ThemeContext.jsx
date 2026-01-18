@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react'
 
 const THEME_STORAGE_KEY = 'meetup_theme'
 
@@ -6,6 +6,7 @@ const ThemeContext = createContext({
   theme: 'dark',
   toggleTheme: () => {},
   setTheme: () => {},
+  registerThemeBroadcaster: () => () => {},
   isDark: true,
 })
 
@@ -37,7 +38,17 @@ export function ThemeProvider({ children }) {
     return 'dark' // Default to dark theme
   })
 
+  const broadcastHandlersRef = useRef(new Set())
   const isDark = theme === 'dark'
+
+  const registerThemeBroadcaster = useCallback((handler) => {
+    if (typeof handler === 'function') {
+      broadcastHandlersRef.current.add(handler)
+    }
+    return () => {
+      broadcastHandlersRef.current.delete(handler)
+    }
+  }, [])
 
   useEffect(() => {
     applyThemeToDom(theme)
@@ -48,7 +59,7 @@ export function ThemeProvider({ children }) {
     }
   }, [theme])
 
-  const toggleTheme = () => {
+  const toggleTheme = (options = { broadcast: true }) => {
     const next = theme === 'dark' ? 'light' : 'dark'
     applyThemeToDom(next)
     try {
@@ -57,9 +68,19 @@ export function ThemeProvider({ children }) {
       // Ignore storage errors
     }
     setThemeState(next)
+
+    if (options?.broadcast !== false) {
+      broadcastHandlersRef.current.forEach((fn) => {
+        try {
+          fn(next)
+        } catch (err) {
+          console.error('Theme broadcaster error:', err)
+        }
+      })
+    }
   }
 
-  const setTheme = (newTheme) => {
+  const setTheme = (newTheme, options = { broadcast: true }) => {
     if (newTheme === 'dark' || newTheme === 'light') {
       applyThemeToDom(newTheme)
       try {
@@ -68,11 +89,21 @@ export function ThemeProvider({ children }) {
         // Ignore storage errors
       }
       setThemeState(newTheme)
+
+      if (options?.broadcast !== false) {
+        broadcastHandlersRef.current.forEach((fn) => {
+          try {
+            fn(newTheme)
+          } catch (err) {
+            console.error('Theme broadcaster error:', err)
+          }
+        })
+      }
     }
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, isDark }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, registerThemeBroadcaster, isDark }}>
       {children}
     </ThemeContext.Provider>
   )

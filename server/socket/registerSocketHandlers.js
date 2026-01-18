@@ -125,6 +125,11 @@ function registerSocketHandlers(io, redis) {
     socket.on('relay-ice-candidate', ({ roomId, candidate }) => {
       if (roomId && candidate) socket.to(roomId).emit('webrtc-ice-candidate', { candidate })
     })
+    socket.on('sync-theme', ({ roomId, theme }) => {
+      if (roomId && (theme === 'dark' || theme === 'light')) {
+        socket.to(roomId).emit('theme-synced', { theme, sender: socket.id })
+      }
+    })
 
     socket.on('disconnect', async () => {
       await removeFromQueue(redis, socket.id)
