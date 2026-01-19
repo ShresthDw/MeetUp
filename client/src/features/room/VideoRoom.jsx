@@ -46,6 +46,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false)
   const [themeToast, setThemeToast] = useState(null)
+  const [localAspectRatio, setLocalAspectRatio] = useState(null)
+  const [remoteAspectRatio, setRemoteAspectRatio] = useState(null)
   const messagesEndRef = useRef(null)
 
   const {
@@ -90,6 +92,55 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
       return () => clearTimeout(timer)
     }
   }, [syncedThemeNotice])
+
+  // Track dynamic aspect ratio for local video feed
+  useEffect(() => {
+    const localEl = localVideoRef.current
+    const updateLocalRatio = () => {
+      if (localEl && localEl.videoWidth && localEl.videoHeight) {
+        setLocalAspectRatio(localEl.videoWidth / localEl.videoHeight)
+      }
+    }
+    if (localEl) {
+      localEl.addEventListener('loadedmetadata', updateLocalRatio)
+      localEl.addEventListener('resize', updateLocalRatio)
+      updateLocalRatio()
+    }
+    return () => {
+      if (localEl) {
+        localEl.removeEventListener('loadedmetadata', updateLocalRatio)
+        localEl.removeEventListener('resize', updateLocalRatio)
+      }
+    }
+  }, [localStream, streamReady, isCameraOff, isScreenSharing, localVideoRef])
+
+  // Track dynamic aspect ratio for remote stranger video feed
+  useEffect(() => {
+    const remoteEl = remoteVideoRef.current
+    const updateRemoteRatio = () => {
+      if (remoteEl && remoteEl.videoWidth && remoteEl.videoHeight) {
+        setRemoteAspectRatio(remoteEl.videoWidth / remoteEl.videoHeight)
+      }
+    }
+    if (remoteEl) {
+      remoteEl.addEventListener('loadedmetadata', updateRemoteRatio)
+      remoteEl.addEventListener('resize', updateRemoteRatio)
+      updateRemoteRatio()
+    }
+    return () => {
+      if (remoteEl) {
+        remoteEl.removeEventListener('loadedmetadata', updateRemoteRatio)
+        remoteEl.removeEventListener('resize', updateRemoteRatio)
+      }
+    }
+  }, [remoteStream, status, remoteVideoRef])
+
+  // Reset remote aspect ratio when disconnected or matchmaking
+  useEffect(() => {
+    if (!remoteStream || status !== 'connected' || partnerDisconnected) {
+      setRemoteAspectRatio(null)
+    }
+  }, [remoteStream, status, partnerDisconnected])
 
   // Explicitly ensure remote video stream is attached & playing
   useEffect(() => {
@@ -310,18 +361,39 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               onClick={() => {
                 if (isSwapped) setIsSwapped(false)
               }}
+              style={{
+                aspectRatio: isSwapped && remoteAspectRatio ? `${remoteAspectRatio}` : undefined,
+              }}
               className={`transition-all duration-300 ${
                 !isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#080e12] flex items-center justify-center z-10'
-                  : 'absolute top-3 right-3 sm:top-4 sm:right-4 z-40 w-28 xs:w-36 sm:w-48 md:w-56 aspect-[4/3] sm:aspect-video overflow-hidden rounded-2xl border-2 border-slate-300 dark:border-[#243c47] hover:border-white bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : `absolute top-3 right-3 sm:top-4 sm:right-4 z-40 ${
+                      remoteAspectRatio && remoteAspectRatio < 1
+                        ? 'w-24 xs:w-28 sm:w-36 md:w-44 max-h-[38vh] max-w-[38vw]'
+                        : 'w-32 xs:w-40 sm:w-48 md:w-56 max-h-[28vh] max-w-[48vw]'
+                    } ${
+                      !remoteAspectRatio ? 'aspect-[4/3] sm:aspect-video' : ''
+                    } overflow-hidden rounded-2xl border-2 border-slate-300 dark:border-[#243c47] hover:border-white bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform`
               }`}
             >
               <video
                 ref={remoteVideoRef}
                 autoPlay
                 playsInline
-                style={{ objectFit: 'contain' }}
-                className={`h-full w-full bg-[#080e12] object-contain transition-opacity duration-300 ${
+                onLoadedMetadata={(e) => {
+                  if (e.target.videoWidth && e.target.videoHeight) {
+                    setRemoteAspectRatio(e.target.videoWidth / e.target.videoHeight)
+                  }
+                }}
+                onResize={(e) => {
+                  if (e.target.videoWidth && e.target.videoHeight) {
+                    setRemoteAspectRatio(e.target.videoWidth / e.target.videoHeight)
+                  }
+                }}
+                style={{ objectFit: isSwapped ? 'cover' : 'contain' }}
+                className={`h-full w-full bg-[#080e12] ${
+                  isSwapped ? 'object-cover' : 'object-contain'
+                } transition-opacity duration-300 ${
                   status === 'connected' && !partnerDisconnected ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -450,10 +522,19 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               onClick={() => {
                 if (!isSwapped) setIsSwapped(true)
               }}
+              style={{
+                aspectRatio: !isSwapped && localAspectRatio && !isCameraOff ? `${localAspectRatio}` : undefined,
+              }}
               className={`transition-all duration-300 ${
                 isSwapped
                   ? 'absolute inset-0 h-full w-full overflow-hidden bg-[#080e12] flex items-center justify-center z-10'
-                  : 'absolute top-3 right-3 sm:top-4 sm:right-4 z-40 w-28 xs:w-36 sm:w-48 md:w-56 aspect-[4/3] sm:aspect-video overflow-hidden rounded-2xl border-2 border-slate-300 dark:border-[#243c47] hover:border-white bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform'
+                  : `absolute top-3 right-3 sm:top-4 sm:right-4 z-40 ${
+                      localAspectRatio && localAspectRatio < 1 && !isCameraOff
+                        ? 'w-24 xs:w-28 sm:w-36 md:w-44 max-h-[38vh] max-w-[38vw]'
+                        : 'w-32 xs:w-40 sm:w-48 md:w-56 max-h-[28vh] max-w-[48vw]'
+                    } ${
+                      !localAspectRatio || isCameraOff ? 'aspect-[4/3] sm:aspect-video' : ''
+                    } overflow-hidden rounded-2xl border-2 border-slate-300 dark:border-[#243c47] hover:border-white bg-[#0d171d] shadow-2xl backdrop-blur-xl cursor-pointer hover:scale-102 transition-transform`
               }`}
             >
               {isCameraOff && !isScreenSharing ? (
@@ -467,8 +548,20 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                   autoPlay
                   muted
                   playsInline
-                  style={{ objectFit: 'contain' }}
-                  className={`h-full w-full bg-[#080e12] object-contain ${
+                  onLoadedMetadata={(e) => {
+                    if (e.target.videoWidth && e.target.videoHeight) {
+                      setLocalAspectRatio(e.target.videoWidth / e.target.videoHeight)
+                    }
+                  }}
+                  onResize={(e) => {
+                    if (e.target.videoWidth && e.target.videoHeight) {
+                      setLocalAspectRatio(e.target.videoWidth / e.target.videoHeight)
+                    }
+                  }}
+                  style={{ objectFit: !isSwapped ? 'cover' : 'contain' }}
+                  className={`h-full w-full bg-[#080e12] ${
+                    !isSwapped ? 'object-cover' : 'object-contain'
+                  } ${
                     !isScreenSharing ? '-scale-x-100' : ''
                   }`}
                 />
