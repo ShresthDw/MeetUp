@@ -78,10 +78,13 @@ function AppContent() {
         <HomePage
           user={user}
           onlineCount={room.onlineCount}
+          localStream={room.localStream}
+          onInitializeMedia={room.initializeMedia}
           onStartChat={handleStartChat}
           onOpenAuth={handleOpenAuth}
         />
       ) : (
+
         <VideoRoom
           user={user}
           preferences={preferences}

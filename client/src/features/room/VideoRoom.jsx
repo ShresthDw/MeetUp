@@ -45,6 +45,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   const [flyingEmojis, setFlyingEmojis] = useState([])
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false)
+  const [themeToast, setThemeToast] = useState(null)
   const messagesEndRef = useRef(null)
 
   const {
@@ -61,6 +62,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
     localVideoRef,
     remoteVideoRef,
     localStream,
+    remoteStream,
+    syncedThemeNotice,
     streamReady,
     startMatching,
     nextPeer,
@@ -76,6 +79,25 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Show theme sync toast when stranger changes theme
+  useEffect(() => {
+    if (syncedThemeNotice) {
+      setThemeToast(syncedThemeNotice.theme)
+      const timer = setTimeout(() => {
+        setThemeToast(null)
+      }, 3200)
+      return () => clearTimeout(timer)
+    }
+  }, [syncedThemeNotice])
+
+  // Explicitly ensure remote video stream is attached & playing
+  useEffect(() => {
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream
+      remoteVideoRef.current.play().catch(() => {})
+    }
+  }, [remoteStream, isSwapped, remoteVideoRef])
 
   // Trigger floating/flying emoji animation
   const triggerFlyEmoji = (emoji, isPeer = false) => {
@@ -137,6 +159,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [nextPeer, toggleMic, toggleCamera])
+
 
   const handleExit = () => {
     leaveRoom()
@@ -269,8 +292,17 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
       {/* Main Split Layout: Video Area + Real-Time Chat */}
       <div className="relative flex flex-1 overflow-hidden">
+        {/* Floating Stranger Theme Sync Indicator */}
+        {themeToast && (
+          <div className="pointer-events-none absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full border border-amber-500/50 bg-slate-950/90 text-amber-300 px-4 py-1.5 text-xs font-bold shadow-2xl backdrop-blur-xl animate-bounce">
+            <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+            <span>Stranger switched to {themeToast === 'dark' ? 'Dark Mode (Lit)' : 'Light Mode (Off)'}</span>
+          </div>
+        )}
+
         {/* Video Stage Area */}
         <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-slate-100 dark:bg-[#142229]">
+
           {/* Main Stage Container */}
           <div className="relative flex flex-1 w-full max-w-5xl h-full max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#080e12] shadow-2xl">
             {/* WRAPPER 1: REMOTE STRANGER */}

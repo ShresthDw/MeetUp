@@ -11,15 +11,26 @@ const ThemeContext = createContext({
 })
 
 function applyThemeToDom(theme) {
+  if (typeof document === 'undefined') return
   const root = document.documentElement
+  const body = document.body
+
   if (theme === 'dark') {
     root.classList.add('dark')
     root.classList.remove('light')
     root.style.colorScheme = 'dark'
+    if (body) {
+      body.classList.add('dark')
+      body.classList.remove('light')
+    }
   } else {
     root.classList.add('light')
     root.classList.remove('dark')
     root.style.colorScheme = 'light'
+    if (body) {
+      body.classList.add('light')
+      body.classList.remove('dark')
+    }
   }
 }
 
@@ -38,8 +49,20 @@ export function ThemeProvider({ children }) {
     return 'dark' // Default to dark theme
   })
 
+
   const broadcastHandlersRef = useRef(new Set())
+  const themeRef = useRef(theme)
   const isDark = theme === 'dark'
+
+  useEffect(() => {
+    themeRef.current = theme
+    applyThemeToDom(theme)
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme)
+    } catch {
+      // Ignore storage errors
+    }
+  }, [theme])
 
   const registerThemeBroadcaster = useCallback((handler) => {
     if (typeof handler === 'function') {
@@ -50,17 +73,10 @@ export function ThemeProvider({ children }) {
     }
   }, [])
 
-  useEffect(() => {
-    applyThemeToDom(theme)
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, theme)
-    } catch {
-      // Ignore storage errors
-    }
-  }, [theme])
-
-  const toggleTheme = (options = { broadcast: true }) => {
-    const next = theme === 'dark' ? 'light' : 'dark'
+  const toggleTheme = useCallback((options = { broadcast: true }) => {
+    const current = themeRef.current
+    const next = current === 'dark' ? 'light' : 'dark'
+    themeRef.current = next
     applyThemeToDom(next)
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next)
@@ -78,10 +94,11 @@ export function ThemeProvider({ children }) {
         }
       })
     }
-  }
+  }, [])
 
-  const setTheme = (newTheme, options = { broadcast: true }) => {
+  const setTheme = useCallback((newTheme, options = { broadcast: true }) => {
     if (newTheme === 'dark' || newTheme === 'light') {
+      themeRef.current = newTheme
       applyThemeToDom(newTheme)
       try {
         localStorage.setItem(THEME_STORAGE_KEY, newTheme)
@@ -100,7 +117,7 @@ export function ThemeProvider({ children }) {
         })
       }
     }
-  }
+  }, [])
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, registerThemeBroadcaster, isDark }}>

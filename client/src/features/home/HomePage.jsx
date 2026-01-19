@@ -30,7 +30,7 @@ const POPULAR_TAGS = [
   'Late Night',
 ]
 
-export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAuth }) {
+export default function HomePage({ user, onlineCount = 1, localStream, onInitializeMedia, onStartChat, onOpenAuth }) {
   const [mode, setMode] = useState('video') // 'video' | 'text'
   const [selectedTags, setSelectedTags] = useState(['Gaming', 'Music'])
   const [customTagInput, setCustomTagInput] = useState('')
@@ -40,7 +40,6 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
   const [previewAspectRatio, setPreviewAspectRatio] = useState(null)
 
   const previewVideoRef = useRef(null)
-  const previewStreamRef = useRef(null)
 
   // Initialize camera preview on home screen
   useEffect(() => {
@@ -48,19 +47,23 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
 
     async function initPreview() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: true,
-        })
-        if (!active) {
-          stream.getTracks().forEach((track) => track.stop())
+        if (localStream) {
+          if (previewVideoRef.current) {
+            previewVideoRef.current.srcObject = localStream
+            previewVideoRef.current.play().catch(() => {})
+          }
+          setMediaError('')
           return
         }
-        previewStreamRef.current = stream
-        if (previewVideoRef.current) {
-          previewVideoRef.current.srcObject = stream
+
+        if (onInitializeMedia) {
+          const stream = await onInitializeMedia()
+          if (active && stream && previewVideoRef.current) {
+            previewVideoRef.current.srcObject = stream
+            previewVideoRef.current.play().catch(() => {})
+          }
+          setMediaError('')
         }
-        setMediaError('')
       } catch (err) {
         console.warn('Camera preview not available:', err.message)
         setMediaError('Camera / mic preview not accessible. You can still chat!')
@@ -70,19 +73,15 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
     if (cameraActive) {
       initPreview()
     } else {
-      if (previewStreamRef.current) {
-        previewStreamRef.current.getTracks().forEach((track) => track.stop())
-        previewStreamRef.current = null
+      if (previewVideoRef.current) {
+        previewVideoRef.current.srcObject = null
       }
     }
 
     return () => {
       active = false
-      if (previewStreamRef.current) {
-        previewStreamRef.current.getTracks().forEach((track) => track.stop())
-      }
     }
-  }, [cameraActive])
+  }, [cameraActive, localStream, onInitializeMedia])
 
   // Track preview stream aspect ratio to adapt container size dynamically
   useEffect(() => {
@@ -103,11 +102,12 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
         previewEl.removeEventListener('resize', updateRatio)
       }
     }
-  }, [cameraActive])
+  }, [cameraActive, localStream])
 
   const toggleCameraPreview = () => {
-    if (previewStreamRef.current) {
-      const vTrack = previewStreamRef.current.getVideoTracks()[0]
+    const stream = localStream || previewVideoRef.current?.srcObject
+    if (stream) {
+      const vTrack = stream.getVideoTracks()[0]
       if (vTrack) {
         vTrack.enabled = !cameraActive
       }
@@ -116,14 +116,16 @@ export default function HomePage({ user, onlineCount = 1, onStartChat, onOpenAut
   }
 
   const toggleMicPreview = () => {
-    if (previewStreamRef.current) {
-      const aTrack = previewStreamRef.current.getAudioTracks()[0]
+    const stream = localStream || previewVideoRef.current?.srcObject
+    if (stream) {
+      const aTrack = stream.getAudioTracks()[0]
       if (aTrack) {
         aTrack.enabled = !micActive
       }
     }
     setMicActive(!micActive)
   }
+
 
   const handleToggleTag = (tag) => {
     if (selectedTags.includes(tag)) {

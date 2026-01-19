@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { io } from 'socket.io-client'
 
-import { SOCKET_TRANSPORT, SOCKET_URL } from '../../config/env'
+import { SOCKET_TRANSPORTS, SOCKET_URL } from '../../config/env'
 import { useTheme } from '../../context/ThemeContext'
 
 const iceServers = [
@@ -11,12 +11,11 @@ const iceServers = [
 ]
 
 export function useVideoRoom() {
-  const { setTheme, registerThemeBroadcaster } = useTheme()
+  const { theme, setTheme, registerThemeBroadcaster } = useTheme()
 
   const socket = useMemo(() => io(SOCKET_URL, {
     autoConnect: true,
-    transports: [SOCKET_TRANSPORT],
-    upgrade: SOCKET_TRANSPORT !== 'polling',
+    transports: SOCKET_TRANSPORTS || ['websocket', 'polling'],
   }), [])
 
   const [status, setStatus] = useState('idle') // 'idle' | 'matching' | 'connected' | 'disconnected'
@@ -32,21 +31,31 @@ export function useVideoRoom() {
   const [streamReady, setStreamReady] = useState(0)
   const [onlineCount, setOnlineCount] = useState(1)
   const [inRoomsCount, setInRoomsCount] = useState(0)
+  const [remoteStream, setRemoteStream] = useState(null)
+  const [syncedThemeNotice, setSyncedThemeNotice] = useState(null)
 
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
   const localStreamRef = useRef(null)
   const screenStreamRef = useRef(null)
+  const remoteStreamRef = useRef(null)
   const peerRef = useRef(null)
+  const iceCandidatesQueueRef = useRef([])
   const roomIdRef = useRef('')
   const statusRef = useRef('idle')
+  const themeRef = useRef(theme)
   const timerRef = useRef(null)
 
   useEffect(() => {
     statusRef.current = status
   }, [status])
 
+  useEffect(() => {
+    themeRef.current = theme
+  }, [theme])
+
   const closePeer = useCallback(() => {
+    iceCandidatesQueueRef.current = []
     if (peerRef.current) {
       peerRef.current.onicecandidate = null
       peerRef.current.ontrack = null
@@ -54,8 +63,23 @@ export function useVideoRoom() {
       peerRef.current.close()
       peerRef.current = null
     }
+    remoteStreamRef.current = null
+    setRemoteStream(null)
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = null
+    }
+  }, [])
+
+  const drainIceCandidates = useCallback(async (peer) => {
+    if (!peer || !peer.remoteDescription) return
+    const queue = [...iceCandidatesQueueRef.current]
+    iceCandidatesQueueRef.current = []
+    for (const candidate of queue) {
+      try {
+        await peer.addIceCandidate(new RTCIceCandidate(candidate))
+      } catch (err) {
+        console.warn('Failed to apply queued ICE candidate:', err.message)
+      }
     }
   }, [])
 
@@ -74,15 +98,25 @@ export function useVideoRoom() {
     }
 
     peer.ontrack = (event) => {
-      if (remoteVideoRef.current && event.streams && event.streams[0]) {
-        remoteVideoRef.current.srcObject = event.streams[0]
+      const stream = (event.streams && event.streams[0]) || (event.track ? new MediaStream([event.track]) : null)
+      if (stream) {
+        remoteStreamRef.current = stream
+        setRemoteStream(stream)
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = stream
+          remoteVideoRef.current.play().catch(() => {})
+        }
       }
     }
 
     const currentStream = screenStreamRef.current || localStreamRef.current
     if (currentStream) {
       currentStream.getTracks().forEach((track) => {
-        peer.addTrack(track, currentStream)
+        try {
+          peer.addTrack(track, currentStream)
+        } catch (err) {
+          console.warn('Track already added or addTrack failed:', err.message)
+        }
       })
     }
 
@@ -119,14 +153,15 @@ export function useVideoRoom() {
 
   const initializeMedia = useCallback(async () => {
     if (localStreamRef.current) {
-      attachLocalStream()
-      return localStreamRef.current
+      const activeTracks = localStreamRef.current.getTracks().filter((t) => t.readyState === 'live')
+      if (activeTracks.length > 0) {
+        attachLocalStream()
+        return localStreamRef.current
+      }
     }
 
     try {
-      const isMobile = typeof window !== 'undefined' && (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768)
-
-      // Natural Camera Constraints (Preserves native sensor aspect ratio without forced digital crop zoom)
+      // Natural Camera Constraints
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
@@ -138,10 +173,28 @@ export function useVideoRoom() {
       localStreamRef.current = stream
       setStreamReady((prev) => prev + 1)
       attachLocalStream()
+
+      // If peer connection exists, ensure tracks are added
+      if (peerRef.current) {
+        const senders = peerRef.current.getSenders()
+        stream.getTracks().forEach((track) => {
+          const sender = senders.find((s) => s.track && s.track.kind === track.kind)
+          if (sender) {
+            sender.replaceTrack(track).catch(() => {})
+          } else {
+            try {
+              peerRef.current.addTrack(track, stream)
+            } catch (err) {
+              // ignore
+            }
+          }
+        })
+      }
+
       return stream
     } catch (err) {
       console.warn('Media access error/fallback:', err.message)
-      // Fallback with basic constraints if HD rejected
+      // Fallback with basic constraints
       try {
         const fallbackStream = await navigator.mediaDevices.getUserMedia({
           video: true,
@@ -161,30 +214,36 @@ export function useVideoRoom() {
   const startMatching = useCallback(async () => {
     setError('')
     setPartnerDisconnected(false)
+    statusRef.current = 'matching'
     setStatus('matching')
     setRoomId('')
     roomIdRef.current = ''
     setRole('')
     setMessages([])
     setConnectedTime(0)
+    setSyncedThemeNotice(null)
     closePeer()
 
     await initializeMedia()
     socket.emit('join-queue')
   }, [closePeer, initializeMedia, socket])
 
-  const nextPeer = useCallback(() => {
+  const nextPeer = useCallback(async () => {
     setMessages([])
     setPartnerDisconnected(false)
+    statusRef.current = 'matching'
     setStatus('matching')
+    setRoomId('')
+    roomIdRef.current = ''
     setConnectedTime(0)
+    setSyncedThemeNotice(null)
     closePeer()
+    await initializeMedia()
     socket.emit('next-peer')
-  }, [closePeer, socket])
+  }, [closePeer, initializeMedia, socket])
 
   const leaveRoom = useCallback(() => {
-    socket.emit('leave-room')
-    closePeer()
+    statusRef.current = 'idle'
     setStatus('idle')
     setRoomId('')
     roomIdRef.current = ''
@@ -192,6 +251,9 @@ export function useVideoRoom() {
     setMessages([])
     setPartnerDisconnected(false)
     setConnectedTime(0)
+    setSyncedThemeNotice(null)
+    closePeer()
+    socket.emit('leave-room')
   }, [closePeer, socket])
 
   const toggleMic = useCallback(() => {
@@ -234,7 +296,7 @@ export function useVideoRoom() {
         localVideoRef.current.play().catch(() => {})
       }
     } else {
-      // Start screen share with native full display resolution
+      // Start screen share
       try {
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: {
@@ -281,10 +343,25 @@ export function useVideoRoom() {
     return true
   }, [socket])
 
-  useEffect(() => {
-    let mounted = true
+  const ensurePeerRef = useRef(ensurePeer)
+  ensurePeerRef.current = ensurePeer
 
+  const closePeerRef = useRef(closePeer)
+  closePeerRef.current = closePeer
+
+  const drainIceCandidatesRef = useRef(drainIceCandidates)
+  drainIceCandidatesRef.current = drainIceCandidates
+
+  const setThemeRef = useRef(setTheme)
+  setThemeRef.current = setTheme
+
+  // Setup socket event listeners
+  useEffect(() => {
     initializeMedia()
+
+    if (socket.connected) {
+      setError('')
+    }
 
     socket.on('connect', () => {
       setError('')
@@ -295,6 +372,7 @@ export function useVideoRoom() {
     })
 
     socket.on('matching', () => {
+      statusRef.current = 'matching'
       setStatus('matching')
       setPartnerDisconnected(false)
     })
@@ -308,18 +386,26 @@ export function useVideoRoom() {
       setRoomId(matchedRoomId)
       roomIdRef.current = matchedRoomId
       setRole(matchedRole)
+      statusRef.current = 'connected'
       setStatus('connected')
       setPartnerDisconnected(false)
       setConnectedTime(0)
+      setSyncedThemeNotice(null)
 
+      // Initiator triggers WebRTC offer and initial theme sync
       if (matchedRole === 'initiator') {
-        const peer = ensurePeer(matchedRoomId)
-        const offer = await peer.createOffer({
-          offerToReceiveAudio: true,
-          offerToReceiveVideo: true,
-        })
-        await peer.setLocalDescription(offer)
-        socket.emit('relay-offer', { roomId: matchedRoomId, offer })
+        const peer = ensurePeerRef.current(matchedRoomId)
+        try {
+          const offer = await peer.createOffer({
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: true,
+          })
+          await peer.setLocalDescription(offer)
+          socket.emit('relay-offer', { roomId: matchedRoomId, offer })
+          socket.emit('sync-theme', { roomId: matchedRoomId, theme: themeRef.current })
+        } catch (err) {
+          console.error('Error creating WebRTC offer:', err)
+        }
       }
     })
 
@@ -342,30 +428,45 @@ export function useVideoRoom() {
 
     socket.on('peer-left', () => {
       setPartnerDisconnected(true)
+      statusRef.current = 'disconnected'
       setStatus('disconnected')
-      closePeer()
+      closePeerRef.current()
     })
 
     socket.on('webrtc-offer', async ({ offer }) => {
       const activeRoomId = roomIdRef.current
-      if (!activeRoomId) return
+      if (!activeRoomId || !offer) return
 
-      const peer = ensurePeer(activeRoomId)
-      await peer.setRemoteDescription(new RTCSessionDescription(offer))
-      const answer = await peer.createAnswer()
-      await peer.setLocalDescription(answer)
-      socket.emit('relay-answer', { roomId: activeRoomId, answer })
+      try {
+        const peer = ensurePeerRef.current(activeRoomId)
+        await peer.setRemoteDescription(new RTCSessionDescription(offer))
+        await drainIceCandidatesRef.current(peer)
+        const answer = await peer.createAnswer()
+        await peer.setLocalDescription(answer)
+        socket.emit('relay-answer', { roomId: activeRoomId, answer })
+      } catch (err) {
+        console.error('Error handling webrtc-offer:', err)
+      }
     })
 
     socket.on('webrtc-answer', async ({ answer }) => {
-      if (peerRef.current) {
+      if (!answer || !peerRef.current) return
+      try {
         await peerRef.current.setRemoteDescription(new RTCSessionDescription(answer))
+        await drainIceCandidatesRef.current(peerRef.current)
+      } catch (err) {
+        console.error('Error handling webrtc-answer:', err)
       }
     })
 
     socket.on('webrtc-ice-candidate', async ({ candidate }) => {
+      if (!candidate) return
       try {
-        await peerRef.current?.addIceCandidate(new RTCIceCandidate(candidate))
+        if (peerRef.current && peerRef.current.remoteDescription && peerRef.current.remoteDescription.type) {
+          await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate))
+        } else {
+          iceCandidatesQueueRef.current.push(candidate)
+        }
       } catch (err) {
         console.warn('Failed to apply ICE candidate:', err.message)
       }
@@ -373,30 +474,31 @@ export function useVideoRoom() {
 
     socket.on('theme-synced', ({ theme: incomingTheme }) => {
       if (incomingTheme === 'dark' || incomingTheme === 'light') {
-        setTheme(incomingTheme, { broadcast: false })
+        setThemeRef.current(incomingTheme, { broadcast: false })
+        setSyncedThemeNotice({ theme: incomingTheme, timestamp: Date.now() })
       }
     })
 
     return () => {
-      mounted = false
       socket.removeAllListeners()
       socket.disconnect()
-      closePeer()
+      closePeerRef.current()
       localStreamRef.current?.getTracks().forEach((track) => track.stop())
       screenStreamRef.current?.getTracks().forEach((track) => track.stop())
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [socket, closePeer, ensurePeer, initializeMedia, setTheme])
+  }, [socket, initializeMedia])
 
   // Sync theme changes with partner when in an active connected room
   useEffect(() => {
-    if (status === 'connected' && roomId) {
-      const unregister = registerThemeBroadcaster((newTheme) => {
-        socket.emit('sync-theme', { roomId, theme: newTheme })
-      })
-      return () => unregister()
-    }
-  }, [status, roomId, registerThemeBroadcaster, socket])
+    const unregister = registerThemeBroadcaster((newTheme) => {
+      const currentRoomId = roomIdRef.current
+      if (currentRoomId && statusRef.current === 'connected') {
+        socket.emit('sync-theme', { roomId: currentRoomId, theme: newTheme })
+      }
+    })
+    return () => unregister()
+  }, [registerThemeBroadcaster, socket])
 
   // Timer counter for active call
   useEffect(() => {
@@ -425,6 +527,8 @@ export function useVideoRoom() {
     localVideoRef,
     remoteVideoRef,
     localStream: localStreamRef.current,
+    remoteStream,
+    syncedThemeNotice,
     streamReady,
     startMatching,
     nextPeer,
@@ -437,3 +541,4 @@ export function useVideoRoom() {
     attachLocalStream,
   }
 }
+
