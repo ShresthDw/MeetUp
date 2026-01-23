@@ -322,7 +322,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             <MessageSquare className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
             <span className="hidden xs:inline">Chat</span>
             {messages.length > 0 && (
-              <span className="rounded-full bg-[#E09800] text-[9px] text-white px-1.5 py-0.2 font-black leading-tight">
+              <span className="rounded-full bg-lamp-badge text-[9px] text-white px-1.5 py-0.2 font-black leading-tight">
                 {messages.length}
               </span>
             )}
@@ -401,7 +401,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               {status === 'matching' && (
                 isSwapped ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 p-2 text-center select-none space-y-1">
-                    <div className="relative mb-0.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#E09800] text-white">
+                    <div className="relative mb-0.5 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-lamp-badge text-white">
                       <Radio className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" />
                     </div>
                     <span className="text-xs font-black uppercase tracking-wider text-white">Searching…</span>
@@ -410,9 +410,9 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d171d]/95 backdrop-blur-md p-4 sm:p-6 text-center space-y-3 sm:space-y-4">
                     <div className="relative flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center aspect-square">
-                      <div className="absolute inset-0 rounded-full border border-[#E09800]/30 animate-radar" />
-                      <div className="absolute inset-0 rounded-full border border-[#E09800]/50 animate-radar-delayed-1" />
-                      <div className="relative flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#E09800] text-white">
+                      <div className="absolute inset-0 rounded-full border border-amber-500/30 animate-radar" />
+                      <div className="absolute inset-0 rounded-full border border-amber-500/50 animate-radar-delayed-1" />
+                      <div className="relative flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-lamp-badge text-white">
                         <Radio className="h-5 w-5 sm:h-7 sm:w-7 text-white" />
                       </div>
                     </div>
@@ -462,8 +462,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                         e.stopPropagation()
                         nextPeer()
                       }}
-                      style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-                      className="btn-yellow-primary flex items-center gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-4 py-2 text-xs font-bold text-white hover:brightness-105 transition shadow cursor-pointer"
+                      className="btn-lamp-primary flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-md transition cursor-pointer"
                     >
                       <RotateCw className="h-3.5 w-3.5 text-white" />
                       <span className="text-white font-bold">Find Next (Space)</span>
@@ -495,8 +494,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                         e.stopPropagation()
                         startMatching()
                       }}
-                      style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-                      className="btn-yellow-primary flex items-center gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-5 py-2 text-xs font-bold text-white hover:brightness-105 transition shadow cursor-pointer"
+                      className="btn-lamp-primary flex items-center gap-2 rounded-xl px-5 py-2 text-xs font-bold text-white shadow-md transition cursor-pointer"
                     >
                       <Zap className="h-3.5 w-3.5 fill-white text-white" />
                       <span className="text-white font-bold">Join Match Queue</span>
@@ -586,8 +584,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               <button
                 type="button"
                 onClick={nextPeer}
-                style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-                className="btn-yellow-primary flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-3 sm:px-4 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
+                className="btn-lamp-primary flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-xs font-bold text-white shadow-md transition active:scale-95 cursor-pointer"
                 title="Next (Space)"
               >
                 <RotateCw className="h-3.5 w-3.5 text-white" />
@@ -631,7 +628,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 title={isScreenSharing ? 'Stop Screen Share' : 'Share Screen'}
                 className={`hidden sm:flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl transition cursor-pointer ${
                   isScreenSharing
-                    ? 'bg-[#E09800] text-white font-bold shadow-lg shadow-[#E09800]/30'
+                    ? 'btn-lamp-primary text-white font-bold shadow-md'
                     : 'bg-slate-100 dark:bg-[#1a2d36] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#243c47] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -644,7 +641,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 title="Toggle Chat"
                 className={`md:hidden flex h-9 w-9 items-center justify-center rounded-xl transition cursor-pointer ${
                   isMobileChatOpen
-                    ? 'bg-[#E09800] text-white font-bold'
+                    ? 'btn-lamp-primary text-white font-bold'
                     : 'bg-slate-100 dark:bg-[#1a2d36] text-slate-700 dark:text-slate-300'
                 }`}
               >
@@ -744,7 +741,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                     <div
                       className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed shadow-xs break-words ${
                         isYou
-                          ? 'bg-[#E09800] text-white font-medium rounded-br-none'
+                          ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium rounded-br-none shadow-xs'
                           : 'bg-slate-100 text-slate-800 rounded-bl-none border border-slate-200 dark:bg-[#1a2d36] dark:text-slate-100 dark:border-[#243c47]'
                       }`}
                     >
@@ -819,8 +816,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             <button
               type="submit"
               disabled={!inputText.trim() || status !== 'connected'}
-              style={{ backgroundColor: '#E09800', color: '#ffffff' }}
-              className="btn-yellow-primary flex h-8 w-8 items-center justify-center rounded-xl bg-[#E09800] text-white hover:bg-[#C78600] transition disabled:opacity-40 cursor-pointer"
+              className="btn-lamp-primary flex h-8 w-8 items-center justify-center rounded-xl text-white transition disabled:opacity-40 cursor-pointer"
             >
               <Send className="h-3.5 w-3.5 text-white" />
             </button>

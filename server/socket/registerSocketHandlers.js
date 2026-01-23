@@ -1,4 +1,11 @@
-const { enqueueAndTryMatch, removeFromQueue } = require('../matchmaker')
+const {
+  enqueueAndTryMatch,
+  removeFromQueue,
+  enqueueOrJoinPublicGroup,
+  createCustomGroupRoom,
+  joinSpecificGroupRoom,
+  leaveGroupRoom,
+} = require('../matchmaker')
 
 const blockedTerms = [/spam/i, /scam/i]
 
@@ -102,6 +109,14 @@ function registerSocketHandlers(io, redis) {
     }
   }
 
+  function handleLeaveGroupRoom(socket) {
+    const leftInfo = leaveGroupRoom(socket.id)
+    if (leftInfo) {
+      socket.leave(leftInfo.roomId)
+      io.to(leftInfo.roomId).emit('group-peer-left', { peerSocketId: socket.id })
+    }
+  }
+
   io.on('connection', (socket) => {
     // Send immediate real-time stats to the newly connected socket
     const currentOnline = io.engine?.clientsCount || io.sockets.sockets.size || 1
@@ -123,7 +138,11 @@ function registerSocketHandlers(io, redis) {
       })
     })
 
+    // ==========================================
+    // 1-on-1 DUO ROOM HANDLERS
+    // ==========================================
     socket.on('join-queue', async () => {
+      handleLeaveGroupRoom(socket)
       await removeFromQueue(redis, socket.id)
       await joinQueue(socket)
     })
@@ -195,8 +214,139 @@ function registerSocketHandlers(io, redis) {
       }
     })
 
+    // ==========================================
+    // GROUP LOUNGE HANDLERS (Mesh WebRTC)
+    // ==========================================
+    socket.on('join-group-queue', async () => {
+      await leaveCurrentRoom(socket)
+      const match = await enqueueOrJoinPublicGroup(socket.id)
+      if (!match) return
+
+      socket.join(match.roomId)
+      socket.emit('group-matched', {
+        roomId: match.roomId,
+        roomCode: match.roomCode,
+        members: match.members,
+        isNew: match.isNew,
+      })
+
+      // Notify other group members in the room that a new peer joined
+      socket.to(match.roomId).emit('group-peer-joined', {
+        peerSocketId: socket.id,
+        roomId: match.roomId,
+      })
+      broadcastLiveStats()
+    })
+
+    socket.on('create-custom-group', async () => {
+      await leaveCurrentRoom(socket)
+      const match = await createCustomGroupRoom(socket.id)
+      if (!match) return
+
+      socket.join(match.roomId)
+      socket.emit('group-matched', {
+        roomId: match.roomId,
+        roomCode: match.roomCode,
+        members: match.members,
+        isNew: true,
+      })
+      broadcastLiveStats()
+    })
+
+    socket.on('join-specific-group', async ({ roomCode }) => {
+      await leaveCurrentRoom(socket)
+      const result = await joinSpecificGroupRoom(roomCode, socket.id)
+      if (!result.success) {
+        socket.emit('group-error', { reason: result.reason || 'Could not join group room.' })
+        return
+      }
+
+      socket.join(result.roomId)
+      socket.emit('group-matched', {
+        roomId: result.roomId,
+        roomCode: result.roomCode,
+        members: result.members,
+        isNew: result.isNew,
+      })
+
+      socket.to(result.roomId).emit('group-peer-joined', {
+        peerSocketId: socket.id,
+        roomId: result.roomId,
+      })
+      broadcastLiveStats()
+    })
+
+    socket.on('leave-group-room', () => {
+      handleLeaveGroupRoom(socket)
+      broadcastLiveStats()
+    })
+
+    socket.on('next-group', async () => {
+      handleLeaveGroupRoom(socket)
+      const match = await enqueueOrJoinPublicGroup(socket.id)
+      if (!match) return
+
+      socket.join(match.roomId)
+      socket.emit('group-matched', {
+        roomId: match.roomId,
+        roomCode: match.roomCode,
+        members: match.members,
+        isNew: match.isNew,
+      })
+
+      socket.to(match.roomId).emit('group-peer-joined', {
+        peerSocketId: socket.id,
+        roomId: match.roomId,
+      })
+      broadcastLiveStats()
+    })
+
+    // Targeted Group Mesh Signaling
+    socket.on('relay-group-offer', ({ to, offer }) => {
+      if (to && offer) {
+        io.to(to).emit('group-webrtc-offer', { from: socket.id, offer })
+      }
+    })
+
+    socket.on('relay-group-answer', ({ to, answer }) => {
+      if (to && answer) {
+        io.to(to).emit('group-webrtc-answer', { from: socket.id, answer })
+      }
+    })
+
+    socket.on('relay-group-ice-candidate', ({ to, candidate }) => {
+      if (to && candidate) {
+        io.to(to).emit('group-webrtc-ice-candidate', { from: socket.id, candidate })
+      }
+    })
+
+    socket.on('relay-group-status', ({ roomId, isCameraOff, isMicMuted }) => {
+      if (roomId) {
+        socket.to(roomId).emit('group-peer-status-update', {
+          peerSocketId: socket.id,
+          isCameraOff,
+          isMicMuted,
+        })
+      }
+    })
+
+    socket.on('send-group-message', ({ roomId, message, senderLabel }) => {
+      if (!roomId || typeof message !== 'string') return
+      if (!isAllowedMessage(message)) {
+        socket.emit('message-blocked', { reason: 'Message failed moderation.' })
+        return
+      }
+
+      io.to(roomId).emit('group-chat-message', {
+        sender: socket.id,
+        senderLabel: senderLabel || 'Stranger',
+        text: message.trim(),
+        createdAt: Date.now(),
+      })
+    })
 
     socket.on('disconnect', async () => {
+      handleLeaveGroupRoom(socket)
       await removeFromQueue(redis, socket.id)
       await leaveCurrentRoom(socket)
       broadcastLiveStats()
@@ -205,4 +355,5 @@ function registerSocketHandlers(io, redis) {
 }
 
 module.exports = { registerSocketHandlers }
+
 

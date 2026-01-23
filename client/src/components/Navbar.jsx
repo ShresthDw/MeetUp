@@ -8,13 +8,13 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
       <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* Brand */}
         <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => onNavigate?.('home')}>
-          <div className="relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#E09800] shadow-md shadow-[#E09800]/25">
+          <div className="relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-lamp-badge shadow-md">
             <Video className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-display text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
-                MeetUp<span className="text-[#E09800]">.</span>
+                MeetUp<span className="text-amber-500">.</span>
               </span>
             </div>
             <p className="text-[9px] sm:text-[10px] tracking-wide text-slate-500 dark:text-slate-400 uppercase hidden sm:block font-medium">
@@ -45,7 +45,7 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
           {user ? (
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-[#223640] bg-slate-100/80 dark:bg-[#1a2d36]/80 px-2.5 sm:px-3 py-1 sm:py-1.5">
-                <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-[#E09800] text-xs font-bold text-white shadow-xs">
+                <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-lamp-badge text-xs font-bold text-white shadow-xs">
                   {user.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
                 <div className="text-left hidden sm:block">
@@ -78,8 +78,7 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
 
               <button
                 onClick={() => onOpenAuth('register')}
-                style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-                className="btn-yellow-primary flex items-center gap-1 sm:gap-1.5 rounded-xl bg-[#E09800] hover:bg-[#C78600] px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-md shadow-[#E09800]/30 hover:brightness-105 transition active:scale-95 cursor-pointer"
+                className="btn-lamp-primary flex items-center gap-1 sm:gap-1.5 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-md transition active:scale-95 cursor-pointer"
               >
                 <UserPlus className="h-3.5 w-3.5 text-white" />
                 <span className="text-white font-bold">Sign Up</span>

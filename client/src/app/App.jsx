@@ -6,21 +6,24 @@ import Navbar from '../components/Navbar'
 import AuthModal from '../features/auth/AuthModal'
 import HomePage from '../features/home/HomePage'
 import VideoRoom from '../features/room/VideoRoom'
+import GroupRoom from '../features/room/GroupRoom'
 import { useVideoRoom } from '../features/room/useVideoRoom'
+import { useGroupRoom } from '../features/room/useGroupRoom'
 
 function AppContent() {
   const [user, setUser] = useState(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
-  const [currentView, setCurrentView] = useState('home') // 'home' | 'room'
+  const [currentView, setCurrentView] = useState('home') // 'home' | 'duo-room' | 'group-room'
   const [authModal, setAuthModal] = useState({ isOpen: false, initialMode: 'login' })
   const [preferences, setPreferences] = useState({
-    mode: 'video',
+    mode: 'duo',
     interests: [],
     cameraActive: true,
     micActive: true,
   })
 
   const room = useVideoRoom()
+  const groupRoom = useGroupRoom()
 
   // Check saved session on mount (non-blocking)
   useEffect(() => {
@@ -38,12 +41,24 @@ function AppContent() {
 
   const handleStartChat = (chatPreferences) => {
     setPreferences(chatPreferences)
-    setCurrentView('room')
-    room.startMatching()
+    if (chatPreferences.mode === 'group') {
+      setCurrentView('group-room')
+      if (chatPreferences.groupAction === 'create') {
+        groupRoom.createCustomGroup()
+      } else if (chatPreferences.groupAction === 'join' && chatPreferences.groupRoomCode) {
+        groupRoom.joinSpecificGroup(chatPreferences.groupRoomCode)
+      } else {
+        groupRoom.startGroupMatching()
+      }
+    } else {
+      setCurrentView('duo-room')
+      room.startMatching()
+    }
   }
 
   const handleLeaveRoom = () => {
     room.leaveRoom()
+    groupRoom.leaveGroupRoom()
     setCurrentView('home')
   }
 
@@ -83,8 +98,14 @@ function AppContent() {
           onStartChat={handleStartChat}
           onOpenAuth={handleOpenAuth}
         />
+      ) : currentView === 'group-room' ? (
+        <GroupRoom
+          user={user}
+          preferences={preferences}
+          room={groupRoom}
+          onLeaveRoom={handleLeaveRoom}
+        />
       ) : (
-
         <VideoRoom
           user={user}
           preferences={preferences}

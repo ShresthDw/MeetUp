@@ -53,7 +53,7 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
 
         {/* Modal Header */}
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E09800] text-white shadow-md shadow-[#E09800]/25">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-lamp-badge text-white shadow-md">
             {mode === 'login' ? <User className="h-6 w-6 text-white" /> : <UserPlus className="h-6 w-6 text-white" />}
           </div>
           <h2 className="font-display text-2xl font-black tracking-tight text-slate-950 dark:text-white uppercase">
@@ -71,9 +71,8 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
           <button
             type="button"
             onClick={() => switchMode('login')}
-            style={mode === 'login' ? { backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' } : {}}
             className={`rounded-lg py-2 text-xs font-black transition cursor-pointer ${
-              mode === 'login' ? 'btn-yellow-primary bg-[#E09800] text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              mode === 'login' ? 'btn-lamp-primary text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Log In
@@ -81,9 +80,8 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
           <button
             type="button"
             onClick={() => switchMode('register')}
-            style={mode === 'register' ? { backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' } : {}}
             className={`rounded-lg py-2 text-xs font-black transition cursor-pointer ${
-              mode === 'register' ? 'btn-yellow-primary bg-[#E09800] text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              mode === 'register' ? 'btn-lamp-primary text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Register
@@ -154,8 +152,7 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
           <button
             type="submit"
             disabled={loading}
-            style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-            className="btn-yellow-primary flex w-full items-center justify-center gap-2 rounded-xl bg-[#E09800] hover:bg-[#C78600] py-3.5 text-sm font-black text-white shadow-lg shadow-[#E09800]/30 hover:brightness-105 transition active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+            className="btn-lamp-primary flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-black text-white shadow-lg transition active:scale-[0.99] disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <span className="flex items-center gap-2">

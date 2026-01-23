@@ -13,6 +13,11 @@ import {
   Minus,
   Lock,
   Compass,
+  User,
+  Users,
+  Key,
+  Share2,
+  Sparkles,
 } from 'lucide-react'
 
 const POPULAR_TAGS = [
@@ -31,7 +36,9 @@ const POPULAR_TAGS = [
 ]
 
 export default function HomePage({ user, onlineCount = 1, localStream, onInitializeMedia, onStartChat, onOpenAuth }) {
-  const [mode, setMode] = useState('video') // 'video' | 'text'
+  const [chatMode, setChatMode] = useState('duo') // 'duo' | 'group'
+  const [groupAction, setGroupAction] = useState('match') // 'match' | 'create' | 'join'
+  const [joinRoomCodeInput, setJoinRoomCodeInput] = useState('')
   const [selectedTags, setSelectedTags] = useState(['Gaming', 'Music'])
   const [customTagInput, setCustomTagInput] = useState('')
   const [cameraActive, setCameraActive] = useState(true)
@@ -40,6 +47,17 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
   const [previewAspectRatio, setPreviewAspectRatio] = useState(null)
 
   const previewVideoRef = useRef(null)
+
+  // Check URL query parameters on mount (e.g. ?room=GRP-XXXX)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const roomParam = params.get('room')
+    if (roomParam) {
+      setChatMode('group')
+      setGroupAction('join')
+      setJoinRoomCodeInput(roomParam.trim().toUpperCase())
+    }
+  }, [])
 
   // Initialize camera preview on home screen
   useEffect(() => {
@@ -150,7 +168,9 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
 
   const handleLaunch = () => {
     onStartChat({
-      mode,
+      mode: chatMode,
+      groupAction,
+      groupRoomCode: joinRoomCodeInput.trim().toUpperCase(),
       interests: selectedTags,
       cameraActive,
       micActive,
@@ -212,77 +232,179 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
             {/* Frame: Interests & Matching Topics */}
             <div className="order-2 lg:order-1 lg:col-span-7 flex flex-col">
               <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/95 dark:bg-[#1a2d36]/90 shadow-xl dark:shadow-2xl backdrop-blur-2xl overflow-hidden flex-1 flex flex-col">
-                {/* Top Bar */}
+                {/* Top Bar with Mode Switcher */}
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-slate-100/90 dark:bg-[#15252e] px-3 sm:px-3.5 py-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">Match Settings</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">Mode Selection</span>
+                  <div className="flex items-center gap-1 rounded-lg bg-slate-200/80 dark:bg-[#101b22] p-0.5 border border-slate-300 dark:border-[#243c47]">
+                    <button
+                      type="button"
+                      onClick={() => setChatMode('duo')}
+                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-bold transition-all cursor-pointer ${
+                        chatMode === 'duo'
+                          ? 'btn-lamp-primary text-white shadow-sm'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      <User className="h-3 w-3" />
+                      <span>1-on-1 Duo</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setChatMode('group')}
+                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-bold transition-all cursor-pointer ${
+                        chatMode === 'group'
+                          ? 'btn-lamp-primary text-white shadow-sm'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      <Users className="h-3 w-3" />
+                      <span>Group Lounge (3-6)</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Console Content */}
                 <div className="p-3.5 sm:p-5 space-y-3.5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
+                  {chatMode === 'duo' ? (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                          <Tag className="h-3.5 w-3.5 text-slate-400" />
+                          <span>Match by Interests (Optional)</span>
+                        </label>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                          {selectedTags.length}/8 active
+                        </span>
+                      </div>
+
+                      {/* Dynamic Tags Wrap */}
+                      <div className="flex flex-wrap gap-1.5 mb-2.5">
+                        {[
+                          ...selectedTags,
+                          ...POPULAR_TAGS.filter((tag) => !selectedTags.includes(tag)),
+                        ].map((tag) => {
+                          const isSelected = selectedTags.includes(tag)
+                          return (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => handleToggleTag(tag)}
+                              className={`group rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5 select-none ${
+                                isSelected
+                                  ? 'btn-lamp-tag text-white scale-102'
+                                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200 dark:bg-[#122027] dark:text-slate-300 dark:hover:bg-[#1a2d36] dark:hover:text-white dark:border-[#243c47]'
+                              }`}
+                            >
+                              {isSelected ? (
+                                <Minus className="h-3 w-3 shrink-0 text-white transition-transform duration-150" />
+                              ) : (
+                                <Plus className="h-3 w-3 shrink-0 text-amber-500 group-hover:scale-110 transition-transform duration-150" />
+                              )}
+                              <span>{tag}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {/* Custom Topic Input */}
+                      <form onSubmit={handleAddCustomTag} className="flex gap-2">
+                        <input
+                          value={customTagInput}
+                          onChange={(e) => setCustomTagInput(e.target.value)}
+                          placeholder="Add custom topic (e.g. Formula1, Art, Tech)..."
+                          className="flex-1 min-w-0 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#101e25] px-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] focus:ring-1 focus:ring-[#E09800] transition"
+                        />
+                        <button
+                          type="submit"
+                          className="flex items-center gap-1 shrink-0 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-100 hover:bg-slate-200 dark:bg-[#122027] dark:hover:bg-[#1a2d36] px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+                        >
+                          <Plus className="h-3 w-3 text-slate-500 dark:text-slate-400" />
+                          <span>Add</span>
+                        </button>
+                      </form>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
                       <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                        <Tag className="h-3.5 w-3.5 text-slate-400" />
-                        <span>Match by Interests (Optional)</span>
+                        <Users className="h-3.5 w-3.5 text-[#E09800]" />
+                        <span>Group Lounge Options</span>
                       </label>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                        {selectedTags.length}/8 active
-                      </span>
-                    </div>
 
-                    {/* Dynamic Tags Wrap */}
-                    <div className="flex flex-wrap gap-1.5 mb-2.5">
-                      {[
-                        ...selectedTags,
-                        ...POPULAR_TAGS.filter((tag) => !selectedTags.includes(tag)),
-                      ].map((tag) => {
-                        const isSelected = selectedTags.includes(tag)
-                        return (
-                          <button
-                            key={tag}
-                            type="button"
-                            onClick={() => handleToggleTag(tag)}
-                            style={isSelected ? { backgroundColor: '#E09800', color: '#ffffff', borderColor: '#FFB82E' } : {}}
-                            className={`group rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5 select-none ${
-                              isSelected
-                                ? 'bg-[#E09800] text-white shadow-sm shadow-[#E09800]/30 border border-[#FFB82E] scale-102'
-                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200 dark:bg-[#122027] dark:text-slate-300 dark:hover:bg-[#1a2d36] dark:hover:text-white dark:border-[#243c47]'
-                            }`}
-                          >
-                            {isSelected ? (
-                              <Minus className="h-3 w-3 shrink-0 text-white transition-transform duration-150" />
-                            ) : (
-                              <Plus className="h-3 w-3 shrink-0 text-[#E09800] group-hover:scale-110 transition-transform duration-150" />
-                            )}
-                            <span>{tag}</span>
-                          </button>
-                        )
-                      })}
-                    </div>
+                      {/* Group Action Selector */}
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setGroupAction('match')}
+                          className={`flex flex-col items-center justify-center p-3 rounded-xl border transition text-center cursor-pointer ${
+                            groupAction === 'match'
+                              ? 'border-[#E09800] bg-[#E09800]/10 text-slate-900 dark:text-white font-bold'
+                              : 'border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d36]'
+                          }`}
+                        >
+                          <Sparkles className={`h-4 w-4 mb-1 ${groupAction === 'match' ? 'text-[#E09800]' : 'text-slate-400'}`} />
+                          <span className="text-xs font-bold">Quick Match</span>
+                          <span className="text-[10px] text-slate-400">Random Strangers</span>
+                        </button>
 
-                    {/* Custom Topic Input */}
-                    <form onSubmit={handleAddCustomTag} className="flex gap-2">
-                      <input
-                        value={customTagInput}
-                        onChange={(e) => setCustomTagInput(e.target.value)}
-                        placeholder="Add custom topic (e.g. Formula1, Art, Tech)..."
-                        className="flex-1 min-w-0 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#101e25] px-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] focus:ring-1 focus:ring-[#E09800] transition"
-                      />
-                      <button
-                        type="submit"
-                        className="flex items-center gap-1 shrink-0 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-100 hover:bg-slate-200 dark:bg-[#122027] dark:hover:bg-[#1a2d36] px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
-                      >
-                        <Plus className="h-3 w-3 text-slate-500 dark:text-slate-400" />
-                        <span>Add</span>
-                      </button>
-                    </form>
-                  </div>
+                        <button
+                          type="button"
+                          onClick={() => setGroupAction('create')}
+                          className={`flex flex-col items-center justify-center p-3 rounded-xl border transition text-center cursor-pointer ${
+                            groupAction === 'create'
+                              ? 'border-[#E09800] bg-[#E09800]/10 text-slate-900 dark:text-white font-bold'
+                              : 'border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d36]'
+                          }`}
+                        >
+                          <Share2 className={`h-4 w-4 mb-1 ${groupAction === 'create' ? 'text-[#E09800]' : 'text-slate-400'}`} />
+                          <span className="text-xs font-bold">Create Group</span>
+                          <span className="text-[10px] text-slate-400">Invite Friends</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setGroupAction('join')}
+                          className={`flex flex-col items-center justify-center p-3 rounded-xl border transition text-center cursor-pointer ${
+                            groupAction === 'join'
+                              ? 'border-[#E09800] bg-[#E09800]/10 text-slate-900 dark:text-white font-bold'
+                              : 'border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d36]'
+                          }`}
+                        >
+                          <Key className={`h-4 w-4 mb-1 ${groupAction === 'join' ? 'text-[#E09800]' : 'text-slate-400'}`} />
+                          <span className="text-xs font-bold">Join by Code</span>
+                          <span className="text-[10px] text-slate-400">Enter Room ID</span>
+                        </button>
+                      </div>
+
+                      {/* Join by Code Input (when selected) */}
+                      {groupAction === 'join' && (
+                        <div className="space-y-1.5 pt-1">
+                          <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                            Enter Group Room Code or Invite Link:
+                          </label>
+                          <input
+                            value={joinRoomCodeInput}
+                            onChange={(e) => setJoinRoomCodeInput(e.target.value)}
+                            placeholder="e.g. GRP-4829"
+                            className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#101e25] px-3.5 py-2 text-xs font-mono font-bold tracking-wider uppercase text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] transition"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Smart Match Info Box */}
                   <div className="rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-100/80 dark:bg-[#122027]/80 p-3 flex items-start gap-2.5">
                     <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse mt-1 shrink-0" />
                     <div className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                      <span className="font-semibold text-slate-900 dark:text-white">Smart Match Queue:</span> Choose topics to match with people of shared interests, or leave empty to match randomly.
+                      {chatMode === 'duo' ? (
+                        <>
+                          <span className="font-semibold text-slate-900 dark:text-white">Smart Match Queue:</span> Choose topics to match with people of shared interests, or leave empty to match randomly.
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-semibold text-slate-900 dark:text-white">Group Lounge:</span> Talk with 3 to 6 strangers simultaneously, or invite specific friends using a shareable room code.
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -370,15 +492,24 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                     </div>
                   </div>
 
-                  {/* Start Video Chat Button */}
+                  {/* Dynamic Action Button */}
                   <button
                     type="button"
                     onClick={handleLaunch}
-                    style={{ backgroundColor: '#E09800', color: '#ffffff', border: '1px solid #FFB82E' }}
-                    className="btn-yellow-primary group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-[#E09800] hover:bg-[#C78600] py-2.5 px-4 text-xs sm:text-sm font-bold text-white shadow-lg shadow-[#E09800]/40 active:scale-[0.98] transition-all duration-150 cursor-pointer"
+                    className="btn-lamp-primary group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl py-2.5 px-4 text-xs sm:text-sm font-bold text-white shadow-lg active:scale-[0.98] transition-all duration-150 cursor-pointer"
                   >
                     <Zap className="h-3.5 w-3.5 fill-white text-white group-hover:scale-110 transition-transform" />
-                    <span className="tracking-wide text-white font-bold">Start Video Chat</span>
+                    <span className="tracking-wide text-white font-bold">
+                      {chatMode === 'duo'
+                        ? 'Start 1-on-1 Video Chat'
+                        : groupAction === 'create'
+                        ? 'Create & Enter Group Lounge'
+                        : groupAction === 'join' && joinRoomCodeInput.trim()
+                        ? `Join Group (${joinRoomCodeInput.trim().toUpperCase()})`
+                        : groupAction === 'join'
+                        ? 'Enter Group Code to Join'
+                        : 'Join Stranger Group Lounge'}
+                    </span>
                     <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform text-white" />
                   </button>
 

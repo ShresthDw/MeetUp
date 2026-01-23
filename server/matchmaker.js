@@ -82,9 +82,193 @@ async function removeFromQueue(redis, socketId) {
   }
 }
 
+// Active Group Rooms Storage
+const MAX_GROUP_CAPACITY = 6
+const publicGroupRooms = new Map() // roomId -> { roomId, roomCode, members: Set(socketIds), createdAt }
+const allGroupRoomsByCode = new Map() // normalizedCode -> room object
+const socketToGroupRoom = new Map() // socketId -> roomId
+
+function generateGroupCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let code = ''
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return `GRP-${code}`
+}
+
+function normalizeCode(code) {
+  if (!code) return ''
+  return String(code).trim().toUpperCase().replace(/[^A-Z0-9-]/g, '')
+}
+
+async function enqueueOrJoinPublicGroup(socketId, maxMembers = MAX_GROUP_CAPACITY) {
+  if (!socketId) return null
+
+  // Check if socket is already in a group room and remove first
+  leaveGroupRoom(socketId)
+
+  // Find an existing public room with space
+  for (const [roomId, room] of publicGroupRooms.entries()) {
+    if (room.members.size > 0 && room.members.size < maxMembers && !room.members.has(socketId)) {
+      const existingMembers = Array.from(room.members)
+      room.members.add(socketId)
+      socketToGroupRoom.set(socketId, roomId)
+      return {
+        roomId: room.roomId,
+        roomCode: room.roomCode,
+        members: existingMembers,
+        isNew: false,
+      }
+    }
+  }
+
+  // Otherwise, create a new public group room
+  const roomId = randomUUID()
+  const roomCode = generateGroupCode()
+  const room = {
+    roomId,
+    roomCode,
+    isPublic: true,
+    members: new Set([socketId]),
+    createdAt: Date.now(),
+  }
+
+  publicGroupRooms.set(roomId, room)
+  allGroupRoomsByCode.set(normalizeCode(roomCode), room)
+  allGroupRoomsByCode.set(normalizeCode(roomId), room)
+  socketToGroupRoom.set(socketId, roomId)
+
+  return {
+    roomId,
+    roomCode,
+    members: [],
+    isNew: true,
+  }
+}
+
+async function createCustomGroupRoom(socketId, maxMembers = MAX_GROUP_CAPACITY) {
+  if (!socketId) return null
+  leaveGroupRoom(socketId)
+
+  const roomId = randomUUID()
+  const roomCode = generateGroupCode()
+  const room = {
+    roomId,
+    roomCode,
+    isPublic: false,
+    members: new Set([socketId]),
+    createdAt: Date.now(),
+  }
+
+  allGroupRoomsByCode.set(normalizeCode(roomCode), room)
+  allGroupRoomsByCode.set(normalizeCode(roomId), room)
+  socketToGroupRoom.set(socketId, roomId)
+
+  return {
+    roomId,
+    roomCode,
+    members: [],
+    isNew: true,
+  }
+}
+
+async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_CAPACITY) {
+  if (!socketId || !codeOrId) return { success: false, reason: 'Invalid room code.' }
+  leaveGroupRoom(socketId)
+
+  const normalized = normalizeCode(codeOrId)
+  let room = allGroupRoomsByCode.get(normalized)
+
+  if (room) {
+    if (room.members.size >= maxMembers && !room.members.has(socketId)) {
+      return { success: false, reason: `Room is full (maximum ${maxMembers} participants).` }
+    }
+    const existingMembers = Array.from(room.members).filter((id) => id !== socketId)
+    room.members.add(socketId)
+    socketToGroupRoom.set(socketId, room.roomId)
+    return {
+      success: true,
+      roomId: room.roomId,
+      roomCode: room.roomCode,
+      members: existingMembers,
+      isNew: false,
+    }
+  }
+
+  // If code doesn't exist yet, automatically initialize it with the requested code
+  const roomId = randomUUID()
+  const roomCode = normalized.startsWith('GRP-') ? normalized : `GRP-${normalized}`
+  room = {
+    roomId,
+    roomCode,
+    isPublic: false,
+    members: new Set([socketId]),
+    createdAt: Date.now(),
+  }
+
+  allGroupRoomsByCode.set(normalizeCode(roomCode), room)
+  allGroupRoomsByCode.set(normalizeCode(roomId), room)
+  socketToGroupRoom.set(socketId, roomId)
+
+  return {
+    success: true,
+    roomId,
+    roomCode,
+    members: [],
+    isNew: true,
+  }
+}
+
+function leaveGroupRoom(socketId) {
+  if (!socketId) return null
+  const roomId = socketToGroupRoom.get(socketId)
+  if (!roomId) return null
+
+  socketToGroupRoom.delete(socketId)
+
+  let room = publicGroupRooms.get(roomId)
+  if (!room) {
+    for (const r of allGroupRoomsByCode.values()) {
+      if (r.roomId === roomId) {
+        room = r
+        break
+      }
+    }
+  }
+
+  if (room) {
+    room.members.delete(socketId)
+    const remainingMembers = Array.from(room.members)
+    if (room.members.size === 0) {
+      publicGroupRooms.delete(roomId)
+      allGroupRoomsByCode.delete(normalizeCode(room.roomCode))
+      allGroupRoomsByCode.delete(normalizeCode(room.roomId))
+    }
+    return {
+      roomId: room.roomId,
+      roomCode: room.roomCode,
+      remainingMembers,
+    }
+  }
+
+  return null
+}
+
+function getGroupRoom(roomIdOrCode) {
+  if (!roomIdOrCode) return null
+  const normalized = normalizeCode(roomIdOrCode)
+  return allGroupRoomsByCode.get(normalized) || publicGroupRooms.get(roomIdOrCode) || null
+}
+
 module.exports = {
   WAITING_QUEUE_KEY,
   enqueueAndTryMatch,
   removeFromQueue,
+  enqueueOrJoinPublicGroup,
+  createCustomGroupRoom,
+  joinSpecificGroupRoom,
+  leaveGroupRoom,
+  getGroupRoom,
 }
 
