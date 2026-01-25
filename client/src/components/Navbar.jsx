@@ -14,7 +14,7 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-display text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
-                MeetUp<span className="text-amber-500">.</span>
+                MeetUp<span className="text-[#964f26]">.</span>
               </span>
             </div>
             <p className="text-[9px] sm:text-[10px] tracking-wide text-slate-500 dark:text-slate-400 uppercase hidden sm:block font-medium">
@@ -29,7 +29,7 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
           </span>
-          <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{Number(onlineCount).toLocaleString()}</span>
+          <span className="font-mono font-bold text-slate-900 dark:text-white">{Number(onlineCount).toLocaleString()}</span>
           <span className="text-slate-500 dark:text-slate-400">{onlineCount === 1 ? 'stranger online' : 'strangers online'}</span>
         </div>
 
@@ -65,7 +65,7 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
           ) : (
             <div className="flex items-center gap-1.5 sm:gap-2.5">
               <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-[#1a2d36]/60 border border-slate-200 dark:border-[#223640]">
-                <Zap className="h-3 w-3 text-amber-500 dark:text-slate-400" />
+                <Zap className="h-3 w-3 text-slate-500 dark:text-slate-400" />
                 <span>Guest Mode Active</span>
               </div>
 

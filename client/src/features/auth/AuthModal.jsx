@@ -57,7 +57,7 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
             {mode === 'login' ? <User className="h-6 w-6 text-white" /> : <UserPlus className="h-6 w-6 text-white" />}
           </div>
           <h2 className="font-display text-2xl font-black tracking-tight text-slate-950 dark:text-white uppercase">
-            {mode === 'login' ? 'Welcome Back' : 'Create Account'}<span className="text-[#E09800]">.</span>
+            {mode === 'login' ? 'Welcome Back' : 'Create Account'}<span className="text-[#964f26]">.</span>
           </h2>
           <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
             {mode === 'login' 
@@ -102,7 +102,7 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
                   value={form.name}
                   onChange={updateField('name')}
                   placeholder="e.g. Alex"
-                  className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] focus:ring-1 focus:ring-[#E09800] transition"
+                  className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#964f26] focus:ring-1 focus:ring-[#964f26] transition"
                 />
               </div>
             </div>
@@ -120,7 +120,7 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
                 value={form.email}
                 onChange={updateField('email')}
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] focus:ring-1 focus:ring-[#E09800] transition"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#964f26] focus:ring-1 focus:ring-[#964f26] transition"
               />
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
                 value={form.password}
                 onChange={updateField('password')}
                 placeholder={mode === 'register' ? 'At least 6 characters' : 'Enter password'}
-                className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] focus:ring-1 focus:ring-[#E09800] transition"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#964f26] focus:ring-1 focus:ring-[#964f26] transition"
               />
             </div>
           </div>

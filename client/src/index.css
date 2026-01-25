@@ -111,60 +111,60 @@
   box-shadow: 0 16px 35px -10px rgba(0, 0, 0, 0.6);
 }
 
-/* Warm Orange Lamp Light Primary Button (Clean, Non-Glowing) */
-.btn-lamp-primary, .btn-yellow-primary, .btn-orange-primary {
-  background: #f97316 !important;
-  background-color: #f97316 !important;
+/* Light Warm Brown Primary Button (Clean, Non-Glowing) */
+.btn-lamp-primary, .btn-yellow-primary, .btn-orange-primary, .btn-brown-primary {
+  background: #964f26 !important;
+  background-color: #964f26 !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  border: 1px solid #ea580c !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #823e17 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px -1px rgba(0, 0, 0, 0.08) !important;
   text-shadow: none !important;
   transition: all 0.15s ease-in-out !important;
 }
 
-.btn-lamp-primary:hover, .btn-yellow-primary:hover, .btn-orange-primary:hover {
-  background: #ea580c !important;
-  background-color: #ea580c !important;
-  border-color: #c2410c !important;
-  box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.15), 0 1px 3px -1px rgba(0, 0, 0, 0.1) !important;
+.btn-lamp-primary:hover, .btn-yellow-primary:hover, .btn-orange-primary:hover, .btn-brown-primary:hover {
+  background: #823e17 !important;
+  background-color: #823e17 !important;
+  border-color: #6a3110 !important;
+  box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.18), 0 1px 3px -1px rgba(0, 0, 0, 0.12) !important;
   filter: none !important;
   transform: translateY(-1px);
 }
 
-.btn-lamp-primary:active, .btn-yellow-primary:active, .btn-orange-primary:active {
-  background: #c2410c !important;
-  background-color: #c2410c !important;
+.btn-lamp-primary:active, .btn-yellow-primary:active, .btn-orange-primary:active, .btn-brown-primary:active {
+  background: #6a3110 !important;
+  background-color: #6a3110 !important;
   transform: scale(0.98) translateY(0);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12) !important;
 }
 
-/* Warm Orange Lamp Tag and Pill */
-.btn-lamp-tag {
-  background: #f97316 !important;
-  background-color: #f97316 !important;
+/* Light Warm Brown Tag and Pill */
+.btn-lamp-tag, .btn-brown-tag {
+  background: #964f26 !important;
+  background-color: #964f26 !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  border: 1px solid #ea580c !important;
+  border: 1px solid #823e17 !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
   text-shadow: none !important;
   transition: all 0.15s ease-in-out !important;
 }
 
-.btn-lamp-tag:hover {
-  background: #ea580c !important;
-  background-color: #ea580c !important;
-  border-color: #c2410c !important;
+.btn-lamp-tag:hover, .btn-brown-tag:hover {
+  background: #823e17 !important;
+  background-color: #823e17 !important;
+  border-color: #6a3110 !important;
   transform: scale(1.02);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12) !important;
 }
 
-/* Warm Orange Lamp Light Icon Badge & Accent */
-.bg-lamp-badge {
-  background: #f97316 !important;
-  background-color: #f97316 !important;
+/* Light Warm Brown Icon Badge & Accent */
+.bg-lamp-badge, .bg-brown-badge {
+  background: #964f26 !important;
+  background-color: #964f26 !important;
   color: #ffffff !important;
-  border: 1px solid #ea580c !important;
+  border: 1px solid #823e17 !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
 }
 

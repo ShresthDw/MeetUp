@@ -505,7 +505,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
               {!isSwapped ? (
                 <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
-                  <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#E09800] animate-pulse" />
+                  <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#964f26] animate-pulse" />
                   <span>Stranger</span>
                 </div>
               ) : (
@@ -683,7 +683,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-100 hover:bg-slate-200 dark:bg-[#122027] dark:hover:bg-[#1a2d36] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2.5 py-1 text-[11px] font-semibold transition cursor-pointer"
                 title="Generate a random conversation topic"
               >
-                <Lightbulb className="h-3 w-3 text-amber-500 dark:text-slate-400" />
+                <Lightbulb className="h-3 w-3 text-[#964f26] dark:text-[#964f26]" />
                 <span>Icebreaker</span>
               </button>
 
@@ -741,7 +741,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                     <div
                       className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed shadow-xs break-words ${
                         isYou
-                          ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium rounded-br-none shadow-xs'
+                          ? 'bg-[#964f26] text-white font-medium rounded-br-none shadow-xs'
                           : 'bg-slate-100 text-slate-800 rounded-bl-none border border-slate-200 dark:bg-[#1a2d36] dark:text-slate-100 dark:border-[#243c47]'
                       }`}
                     >
@@ -811,7 +811,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Type message here..."
               disabled={status !== 'connected'}
-              className="flex-1 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] disabled:opacity-40 transition"
+              className="flex-1 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#964f26] disabled:opacity-40 transition"
             />
             <button
               type="submit"

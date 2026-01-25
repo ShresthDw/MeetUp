@@ -60,13 +60,13 @@ function RemotePeerVideo({ peer, index, isSpotlight, onToggleSpotlight }) {
     <div
       onClick={onToggleSpotlight}
       className={`relative group flex items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#0d171d] shadow-xl transition-all duration-300 ${
-        isSpotlight ? 'h-full w-full' : 'h-full w-full cursor-pointer hover:border-[#E09800]/70 hover:scale-[1.01]'
+        isSpotlight ? 'h-full w-full' : 'h-full w-full cursor-pointer hover:border-[#964f26]/70 hover:scale-[1.01]'
       }`}
     >
       {peer.isCameraOff || !peer.stream ? (
         <div className="flex h-full w-full flex-col items-center justify-center bg-slate-900/90 text-slate-400 p-4 space-y-2">
           <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#15252e] text-slate-300 border border-[#243c47] shadow-inner">
-            <Users className="h-6 w-6 sm:h-7 sm:w-7 text-[#E09800]" />
+            <Users className="h-6 w-6 sm:h-7 sm:w-7 text-[#964f26]" />
           </div>
           <span className="text-xs sm:text-sm font-semibold text-slate-300">{label}</span>
           <span className="text-[10px] text-slate-500">Camera is off</span>
@@ -92,7 +92,7 @@ function RemotePeerVideo({ peer, index, isSpotlight, onToggleSpotlight }) {
 
       {/* Top Overlay Badge */}
       <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-white border border-white/10">
-        <span className="h-1.5 w-1.5 rounded-full bg-[#E09800] animate-pulse" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#964f26] animate-pulse" />
         <span>{label}</span>
         {peer.isMuted && <MicOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-red-400 ml-1" />}
       </div>
@@ -300,7 +300,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
 
             {roomCode && (
               <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                Code: <strong className="text-[#E09800]">{roomCode}</strong>
+                Code: <strong className="text-[#964f26]">{roomCode}</strong>
               </span>
             )}
           </div>
@@ -315,7 +315,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
               className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#1a2d36] hover:bg-slate-200 dark:hover:bg-[#243c47] text-slate-800 dark:text-slate-100 px-3 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer"
               title="Copy shareable link & room code"
             >
-              {copiedToast ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Share2 className="h-3.5 w-3.5 text-[#E09800]" />}
+              {copiedToast ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Share2 className="h-3.5 w-3.5 text-[#964f26]" />}
               <span className="hidden xs:inline">{copiedToast ? 'Copied Link!' : 'Invite Friends'}</span>
             </button>
           )}
@@ -357,7 +357,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                 <div
                   onClick={() => setSpotlightPeerId(spotlightPeerId === 'local' ? null : 'local')}
                   className={`relative group flex items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#0d171d] shadow-xl transition-all duration-300 ${
-                    spotlightPeerId === 'local' ? 'h-full w-full' : 'h-full w-full cursor-pointer hover:border-[#E09800]/70 hover:scale-[1.01]'
+                    spotlightPeerId === 'local' ? 'h-full w-full' : 'h-full w-full cursor-pointer hover:border-[#964f26]/70 hover:scale-[1.01]'
                   }`}
                 >
                   {isCameraOff && !isScreenSharing ? (
@@ -420,10 +420,10 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
 
               {/* Waiting For Group Members Card (When 1 person in room) */}
               {peers.length === 0 && !spotlightPeerId && (
-                <div className="relative flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-dashed border-[#E09800]/40 bg-[#0d171d]/80 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
+                <div className="relative flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-dashed border-[#964f26]/40 bg-[#0d171d]/80 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
                   <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center">
-                    <div className="absolute inset-0 rounded-full border border-amber-500/30 animate-radar" />
-                    <div className="absolute inset-0 rounded-full border border-amber-500/50 animate-radar-delayed-1" />
+                    <div className="absolute inset-0 rounded-full border border-[#964f26]/30 animate-radar" />
+                    <div className="absolute inset-0 rounded-full border border-[#964f26]/50 animate-radar-delayed-1" />
                     <div className="relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-lamp-badge text-white shadow-lg">
                       <Radio className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
@@ -567,7 +567,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                 className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-100 hover:bg-slate-200 dark:bg-[#122027] dark:hover:bg-[#1a2d36] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2.5 py-1 text-[11px] font-semibold transition cursor-pointer"
                 title="Generate an icebreaker question"
               >
-                <Lightbulb className="h-3 w-3 text-amber-500 dark:text-slate-400" />
+                <Lightbulb className="h-3 w-3 text-[#964f26] dark:text-[#964f26]" />
                 <span>Icebreaker</span>
               </button>
 
@@ -621,7 +621,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                     <div
                       className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed shadow-xs break-words ${
                         isYou
-                          ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium rounded-br-none shadow-xs'
+                          ? 'bg-[#964f26] text-white font-medium rounded-br-none shadow-xs'
                           : 'bg-slate-100 text-slate-800 rounded-bl-none border border-slate-200 dark:bg-[#1a2d36] dark:text-slate-100 dark:border-[#243c47]'
                       }`}
                     >
@@ -689,7 +689,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Message the group..."
-              className="flex-1 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#E09800] transition"
+              className="flex-1 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#964f26] transition"
             />
             <button
               type="submit"
