@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTheme } from '../../context/ThemeContext'
 import {
   Video,
   Mic,
@@ -36,6 +37,7 @@ const POPULAR_TAGS = [
 ]
 
 export default function HomePage({ user, onlineCount = 1, localStream, onInitializeMedia, onStartChat, onOpenAuth }) {
+  const { isDark } = useTheme()
   const [chatMode, setChatMode] = useState('duo') // 'duo' | 'group'
   const [groupAction, setGroupAction] = useState('match') // 'match' | 'create' | 'join'
   const [joinRoomCodeInput, setJoinRoomCodeInput] = useState('')
@@ -179,28 +181,21 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
 
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#142229] text-slate-800 dark:text-slate-100 overflow-hidden">
-      {/* Background Animated Decorative Mesh & Radial Atmospheric Glowing Orbs */}
-      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-40 animate-grid-drift" />
-      
-      {/* Dynamic Animated Floating Glow Orbs */}
-      <div className="pointer-events-none absolute -top-32 right-[5%] h-[600px] w-[600px] rounded-full bg-gradient-to-br from-[#964f26]/20 dark:from-[#964f26]/35 via-[#823e17]/10 dark:via-[#823e17]/20 to-transparent blur-[85px] animate-orb-1" />
-      <div className="pointer-events-none absolute top-[15%] -left-32 h-[550px] w-[550px] rounded-full bg-gradient-to-tr from-[#0284c7]/25 dark:from-[#0284c7]/45 via-[#0369a1]/15 dark:via-[#0369a1]/30 to-transparent blur-[80px] animate-orb-2" />
-      <div className="pointer-events-none absolute top-[35%] left-[25%] h-[500px] w-[500px] rounded-full bg-gradient-to-br from-[#964f26]/15 dark:from-[#964f26]/25 via-[#10b981]/15 dark:via-[#10b981]/25 to-transparent blur-[75px] animate-orb-3" />
-      <div className="pointer-events-none absolute bottom-[10%] right-[15%] h-[450px] w-[450px] rounded-full bg-gradient-to-tl from-[#0284c7]/20 dark:from-[#0284c7]/35 via-[#964f26]/10 dark:via-[#964f26]/20 to-transparent blur-[80px] animate-orb-1" />
+      {/* Background Subtle Grid Pattern */}
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30 animate-grid-drift" />
 
-      {/* Floating Luminous Particles */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <span className="absolute top-[18%] left-[12%] h-2.5 w-2.5 rounded-full bg-[#964f26] shadow-[0_0_10px_2px_rgba(150,79,38,0.6)] animate-particle-1" />
-        <span className="absolute top-[28%] right-[22%] h-3 w-3 rounded-full bg-[#38bdf8] shadow-[0_0_16px_4px_rgba(56,189,248,0.8)] animate-particle-2" />
-        <span className="absolute top-[48%] left-[38%] h-2 w-2 rounded-full bg-[#964f26] shadow-[0_0_10px_2px_rgba(150,79,38,0.6)] animate-particle-3" />
-        <span className="absolute top-[14%] right-[38%] h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_14px_4px_rgba(52,211,153,0.8)] animate-particle-4" />
-        <span className="absolute top-[65%] left-[18%] h-3 w-3 rounded-full bg-[#964f26] shadow-[0_0_12px_2px_rgba(150,79,38,0.6)] animate-particle-5" />
-        <span className="absolute top-[58%] right-[10%] h-2.5 w-2.5 rounded-full bg-[#38bdf8] shadow-[0_0_14px_4px_rgba(56,189,248,0.8)] animate-particle-6" />
-        <span className="absolute top-[75%] left-[45%] h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_3px_rgba(52,211,153,0.8)] animate-particle-7" />
-        <span className="absolute top-[35%] left-[8%] h-2.5 w-2.5 rounded-full bg-[#964f26] shadow-[0_0_10px_2px_rgba(150,79,38,0.6)] animate-particle-8" />
-      </div>
+      {/* Seamless Warm Ambient Lamp Illumination Spanning Navbar & Page Background */}
+      {isDark && (
+        <div 
+          className="pointer-events-none absolute -top-24 right-0 sm:right-[max(0.5rem,calc((100vw-80rem)/2+4rem))] lg:right-[max(1.5rem,calc((100vw-80rem)/2+6rem))] w-[700px] sm:w-[950px] lg:w-[1100px] h-[700px] sm:h-[950px] lg:h-[1100px] rounded-full z-0 transition-opacity duration-500"
+          style={{
+            background: 'radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.09) 38%, rgba(180, 83, 9, 0.02) 62%, transparent 80%)',
+            filter: 'blur(50px)',
+          }}
+        />
+      )}
 
-      <main className="relative mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pt-2 sm:pt-3 pb-16">
+      <main className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pt-2 sm:pt-3 pb-16">
         {/* Hero Section */}
         <section className="pt-0 sm:pt-1 pb-6 space-y-3 sm:space-y-4">
           {/* Top Editorial Headline Block */}
@@ -220,7 +215,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
             <div className="flex items-center gap-2 pb-0.5 self-start sm:self-auto">
               <div className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#1a2d36]/80 px-3 py-1 text-xs text-slate-700 dark:text-slate-300 shadow-xs">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{Number(onlineCount).toLocaleString()}</span>
+                <span className="font-mono font-bold text-slate-900 dark:text-white">{Number(onlineCount).toLocaleString()}</span>
                 <span className="text-slate-500 dark:text-slate-400">{onlineCount === 1 ? 'stranger online' : 'strangers online'}</span>
               </div>
             </div>
@@ -392,8 +387,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                   )}
 
                   {/* Smart Match Info Box */}
-                  <div className="rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-100/80 dark:bg-[#122027]/80 p-3 flex items-start gap-2.5">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse mt-1 shrink-0" />
+                  <div className="rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-100/80 dark:bg-[#122027]/80 p-3">
                     <div className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
                       {chatMode === 'duo' ? (
                         <>

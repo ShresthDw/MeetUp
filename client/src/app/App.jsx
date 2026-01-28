@@ -43,16 +43,10 @@ function AppContent() {
     setPreferences(chatPreferences)
     if (chatPreferences.mode === 'group') {
       setCurrentView('group-room')
-      if (chatPreferences.groupAction === 'create') {
-        groupRoom.createCustomGroup()
-      } else if (chatPreferences.groupAction === 'join' && chatPreferences.groupRoomCode) {
-        groupRoom.joinSpecificGroup(chatPreferences.groupRoomCode)
-      } else {
-        groupRoom.startGroupMatching()
-      }
+      groupRoom.joinGroupRoom(user, chatPreferences)
     } else {
       setCurrentView('duo-room')
-      room.startMatching()
+      room.startMatchmaking(user, chatPreferences)
     }
   }
 

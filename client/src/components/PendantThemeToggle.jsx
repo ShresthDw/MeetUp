@@ -101,15 +101,13 @@ export default function PendantThemeToggle({ className = '', variant = 'compact'
 
           {/* Murano Glass Orb Pendant Sphere Container */}
           <div className="relative flex items-center justify-center rounded-full">
-            {/* Ambient Warm Orange Light Halo Bloom (When dark near lamp) */}
+            {/* Self-Contained Ambient Warm Glow on the Lamp Sphere */}
             {isDark && (
               <>
-                {/* Large outer soft warm orange wash */}
-                <div className="absolute -inset-6 sm:-inset-8 rounded-full bg-radial from-amber-500/40 via-orange-500/20 to-transparent blur-xl pointer-events-none" />
-                {/* Inner intense warm golden-orange core glow */}
-                <div className="absolute -inset-3.5 sm:-inset-4 rounded-full bg-radial from-amber-400/60 via-orange-500/35 to-transparent blur-md pointer-events-none" />
-                {/* Downward ambient orange pool reflection */}
-                <div className="absolute -bottom-4 w-12 sm:w-16 h-5 rounded-full bg-orange-500/30 blur-lg pointer-events-none" />
+                {/* Soft outer glow around the sphere */}
+                <div className="absolute -inset-2.5 sm:-inset-3 rounded-full bg-radial from-amber-500/40 via-orange-500/20 to-transparent blur-md pointer-events-none" />
+                {/* Inner golden glow */}
+                <div className="absolute -inset-1.5 rounded-full bg-radial from-amber-400/60 via-orange-500/30 to-transparent blur-xs pointer-events-none" />
               </>
             )}
 

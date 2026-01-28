@@ -4,7 +4,7 @@ import PendantThemeToggle from './PendantThemeToggle'
 
 export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, onNavigate }) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-[#223640]/80 bg-white/90 dark:bg-[#142229]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-[#223640]/80 bg-white/80 dark:bg-[#142229]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* Brand */}
         <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => onNavigate?.('home')}>
@@ -23,15 +23,6 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
           </div>
         </div>
 
-        {/* Live Traffic Badge - Real Socket Count */}
-        <div className="hidden md:flex items-center gap-2 rounded-full border border-slate-200 dark:border-[#243c47] bg-slate-100/80 dark:bg-[#1a2d36]/80 px-3.5 py-1.5 text-xs text-slate-700 dark:text-slate-300 shadow-xs">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-          </span>
-          <span className="font-mono font-bold text-slate-900 dark:text-white">{Number(onlineCount).toLocaleString()}</span>
-          <span className="text-slate-500 dark:text-slate-400">{onlineCount === 1 ? 'stranger online' : 'strangers online'}</span>
-        </div>
 
         {/* Action Controls, Theme Toggle & Auth */}
         <div className="flex items-center gap-2 sm:gap-3.5">

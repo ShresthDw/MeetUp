@@ -345,8 +345,8 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
       <div className="relative flex flex-1 overflow-hidden">
         {/* Floating Stranger Theme Sync Indicator */}
         {themeToast && (
-          <div className="pointer-events-none absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full border border-amber-500/50 bg-slate-950/90 text-amber-300 px-4 py-1.5 text-xs font-bold shadow-2xl backdrop-blur-xl animate-bounce">
-            <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+          <div className="pointer-events-none absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950/90 text-slate-200 px-4 py-1.5 text-xs font-bold shadow-2xl backdrop-blur-xl animate-bounce">
+            <span className="h-2 w-2 rounded-full bg-slate-400 animate-ping" />
             <span>Stranger switched to {themeToast === 'dark' ? 'Dark Mode (Lit)' : 'Light Mode (Off)'}</span>
           </div>
         )}
@@ -569,12 +569,12 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white border border-white/10">
                   <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400" />
                   <span>{isScreenSharing ? 'Your Screen' : 'You'}</span>
-                  {isMicMuted && <MicOff className="h-3 w-3 text-red-400 ml-1" />}
+                  {isMicMuted && <MicOff className="h-3 w-3 text-slate-400 ml-1" />}
                 </div>
               ) : (
                 <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-md bg-black/75 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur border border-white/10 pointer-events-none">
                   <span>{isScreenSharing ? 'Your Screen' : 'You'}</span>
-                  {isMicMuted && <MicOff className="h-2.5 w-2.5 text-red-400" />}
+                  {isMicMuted && <MicOff className="h-2.5 w-2.5 text-slate-400" />}
                 </div>
               )}
             </div>
@@ -683,7 +683,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-[#243c47] bg-slate-100 hover:bg-slate-200 dark:bg-[#122027] dark:hover:bg-[#1a2d36] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2.5 py-1 text-[11px] font-semibold transition cursor-pointer"
                 title="Generate a random conversation topic"
               >
-                <Lightbulb className="h-3 w-3 text-[#964f26] dark:text-[#964f26]" />
+                <Lightbulb className="h-3 w-3 text-slate-500 dark:text-slate-400" />
                 <span>Icebreaker</span>
               </button>
 
@@ -829,7 +829,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
           <div className="w-full max-w-sm rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
             <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Flag className="h-5 w-5 text-red-500 dark:text-red-400" />
+              <Flag className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               <span>Report Stranger</span>
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-400">
