@@ -69,8 +69,15 @@ function AppContent() {
     setUser(null)
   }
 
+  // Ensure window scroll is always reset to top whenever currentView changes
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  }, [currentView])
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#142229] text-slate-900 dark:text-slate-100 flex flex-col font-sans">
+    <div className={`bg-slate-50 dark:bg-[#142229] text-slate-900 dark:text-slate-100 flex flex-col font-sans ${currentView === 'home' ? 'min-h-screen' : 'h-screen h-[100dvh] overflow-hidden'}`}>
       {/* Navbar is visible on Home view */}
       {currentView === 'home' && (
         <Navbar

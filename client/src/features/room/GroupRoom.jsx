@@ -24,6 +24,7 @@ import {
   UserPlus,
 } from 'lucide-react'
 import PendantThemeToggle from '../../components/PendantThemeToggle'
+import { useTheme } from '../../context/ThemeContext'
 
 const ICEBREAKERS = [
   "What's the best movie or show you've watched recently?",
@@ -114,6 +115,7 @@ function RemotePeerVideo({ peer, index, isSpotlight, onToggleSpotlight }) {
 }
 
 export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
+  const { isDark } = useTheme()
   const [inputText, setInputText] = useState('')
   const [reportModalOpen, setReportModalOpen] = useState(false)
   const [reportedSuccess, setReportedSuccess] = useState(false)
@@ -121,8 +123,9 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false)
   const [copiedToast, setCopiedToast] = useState(false)
+  const [themeToast, setThemeToast] = useState(null)
   const [spotlightPeerId, setSpotlightPeerId] = useState(null) // null = Grid View | 'local' or socketId
-  const messagesEndRef = useRef(null)
+  const messagesContainerRef = useRef(null)
 
   const {
     status,
@@ -137,6 +140,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
     peers,
     localStream,
     localVideoRef,
+    syncedThemeNotice,
     streamReady,
     startGroupMatching,
     createCustomGroup,
@@ -150,10 +154,30 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
     attachLocalStream,
   } = room
 
-  // Auto-scroll chat
+  // Ensure window scroll is always at top on entering group room
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  }, [])
+
+  // Auto-scroll chat container to bottom without scrolling window/viewport
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
   }, [messages])
+
+  // Show theme sync toast when group member changes theme
+  useEffect(() => {
+    if (syncedThemeNotice) {
+      setThemeToast(syncedThemeNotice.theme)
+      const timer = setTimeout(() => {
+        setThemeToast(null)
+      }, 3200)
+      return () => clearTimeout(timer)
+    }
+  }, [syncedThemeNotice])
 
   // Explicitly ensure local video stream is attached & playing
   useEffect(() => {
@@ -281,9 +305,21 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
 
   return (
     <div className="relative flex flex-1 flex-col h-[100dvh] overflow-hidden bg-slate-100 dark:bg-[#101b22] select-none">
+      {/* Seamless Warm Ambient Lamp Illumination Spanning Navbar & Group Lounge Background (Tracks Movable Lamp) */}
+      {isDark && (
+        <div 
+          className="pointer-events-none absolute -top-24 w-[700px] sm:w-[950px] lg:w-[1100px] h-[700px] sm:h-[950px] lg:h-[1100px] rounded-full z-0 transition-[left] duration-75"
+          style={{
+            left: 'calc(var(--lamp-screen-x, 80vw) - 475px)',
+            background: 'radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.09) 38%, rgba(180, 83, 9, 0.02) 62%, transparent 80%)',
+            filter: 'blur(50px)',
+          }}
+        />
+      )}
+
       {/* Group Room Top Bar */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/95 dark:bg-[#142229]/95 px-3 sm:px-6 backdrop-blur-md z-30">
-        <div className="flex items-center gap-2 sm:gap-3">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#142229]/80 px-3 sm:px-6 backdrop-blur-md z-30">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
           <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-lamp-badge text-white shadow-md">
             <Users className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
@@ -306,8 +342,13 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
         </div>
 
+        {/* Sliding Ceiling Rail Track for Movable Lamp */}
+        <div className="relative flex-1 mx-2 sm:mx-6 h-full flex items-center overflow-visible z-20">
+          <PendantThemeToggle />
+        </div>
+
         {/* Center / Right Header Action Items */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0 z-10">
           {roomCode && (
             <button
               type="button"
@@ -319,8 +360,6 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
               <span className="hidden xs:inline">{copiedToast ? 'Copied Link!' : 'Invite Friends'}</span>
             </button>
           )}
-
-          <PendantThemeToggle />
 
           <button
             type="button"
@@ -334,7 +373,15 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
       </header>
 
       {/* Main Split Layout: Video Grid + Group Chat */}
-      <div className="relative flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden z-10">
+        {/* Floating Participant Theme Sync Indicator */}
+        {themeToast && (
+          <div className="pointer-events-none absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950/90 text-slate-200 px-4 py-1.5 text-xs font-bold shadow-2xl backdrop-blur-xl animate-bounce">
+            <span className="h-2 w-2 rounded-full bg-slate-400 animate-ping" />
+            <span>Participant switched to {themeToast === 'dark' ? 'Dark Mode (Lit)' : 'Light Mode (Off)'}</span>
+          </div>
+        )}
+
         {/* Copy Toast Notification */}
         {copiedToast && (
           <div className="pointer-events-none absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950/90 text-slate-200 px-4 py-1.5 text-xs font-bold shadow-2xl backdrop-blur-xl animate-bounce">
@@ -344,7 +391,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
         )}
 
         {/* Video Grid Stage Area */}
-        <div className="relative flex flex-1 flex-col items-center justify-center p-2 sm:p-4 overflow-hidden bg-slate-100 dark:bg-[#142229]">
+        <div className="relative flex flex-1 flex-col items-center justify-center p-2 sm:p-4 overflow-hidden bg-transparent z-10">
           
           {/* Main Grid Wrapper */}
           <div className="relative flex flex-1 w-full max-w-6xl h-full max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#080e12] p-2 sm:p-3 shadow-2xl">
@@ -583,7 +630,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
 
           {/* Message Log */}
-          <div className="relative flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-transparent">
+          <div ref={messagesContainerRef} className="relative flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-transparent">
             {/* Flying Emojis Overlay */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden z-30">
               {flyingEmojis.map((item) => (
@@ -631,7 +678,6 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                 )
               })
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Reaction Bar */}

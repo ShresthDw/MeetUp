@@ -18,6 +18,7 @@ import {
   Zap,
 } from 'lucide-react'
 import PendantThemeToggle from '../../components/PendantThemeToggle'
+import { useTheme } from '../../context/ThemeContext'
 
 const ICEBREAKERS = [
   "What's the best movie or show you've watched recently?",
@@ -38,6 +39,7 @@ const EXPANDED_EMOJIS = [
 ]
 
 export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
+  const { isDark } = useTheme()
   const [inputText, setInputText] = useState('')
   const [reportModalOpen, setReportModalOpen] = useState(false)
   const [reportedSuccess, setReportedSuccess] = useState(false)
@@ -48,7 +50,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
   const [themeToast, setThemeToast] = useState(null)
   const [localAspectRatio, setLocalAspectRatio] = useState(null)
   const [remoteAspectRatio, setRemoteAspectRatio] = useState(null)
-  const messagesEndRef = useRef(null)
+  const messagesContainerRef = useRef(null)
 
   const {
     status,
@@ -77,9 +79,18 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
     attachLocalStream,
   } = room
 
-  // Auto-scroll chat to bottom
+  // Ensure window scroll is always at top on entering video room
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  }, [])
+
+  // Auto-scroll chat container to bottom without scrolling window/viewport
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
   }, [messages])
 
   // Show theme sync toast when stranger changes theme
@@ -266,10 +277,22 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
   return (
     <div className="relative flex h-screen h-[100dvh] w-screen flex-col bg-slate-100 dark:bg-[#142229] text-slate-900 dark:text-slate-100 overflow-hidden select-none">
+      {/* Seamless Warm Ambient Lamp Illumination Spanning Navbar & Video Room Background (Tracks Movable Lamp) */}
+      {isDark && (
+        <div 
+          className="pointer-events-none absolute -top-24 w-[700px] sm:w-[950px] lg:w-[1100px] h-[700px] sm:h-[950px] lg:h-[1100px] rounded-full z-0 transition-[left] duration-75"
+          style={{
+            left: 'calc(var(--lamp-screen-x, 80vw) - 475px)',
+            background: 'radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.09) 38%, rgba(180, 83, 9, 0.02) 62%, transparent 80%)',
+            filter: 'blur(50px)',
+          }}
+        />
+      )}
+
       {/* Top Floating Header */}
-      <header className="z-30 flex h-13 sm:h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/95 dark:bg-[#101e25]/95 px-2.5 sm:px-4 backdrop-blur-xl shrink-0">
+      <header className="z-30 flex h-13 sm:h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#101e25]/80 px-2.5 sm:px-4 backdrop-blur-xl shrink-0">
         {/* Left: Exit & Room status */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
           <button
             onClick={handleExit}
             className="flex items-center gap-1 sm:gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#1a2d36] border border-slate-200 dark:border-[#243c47] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer"
@@ -300,15 +323,13 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
         </div>
 
-        {/* Right: Theme Toggle, Quick Next, Mobile Chat & Report actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5">
-          {/* Murano Glass Orb Pendant Theme Switcher */}
-          <div className="flex items-center px-1">
-            <PendantThemeToggle />
-          </div>
+        {/* Sliding Ceiling Rail Track for Movable Lamp */}
+        <div className="relative flex-1 mx-2 sm:mx-6 h-full flex items-center overflow-visible z-20">
+          <PendantThemeToggle />
+        </div>
 
-          <div className="h-4 w-px bg-slate-200 dark:bg-[#243c47]" />
-
+        {/* Right: Quick Next, Mobile Chat & Report actions */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 z-10">
           {/* Mobile Chat Toggle Button */}
           <button
             type="button"
@@ -342,7 +363,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
       </header>
 
       {/* Main Split Layout: Video Area + Real-Time Chat */}
-      <div className="relative flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden z-10">
         {/* Floating Stranger Theme Sync Indicator */}
         {themeToast && (
           <div className="pointer-events-none absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950/90 text-slate-200 px-4 py-1.5 text-xs font-bold shadow-2xl backdrop-blur-xl animate-bounce">
@@ -352,7 +373,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
         )}
 
         {/* Video Stage Area */}
-        <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-slate-100 dark:bg-[#142229]">
+        <div className="relative flex flex-1 flex-col items-center justify-center p-1.5 sm:p-4 overflow-hidden bg-transparent z-10">
 
           {/* Main Stage Container */}
           <div className="relative flex flex-1 w-full max-w-5xl h-full max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#080e12] shadow-2xl">
@@ -700,7 +721,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
 
           {/* Message Log */}
-          <div className="relative flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-transparent">
+          <div ref={messagesContainerRef} className="relative flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-transparent">
             {/* Flying Emojis Overlay */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden z-30">
               {flyingEmojis.map((item) => (
@@ -751,7 +772,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                 )
               })
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Emoji Reaction Bar */}

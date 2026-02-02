@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { io } from 'socket.io-client'
 import { SOCKET_TRANSPORTS, SOCKET_URL } from '../../config/env'
+import { useTheme } from '../../context/ThemeContext'
 
 const iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -9,6 +10,8 @@ const iceServers = [
 ]
 
 export function useGroupRoom() {
+  const { theme, setTheme, registerThemeBroadcaster } = useTheme()
+
   const socket = useMemo(
     () =>
       io(SOCKET_URL, {
@@ -29,6 +32,7 @@ export function useGroupRoom() {
   const [connectedTime, setConnectedTime] = useState(0)
   const [streamReady, setStreamReady] = useState(0)
   const [peers, setPeers] = useState([]) // Array of { socketId, stream, isCameraOff, isMuted }
+  const [syncedThemeNotice, setSyncedThemeNotice] = useState(null)
 
   const localVideoRef = useRef(null)
   const localStreamRef = useRef(null)
@@ -37,6 +41,13 @@ export function useGroupRoom() {
   const iceCandidatesMapRef = useRef(new Map()) // socketId -> Array<candidate>
   const roomIdRef = useRef('')
   const statusRef = useRef('idle')
+  const themeRef = useRef(theme)
+  const setThemeRef = useRef(setTheme)
+  setThemeRef.current = setTheme
+
+  useEffect(() => {
+    themeRef.current = theme
+  }, [theme])
 
   useEffect(() => {
     statusRef.current = status
@@ -474,6 +485,13 @@ export function useGroupRoom() {
       setMessages((prev) => [...prev, payload])
     })
 
+    socket.on('theme-synced', ({ theme: incomingTheme }) => {
+      if (incomingTheme === 'dark' || incomingTheme === 'light') {
+        setThemeRef.current(incomingTheme, { broadcast: false })
+        setSyncedThemeNotice({ theme: incomingTheme, timestamp: Date.now() })
+      }
+    })
+
     socket.on('group-error', ({ reason }) => {
       setError(reason || 'Error joining group.')
       setStatus('idle')
@@ -488,10 +506,22 @@ export function useGroupRoom() {
       socket.off('group-peer-left')
       socket.off('group-peer-status-update')
       socket.off('group-chat-message')
+      socket.off('theme-synced')
       socket.off('group-error')
       closeAllPeers()
     }
   }, [socket, initializeMedia, closeAllPeers])
+
+  // Sync theme changes with group when in an active connected room
+  useEffect(() => {
+    const unregister = registerThemeBroadcaster((newTheme) => {
+      const currentRoomId = roomIdRef.current
+      if (currentRoomId && statusRef.current === 'connected') {
+        socket.emit('sync-theme', { roomId: currentRoomId, theme: newTheme })
+      }
+    })
+    return () => unregister()
+  }, [registerThemeBroadcaster, socket])
 
   // Timer counter
   useEffect(() => {
@@ -517,6 +547,7 @@ export function useGroupRoom() {
     peers,
     localStream: localStreamRef.current,
     localVideoRef,
+    syncedThemeNotice,
     streamReady,
     startGroupMatching,
     createCustomGroup,

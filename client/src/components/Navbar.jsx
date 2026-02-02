@@ -5,9 +5,9 @@ import PendantThemeToggle from './PendantThemeToggle'
 export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, onNavigate }) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-[#223640]/80 bg-white/80 dark:bg-[#142229]/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 relative">
         {/* Brand */}
-        <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => onNavigate?.('home')}>
+        <div className="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0 z-10" onClick={() => onNavigate?.('home')}>
           <div className="relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-lamp-badge shadow-md">
             <Video className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </div>
@@ -23,15 +23,13 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
           </div>
         </div>
 
+        {/* Sliding Ceiling Rail Track for Movable Lamp */}
+        <div className="relative flex-1 mx-2 sm:mx-6 h-full flex items-center overflow-visible z-20">
+          <PendantThemeToggle />
+        </div>
 
-        {/* Action Controls, Theme Toggle & Auth */}
-        <div className="flex items-center gap-2 sm:gap-3.5">
-          {/* Murano Glass Orb Pendant Theme Switcher Button */}
-          <div className="flex items-center px-1 sm:px-2">
-            <PendantThemeToggle />
-          </div>
-
-          <div className="h-5 w-px bg-slate-200 dark:bg-[#223640]" />
+        {/* Action Controls & Auth */}
+        <div className="flex items-center gap-2 sm:gap-3.5 shrink-0 z-10">
 
           {user ? (
             <div className="flex items-center gap-2 sm:gap-3">

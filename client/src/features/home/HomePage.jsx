@@ -184,11 +184,12 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
       {/* Background Subtle Grid Pattern */}
       <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30 animate-grid-drift" />
 
-      {/* Seamless Warm Ambient Lamp Illumination Spanning Navbar & Page Background */}
+      {/* Seamless Warm Ambient Lamp Illumination Spanning Navbar & Page Background (Tracks Movable Lamp) */}
       {isDark && (
         <div 
-          className="pointer-events-none absolute -top-24 right-0 sm:right-[max(0.5rem,calc((100vw-80rem)/2+4rem))] lg:right-[max(1.5rem,calc((100vw-80rem)/2+6rem))] w-[700px] sm:w-[950px] lg:w-[1100px] h-[700px] sm:h-[950px] lg:h-[1100px] rounded-full z-0 transition-opacity duration-500"
+          className="pointer-events-none absolute -top-24 w-[700px] sm:w-[950px] lg:w-[1100px] h-[700px] sm:h-[950px] lg:h-[1100px] rounded-full z-0 transition-[left] duration-75"
           style={{
+            left: 'calc(var(--lamp-screen-x, 80vw) - 475px)',
             background: 'radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.09) 38%, rgba(180, 83, 9, 0.02) 62%, transparent 80%)',
             filter: 'blur(50px)',
           }}
