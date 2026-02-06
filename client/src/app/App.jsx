@@ -18,8 +18,8 @@ function AppContent() {
   const [preferences, setPreferences] = useState({
     mode: 'duo',
     interests: [],
-    cameraActive: true,
-    micActive: true,
+    cameraActive: false,
+    micActive: false,
   })
 
   const room = useVideoRoom()

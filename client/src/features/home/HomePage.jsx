@@ -42,8 +42,8 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
   const [joinRoomCodeInput, setJoinRoomCodeInput] = useState('')
   const [selectedTags, setSelectedTags] = useState(['Gaming', 'Music'])
   const [customTagInput, setCustomTagInput] = useState('')
-  const [cameraActive, setCameraActive] = useState(true)
-  const [micActive, setMicActive] = useState(true)
+  const [cameraActive, setCameraActive] = useState(false)
+  const [micActive, setMicActive] = useState(false)
   const [mediaError, setMediaError] = useState('')
   const [previewAspectRatio, setPreviewAspectRatio] = useState(null)
 
@@ -60,47 +60,19 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
     }
   }, [])
 
-  // Initialize camera preview on home screen
+  // Manage camera preview stream display based on cameraActive state
   useEffect(() => {
-    let active = true
-
-    async function initPreview() {
-      try {
-        if (localStream) {
-          if (previewVideoRef.current) {
-            previewVideoRef.current.srcObject = localStream
-            previewVideoRef.current.play().catch(() => {})
-          }
-          setMediaError('')
-          return
-        }
-
-        if (onInitializeMedia) {
-          const stream = await onInitializeMedia()
-          if (active && stream && previewVideoRef.current) {
-            previewVideoRef.current.srcObject = stream
-            previewVideoRef.current.play().catch(() => {})
-          }
-          setMediaError('')
-        }
-      } catch (err) {
-        console.warn('Camera preview not available:', err.message)
-        setMediaError('Camera / mic preview not accessible. You can still chat!')
+    if (cameraActive && localStream) {
+      if (previewVideoRef.current) {
+        previewVideoRef.current.srcObject = localStream
+        previewVideoRef.current.play().catch(() => {})
       }
-    }
-
-    if (cameraActive) {
-      initPreview()
-    } else {
+    } else if (!cameraActive) {
       if (previewVideoRef.current) {
         previewVideoRef.current.srcObject = null
       }
     }
-
-    return () => {
-      active = false
-    }
-  }, [cameraActive, localStream, onInitializeMedia])
+  }, [cameraActive, localStream])
 
   // Track preview stream aspect ratio to adapt container size dynamically
   useEffect(() => {
@@ -123,26 +95,70 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
     }
   }, [cameraActive, localStream])
 
-  const toggleCameraPreview = () => {
-    const stream = localStream || previewVideoRef.current?.srcObject
-    if (stream) {
-      const vTrack = stream.getVideoTracks()[0]
-      if (vTrack) {
-        vTrack.enabled = !cameraActive
+  const toggleCameraPreview = async () => {
+    let stream = localStream || previewVideoRef.current?.srcObject
+    if (!cameraActive) {
+      if (!stream && onInitializeMedia) {
+        try {
+          stream = await onInitializeMedia()
+          if (stream && previewVideoRef.current) {
+            previewVideoRef.current.srcObject = stream
+            previewVideoRef.current.play().catch(() => {})
+          }
+          setMediaError('')
+        } catch (err) {
+          console.warn('Camera preview permission denied/error:', err)
+          setMediaError('Camera permission was not granted.')
+          return
+        }
       }
+      if (stream) {
+        const vTrack = stream.getVideoTracks()[0]
+        if (vTrack) vTrack.enabled = true
+        if (previewVideoRef.current && !previewVideoRef.current.srcObject) {
+          previewVideoRef.current.srcObject = stream
+          previewVideoRef.current.play().catch(() => {})
+        }
+      }
+      setCameraActive(true)
+    } else {
+      if (stream) {
+        const vTrack = stream.getVideoTracks()[0]
+        if (vTrack) vTrack.enabled = false
+      }
+      setCameraActive(false)
     }
-    setCameraActive(!cameraActive)
   }
 
-  const toggleMicPreview = () => {
-    const stream = localStream || previewVideoRef.current?.srcObject
-    if (stream) {
-      const aTrack = stream.getAudioTracks()[0]
-      if (aTrack) {
-        aTrack.enabled = !micActive
+  const toggleMicPreview = async () => {
+    let stream = localStream || previewVideoRef.current?.srcObject
+    if (!micActive) {
+      if (!stream && onInitializeMedia) {
+        try {
+          stream = await onInitializeMedia()
+          if (stream && previewVideoRef.current) {
+            previewVideoRef.current.srcObject = stream
+            previewVideoRef.current.play().catch(() => {})
+          }
+          setMediaError('')
+        } catch (err) {
+          console.warn('Mic permission denied/error:', err)
+          setMediaError('Microphone permission was not granted.')
+          return
+        }
       }
+      if (stream) {
+        const aTrack = stream.getAudioTracks()[0]
+        if (aTrack) aTrack.enabled = true
+      }
+      setMicActive(true)
+    } else {
+      if (stream) {
+        const aTrack = stream.getAudioTracks()[0]
+        if (aTrack) aTrack.enabled = false
+      }
+      setMicActive(false)
     }
-    setMicActive(!micActive)
   }
 
   const handleToggleTag = (tag) => {
@@ -441,10 +457,12 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/95 dark:bg-[#1a2d36]/90 shadow-xl dark:shadow-2xl backdrop-blur-2xl overflow-hidden flex-1 flex flex-col">
                 {/* Top Bar */}
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-slate-100/90 dark:bg-[#15252e] px-3.5 py-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">Live Camera</span>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>READY</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">Live Camera Preview</span>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold">
+                    <span className={`h-1.5 w-1.5 rounded-full ${cameraActive || micActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+                    <span className={cameraActive || micActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}>
+                      {cameraActive && micActive ? 'CAMERA & MIC ON' : cameraActive ? 'CAMERA ON' : micActive ? 'MIC ON' : 'MUTED (STANDBY)'}
+                    </span>
                   </div>
                 </div>
 
@@ -473,18 +491,24 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                         className="h-full w-full object-contain -scale-x-100"
                       />
                     ) : (
-                      <div className="flex flex-col items-center justify-center gap-2 text-slate-400 py-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800 dark:bg-[#15252e] text-slate-300 border border-slate-700 dark:border-[#243c47]">
-                          <CameraOff className="h-5 w-5" />
+                      <div
+                        onClick={toggleCameraPreview}
+                        className="flex flex-col items-center justify-center gap-2 text-slate-400 py-6 px-4 text-center cursor-pointer hover:text-slate-200 transition select-none group/cam"
+                      >
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800/90 dark:bg-[#15252e] text-slate-300 border border-slate-700 dark:border-[#243c47] group-hover/cam:scale-110 group-hover/cam:border-[#964f26] transition-all shadow-md">
+                          <CameraOff className="h-6 w-6 text-slate-400 group-hover/cam:text-white transition-colors" />
                         </div>
-                        <span className="text-xs font-medium">Camera is disabled</span>
+                        <div className="space-y-0.5">
+                          <span className="text-xs font-bold text-slate-300 block">Camera is Off</span>
+                          <span className="text-[10px] text-slate-500 group-hover/cam:text-amber-400/80 transition-colors">Click to turn on camera preview</span>
+                        </div>
                       </div>
                     )}
 
                     {/* Overlaid Badges */}
                     <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-md bg-slate-950/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-semibold text-white border border-white/10">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>Self Preview</span>
+                      <span className={`h-1.5 w-1.5 rounded-full ${cameraActive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+                      <span>{cameraActive ? 'Self Preview' : 'Preview Off'}</span>
                     </div>
 
                     {/* Overlaid Floating Toggle Controls */}
@@ -492,11 +516,11 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                       <button
                         type="button"
                         onClick={toggleMicPreview}
-                        title={micActive ? 'Mute Microphone' : 'Unmute Microphone'}
+                        title={micActive ? 'Mute Microphone' : 'Turn On Microphone'}
                         className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all cursor-pointer ${
                           micActive
                             ? 'bg-slate-800 text-white hover:bg-slate-700'
-                            : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                            : 'bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30'
                         }`}
                       >
                         {micActive ? <Mic className="h-3.5 w-3.5" /> : <MicOff className="h-3.5 w-3.5" />}
@@ -509,7 +533,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                         className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all cursor-pointer ${
                           cameraActive
                             ? 'bg-slate-800 text-white hover:bg-slate-700'
-                            : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                            : 'bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30'
                         }`}
                       >
                         {cameraActive ? <Camera className="h-3.5 w-3.5" /> : <CameraOff className="h-3.5 w-3.5" />}

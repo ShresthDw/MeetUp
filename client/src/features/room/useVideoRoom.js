@@ -211,7 +211,7 @@ export function useVideoRoom() {
     }
   }, [attachLocalStream])
 
-  const startMatching = useCallback(async () => {
+  const startMatching = useCallback(async (userObj, chatPreferences = {}) => {
     setError('')
     setPartnerDisconnected(false)
     statusRef.current = 'matching'
@@ -224,7 +224,22 @@ export function useVideoRoom() {
     setSyncedThemeNotice(null)
     closePeer()
 
-    await initializeMedia()
+    if (chatPreferences.cameraActive || chatPreferences.micActive || localStreamRef.current) {
+      const stream = await initializeMedia()
+      if (stream) {
+        const vTrack = stream.getVideoTracks()[0]
+        if (vTrack) vTrack.enabled = Boolean(chatPreferences.cameraActive)
+        setIsCameraOff(!chatPreferences.cameraActive)
+
+        const aTrack = stream.getAudioTracks()[0]
+        if (aTrack) aTrack.enabled = Boolean(chatPreferences.micActive)
+        setIsMicMuted(!chatPreferences.micActive)
+      }
+    } else {
+      setIsCameraOff(true)
+      setIsMicMuted(true)
+    }
+
     socket.emit('join-queue')
   }, [closePeer, initializeMedia, socket])
 
@@ -238,9 +253,8 @@ export function useVideoRoom() {
     setConnectedTime(0)
     setSyncedThemeNotice(null)
     closePeer()
-    await initializeMedia()
     socket.emit('next-peer')
-  }, [closePeer, initializeMedia, socket])
+  }, [closePeer, socket])
 
   const leaveRoom = useCallback(() => {
     statusRef.current = 'idle'
@@ -256,23 +270,43 @@ export function useVideoRoom() {
     socket.emit('leave-room')
   }, [closePeer, socket])
 
-  const toggleMic = useCallback(() => {
-    if (!localStreamRef.current) return
+  const toggleMic = useCallback(async () => {
+    if (!localStreamRef.current) {
+      const stream = await initializeMedia()
+      if (stream) {
+        const audioTrack = stream.getAudioTracks()[0]
+        if (audioTrack) {
+          audioTrack.enabled = true
+          setIsMicMuted(false)
+        }
+      }
+      return
+    }
     const audioTrack = localStreamRef.current.getAudioTracks()[0]
     if (audioTrack) {
       audioTrack.enabled = !audioTrack.enabled
       setIsMicMuted(!audioTrack.enabled)
     }
-  }, [])
+  }, [initializeMedia])
 
-  const toggleCamera = useCallback(() => {
-    if (!localStreamRef.current) return
+  const toggleCamera = useCallback(async () => {
+    if (!localStreamRef.current) {
+      const stream = await initializeMedia()
+      if (stream) {
+        const videoTrack = stream.getVideoTracks()[0]
+        if (videoTrack) {
+          videoTrack.enabled = true
+          setIsCameraOff(false)
+        }
+      }
+      return
+    }
     const videoTrack = localStreamRef.current.getVideoTracks()[0]
     if (videoTrack) {
       videoTrack.enabled = !videoTrack.enabled
       setIsCameraOff(!videoTrack.enabled)
     }
-  }, [])
+  }, [initializeMedia])
 
   const toggleScreenShare = useCallback(async () => {
     if (isScreenSharing) {
@@ -357,8 +391,6 @@ export function useVideoRoom() {
 
   // Setup socket event listeners
   useEffect(() => {
-    initializeMedia()
-
     if (socket.connected) {
       setError('')
     }

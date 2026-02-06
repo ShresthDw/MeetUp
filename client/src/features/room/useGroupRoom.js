@@ -260,9 +260,8 @@ export function useGroupRoom() {
     setMessages([])
     setConnectedTime(0)
 
-    await initializeMedia()
     socket.emit('join-group-queue')
-  }, [closeAllPeers, initializeMedia, socket])
+  }, [closeAllPeers, socket])
 
   const createCustomGroup = useCallback(
     async (customCode = null) => {
@@ -276,10 +275,9 @@ export function useGroupRoom() {
       setMessages([])
       setConnectedTime(0)
 
-      await initializeMedia()
       socket.emit('create-custom-group', { roomCode: customCode || undefined })
     },
-    [closeAllPeers, initializeMedia, socket]
+    [closeAllPeers, socket]
   )
 
   const joinSpecificGroup = useCallback(
@@ -294,16 +292,31 @@ export function useGroupRoom() {
       setMessages([])
       setConnectedTime(0)
 
-      await initializeMedia()
       socket.emit('join-specific-group', { roomCode: codeOrId })
     },
-    [closeAllPeers, initializeMedia, socket]
+    [closeAllPeers, socket]
   )
 
   const joinGroupRoom = useCallback(
     async (userObj, chatPreferences = {}) => {
       const action = chatPreferences.groupAction || 'match'
       const customCode = chatPreferences.groupRoomCode || ''
+
+      if (chatPreferences.cameraActive || chatPreferences.micActive || localStreamRef.current) {
+        const stream = await initializeMedia()
+        if (stream) {
+          const vTrack = stream.getVideoTracks()[0]
+          if (vTrack) vTrack.enabled = Boolean(chatPreferences.cameraActive)
+          setIsCameraOff(!chatPreferences.cameraActive)
+
+          const aTrack = stream.getAudioTracks()[0]
+          if (aTrack) aTrack.enabled = Boolean(chatPreferences.micActive)
+          setIsMicMuted(!chatPreferences.micActive)
+        }
+      } else {
+        setIsCameraOff(true)
+        setIsMicMuted(true)
+      }
 
       if (action === 'create') {
         await createCustomGroup(customCode || undefined)
@@ -313,7 +326,7 @@ export function useGroupRoom() {
         await startGroupMatching()
       }
     },
-    [createCustomGroup, joinSpecificGroup, startGroupMatching]
+    [createCustomGroup, joinSpecificGroup, startGroupMatching, initializeMedia]
   )
 
   const nextGroup = useCallback(async () => {
@@ -326,9 +339,8 @@ export function useGroupRoom() {
     setHostSocketId('')
     setConnectedTime(0)
 
-    await initializeMedia()
     socket.emit('next-group')
-  }, [closeAllPeers, initializeMedia, socket])
+  }, [closeAllPeers, socket])
 
   const leaveGroupRoom = useCallback(() => {
     closeAllPeers()
@@ -342,8 +354,25 @@ export function useGroupRoom() {
     socket.emit('leave-group-room')
   }, [closeAllPeers, socket])
 
-  const toggleMic = useCallback(() => {
-    if (!localStreamRef.current) return
+  const toggleMic = useCallback(async () => {
+    if (!localStreamRef.current) {
+      const stream = await initializeMedia()
+      if (stream) {
+        const audioTrack = stream.getAudioTracks()[0]
+        if (audioTrack) {
+          audioTrack.enabled = true
+          setIsMicMuted(false)
+          if (roomIdRef.current) {
+            socket.emit('relay-group-status', {
+              roomId: roomIdRef.current,
+              isCameraOff,
+              isMicMuted: false,
+            })
+          }
+        }
+      }
+      return
+    }
     const audioTrack = localStreamRef.current.getAudioTracks()[0]
     if (audioTrack) {
       audioTrack.enabled = !audioTrack.enabled
@@ -357,10 +386,27 @@ export function useGroupRoom() {
         })
       }
     }
-  }, [isCameraOff, socket])
+  }, [initializeMedia, isCameraOff, socket])
 
-  const toggleCamera = useCallback(() => {
-    if (!localStreamRef.current) return
+  const toggleCamera = useCallback(async () => {
+    if (!localStreamRef.current) {
+      const stream = await initializeMedia()
+      if (stream) {
+        const videoTrack = stream.getVideoTracks()[0]
+        if (videoTrack) {
+          videoTrack.enabled = true
+          setIsCameraOff(false)
+          if (roomIdRef.current) {
+            socket.emit('relay-group-status', {
+              roomId: roomIdRef.current,
+              isCameraOff: false,
+              isMicMuted,
+            })
+          }
+        }
+      }
+      return
+    }
     const videoTrack = localStreamRef.current.getVideoTracks()[0]
     if (videoTrack) {
       videoTrack.enabled = !videoTrack.enabled
@@ -374,7 +420,7 @@ export function useGroupRoom() {
         })
       }
     }
-  }, [isMicMuted, socket])
+  }, [initializeMedia, isMicMuted, socket])
 
   const toggleScreenShare = useCallback(async () => {
     if (isScreenSharing) {
@@ -464,7 +510,6 @@ export function useGroupRoom() {
 
   // Setup Socket listeners for Group WebRTC Mesh
   useEffect(() => {
-    initializeMedia()
 
     socket.on('group-matched', async ({ roomId: matchedRoomId, roomCode: matchedRoomCode, members: existingMembers = [], hostSocketId: roomHostId }) => {
       setRoomId(matchedRoomId)
