@@ -531,6 +531,7 @@ export function useVideoRoom() {
     syncedThemeNotice,
     streamReady,
     startMatching,
+    startMatchmaking: startMatching,
     nextPeer,
     leaveRoom,
     toggleMic,

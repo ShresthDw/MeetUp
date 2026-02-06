@@ -203,19 +203,22 @@ export function useGroupRoom() {
     socket.emit('join-group-queue')
   }, [closeAllPeers, initializeMedia, socket])
 
-  const createCustomGroup = useCallback(async () => {
-    setError('')
-    closeAllPeers()
-    statusRef.current = 'matching'
-    setStatus('matching')
-    setRoomId('')
-    setRoomCode('')
-    setMessages([])
-    setConnectedTime(0)
+  const createCustomGroup = useCallback(
+    async (customCode = null) => {
+      setError('')
+      closeAllPeers()
+      statusRef.current = 'matching'
+      setStatus('matching')
+      setRoomId('')
+      setRoomCode(customCode || '')
+      setMessages([])
+      setConnectedTime(0)
 
-    await initializeMedia()
-    socket.emit('create-custom-group')
-  }, [closeAllPeers, initializeMedia, socket])
+      await initializeMedia()
+      socket.emit('create-custom-group', { roomCode: customCode || undefined })
+    },
+    [closeAllPeers, initializeMedia, socket]
+  )
 
   const joinSpecificGroup = useCallback(
     async (codeOrId) => {
@@ -224,7 +227,7 @@ export function useGroupRoom() {
       statusRef.current = 'matching'
       setStatus('matching')
       setRoomId('')
-      setRoomCode('')
+      setRoomCode(codeOrId || '')
       setMessages([])
       setConnectedTime(0)
 
@@ -232,6 +235,22 @@ export function useGroupRoom() {
       socket.emit('join-specific-group', { roomCode: codeOrId })
     },
     [closeAllPeers, initializeMedia, socket]
+  )
+
+  const joinGroupRoom = useCallback(
+    async (userObj, chatPreferences = {}) => {
+      const action = chatPreferences.groupAction || 'match'
+      const customCode = chatPreferences.groupRoomCode || ''
+
+      if (action === 'create') {
+        await createCustomGroup(customCode || undefined)
+      } else if (action === 'join' && customCode) {
+        await joinSpecificGroup(customCode)
+      } else {
+        await startGroupMatching()
+      }
+    },
+    [createCustomGroup, joinSpecificGroup, startGroupMatching]
   )
 
   const nextGroup = useCallback(async () => {
@@ -552,6 +571,7 @@ export function useGroupRoom() {
     startGroupMatching,
     createCustomGroup,
     joinSpecificGroup,
+    joinGroupRoom,
     nextGroup,
     leaveGroupRoom,
     toggleMic,

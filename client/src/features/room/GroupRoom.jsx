@@ -21,7 +21,6 @@ import {
   Share2,
   Maximize2,
   Minimize2,
-  UserPlus,
 } from 'lucide-react'
 import PendantThemeToggle from '../../components/PendantThemeToggle'
 import { useTheme } from '../../context/ThemeContext'
@@ -336,7 +335,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
 
             {roomCode && (
               <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                Code: <strong className="text-[#964f26]">{roomCode}</strong>
+                Code: <strong className="text-[#964f26] dark:text-amber-400">{roomCode}</strong>
               </span>
             )}
           </div>
@@ -354,9 +353,9 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
               type="button"
               onClick={handleCopyInviteLink}
               className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#1a2d36] hover:bg-slate-200 dark:hover:bg-[#243c47] text-slate-800 dark:text-slate-100 px-3 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer"
-              title="Copy shareable link & room code"
+              title="Copy shareable invite link"
             >
-              {copiedToast ? <Check className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" /> : <Share2 className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />}
+              {copiedToast ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Share2 className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />}
               <span className="hidden xs:inline">{copiedToast ? 'Copied Link!' : 'Invite Friends'}</span>
             </button>
           )}
@@ -397,7 +396,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
           <div className="relative flex flex-1 w-full max-w-6xl h-full max-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#080e12] p-2 sm:p-3 shadow-2xl">
             
             {/* Grid Container */}
-            <div className={`grid ${getGridClass()} gap-2 sm:gap-3 w-full h-full auto-rows-fr`}>
+            <div className={`grid ${getGridClass()} gap-2 sm:gap-3 w-full h-full auto-rows-fr pb-18 sm:pb-20`}>
               
               {/* Local User Tile */}
               {(!spotlightPeerId || spotlightPeerId === 'local') && (
@@ -467,33 +466,39 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
 
               {/* Waiting For Group Members Card (When 1 person in room) */}
               {peers.length === 0 && !spotlightPeerId && (
-                <div className="relative flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-dashed border-[#964f26]/40 bg-[#0d171d]/80 backdrop-blur-sm p-4 sm:p-6 text-center space-y-3">
-                  <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center">
+                <div className="relative flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-dashed border-[#964f26]/40 bg-[#0d171d]/90 backdrop-blur-md p-4 sm:p-5 text-center space-y-3 max-w-sm mx-auto my-auto shadow-2xl">
+                  <div className="relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center">
                     <div className="absolute inset-0 rounded-full border border-[#964f26]/30 animate-radar" />
                     <div className="absolute inset-0 rounded-full border border-[#964f26]/50 animate-radar-delayed-1" />
-                    <div className="relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-lamp-badge text-white shadow-lg">
-                      <Radio className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                    <div className="relative flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-lamp-badge text-white shadow-lg">
+                      <Radio className="h-4 w-4 text-white" />
                     </div>
                   </div>
 
-                  <div className="space-y-1 max-w-xs">
-                    <h4 className="font-display text-sm sm:text-base font-black text-white uppercase tracking-wide">
+                  <div className="space-y-0.5">
+                    <h4 className="font-display text-xs sm:text-sm font-black text-white uppercase tracking-wide">
                       Waiting for Group Members…
                     </h4>
-                    <p className="text-[11px] sm:text-xs text-slate-400 leading-relaxed">
-                      Matching strangers or share the room code below with friends!
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 leading-tight">
+                      Share your room invite link to connect with friends.
                     </p>
                   </div>
 
                   {roomCode && (
-                    <button
-                      type="button"
-                      onClick={handleCopyInviteLink}
-                      className="btn-lamp-primary flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-md transition cursor-pointer"
-                    >
-                      <Copy className="h-3.5 w-3.5 text-white" />
-                      <span>Copy Code ({roomCode})</span>
-                    </button>
+                    <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/40 px-3 py-1.5">
+                      <span className="font-mono text-sm font-black tracking-widest text-amber-400">
+                        {roomCode}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCopyInviteLink}
+                        className="btn-lamp-primary flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-bold text-white transition cursor-pointer"
+                        title="Copy shareable invite link"
+                      >
+                        {copiedToast ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                        <span>{copiedToast ? 'Copied!' : 'Copy Link'}</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
@@ -553,15 +558,6 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                 }`}
               >
                 <ScreenShare className="h-4 w-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={handleCopyInviteLink}
-                title="Invite Friends"
-                className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-[#1a2d36] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#243c47] transition cursor-pointer"
-              >
-                <UserPlus className="h-4 w-4" />
               </button>
 
               <button

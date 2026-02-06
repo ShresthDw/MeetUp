@@ -238,16 +238,17 @@ function registerSocketHandlers(io, redis) {
       broadcastLiveStats()
     })
 
-    socket.on('create-custom-group', async () => {
+    socket.on('create-custom-group', async (payload) => {
       await leaveCurrentRoom(socket)
-      const match = await createCustomGroupRoom(socket.id)
+      const customCode = payload?.roomCode
+      const match = await createCustomGroupRoom(socket.id, undefined, customCode)
       if (!match) return
 
       socket.join(match.roomId)
       socket.emit('group-matched', {
         roomId: match.roomId,
         roomCode: match.roomCode,
-        members: match.members,
+        members: match.members || [],
         isNew: true,
       })
       broadcastLiveStats()

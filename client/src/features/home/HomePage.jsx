@@ -17,7 +17,6 @@ import {
   User,
   Users,
   Key,
-  Share2,
   Sparkles,
 } from 'lucide-react'
 
@@ -146,7 +145,6 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
     setMicActive(!micActive)
   }
 
-
   const handleToggleTag = (tag) => {
     if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter((t) => t !== tag))
@@ -169,10 +167,20 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
   }
 
   const handleLaunch = () => {
+    let finalGroupCode = ''
+    if (chatMode === 'group') {
+      if (groupAction === 'join') {
+        if (!joinRoomCodeInput.trim()) {
+          return
+        }
+        finalGroupCode = joinRoomCodeInput.trim().toUpperCase()
+      }
+    }
+
     onStartChat({
       mode: chatMode,
       groupAction,
-      groupRoomCode: joinRoomCodeInput.trim().toUpperCase(),
+      groupRoomCode: finalGroupCode,
       interests: selectedTags,
       cameraActive,
       micActive,
@@ -319,7 +327,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                       </form>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-3.5">
                       <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                         <Users className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
                         <span>Group Lounge Options</span>
@@ -332,7 +340,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                           onClick={() => setGroupAction('match')}
                           className={`flex flex-col items-center justify-center p-3 rounded-xl border transition text-center cursor-pointer ${
                             groupAction === 'match'
-                              ? 'border-[#964f26] bg-[#964f26]/10 text-slate-900 dark:text-white font-bold'
+                              ? 'border-[#964f26] bg-[#964f26]/10 text-slate-900 dark:text-white font-bold ring-1 ring-[#964f26]'
                               : 'border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d36]'
                           }`}
                         >
@@ -346,13 +354,13 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                           onClick={() => setGroupAction('create')}
                           className={`flex flex-col items-center justify-center p-3 rounded-xl border transition text-center cursor-pointer ${
                             groupAction === 'create'
-                              ? 'border-[#964f26] bg-[#964f26]/10 text-slate-900 dark:text-white font-bold'
+                              ? 'border-[#964f26] bg-[#964f26]/10 text-slate-900 dark:text-white font-bold ring-1 ring-[#964f26]'
                               : 'border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d36]'
                           }`}
                         >
-                          <Share2 className="h-4 w-4 mb-1 text-slate-500 dark:text-slate-400" />
+                          <Users className="h-4 w-4 mb-1 text-slate-500 dark:text-slate-400" />
                           <span className="text-xs font-bold">Create Group</span>
-                          <span className="text-[10px] text-slate-400">Invite Friends</span>
+                          <span className="text-[10px] text-slate-400">New Lounge</span>
                         </button>
 
                         <button
@@ -360,7 +368,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                           onClick={() => setGroupAction('join')}
                           className={`flex flex-col items-center justify-center p-3 rounded-xl border transition text-center cursor-pointer ${
                             groupAction === 'join'
-                              ? 'border-[#964f26] bg-[#964f26]/10 text-slate-900 dark:text-white font-bold'
+                              ? 'border-[#964f26] bg-[#964f26]/10 text-slate-900 dark:text-white font-bold ring-1 ring-[#964f26]'
                               : 'border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1a2d36]'
                           }`}
                         >
@@ -370,18 +378,41 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                         </button>
                       </div>
 
+                      {/* Create Group: Simple info box */}
+                      {groupAction === 'create' && (
+                        <div className="rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] p-3 text-center">
+                          <p className="text-xs text-slate-600 dark:text-slate-300">
+                            Launch a new group lounge for up to 6 people. Your room code will be ready inside to share.
+                          </p>
+                        </div>
+                      )}
+
                       {/* Join by Code Input (when selected) */}
                       {groupAction === 'join' && (
                         <div className="space-y-1.5 pt-1">
-                          <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-                            Enter Group Room Code or Invite Link:
+                          <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">
+                            Enter Group Room Code:
                           </label>
-                          <input
-                            value={joinRoomCodeInput}
-                            onChange={(e) => setJoinRoomCodeInput(e.target.value)}
-                            placeholder="e.g. GRP-4829"
-                            className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#101e25] px-3.5 py-2 text-xs font-mono font-bold tracking-wider uppercase text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#964f26] transition"
-                          />
+                          <div className="relative flex items-center">
+                            <input
+                              value={joinRoomCodeInput}
+                              onChange={(e) => setJoinRoomCodeInput(e.target.value.toUpperCase())}
+                              placeholder="e.g. GRP-4829 or 4829"
+                              className="w-full rounded-xl border border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#101e25] px-3.5 py-2 text-xs font-mono font-bold tracking-wider uppercase text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-[#964f26] transition"
+                            />
+                            {joinRoomCodeInput && (
+                              <button
+                                type="button"
+                                onClick={() => setJoinRoomCodeInput('')}
+                                className="absolute right-2.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold px-1 cursor-pointer"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                            Enter the 4-character code (e.g. <span className="font-mono font-semibold text-[#964f26]">GRP-XXXX</span> or <span className="font-mono font-semibold text-[#964f26]">XXXX</span>) to join.
+                          </p>
                         </div>
                       )}
                     </div>
@@ -396,7 +427,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                         </>
                       ) : (
                         <>
-                          <span className="font-semibold text-slate-900 dark:text-white">Group Lounge:</span> Talk with 3 to 6 strangers simultaneously, or invite specific friends using a shareable room code.
+                          <span className="font-semibold text-slate-900 dark:text-white">Group Lounge:</span> Talk with 3 to 6 strangers simultaneously, or enter a specific room with friends.
                         </>
                       )}
                     </div>

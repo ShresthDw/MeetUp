@@ -102,6 +102,45 @@ function normalizeCode(code) {
   return String(code).trim().toUpperCase().replace(/[^A-Z0-9-]/g, '')
 }
 
+function registerRoomInIndex(room) {
+  if (!room) return
+  const normCode = normalizeCode(room.roomCode)
+  const normId = normalizeCode(room.roomId)
+  const plainCode = normalizeCode(room.roomCode.replace(/^GRP-/, ''))
+
+  if (normCode) allGroupRoomsByCode.set(normCode, room)
+  if (plainCode) allGroupRoomsByCode.set(plainCode, room)
+  if (normId) allGroupRoomsByCode.set(normId, room)
+}
+
+function unregisterRoomFromIndex(room) {
+  if (!room) return
+  const normCode = normalizeCode(room.roomCode)
+  const normId = normalizeCode(room.roomId)
+  const plainCode = normalizeCode(room.roomCode.replace(/^GRP-/, ''))
+
+  if (normCode) allGroupRoomsByCode.delete(normCode)
+  if (plainCode) allGroupRoomsByCode.delete(plainCode)
+  if (normId) allGroupRoomsByCode.delete(normId)
+}
+
+function findRoomByCode(codeOrId) {
+  if (!codeOrId) return null
+  const normalized = normalizeCode(codeOrId)
+  if (!normalized) return null
+
+  const plain = normalizeCode(normalized.replace(/^GRP-/, ''))
+  const withPrefix = normalized.startsWith('GRP-') ? normalized : `GRP-${normalized}`
+
+  return (
+    allGroupRoomsByCode.get(normalized) ||
+    allGroupRoomsByCode.get(withPrefix) ||
+    allGroupRoomsByCode.get(plain) ||
+    publicGroupRooms.get(codeOrId) ||
+    null
+  )
+}
+
 async function enqueueOrJoinPublicGroup(socketId, maxMembers = MAX_GROUP_CAPACITY) {
   if (!socketId) return null
 
@@ -135,8 +174,7 @@ async function enqueueOrJoinPublicGroup(socketId, maxMembers = MAX_GROUP_CAPACIT
   }
 
   publicGroupRooms.set(roomId, room)
-  allGroupRoomsByCode.set(normalizeCode(roomCode), room)
-  allGroupRoomsByCode.set(normalizeCode(roomId), room)
+  registerRoomInIndex(room)
   socketToGroupRoom.set(socketId, roomId)
 
   return {
@@ -147,12 +185,38 @@ async function enqueueOrJoinPublicGroup(socketId, maxMembers = MAX_GROUP_CAPACIT
   }
 }
 
-async function createCustomGroupRoom(socketId, maxMembers = MAX_GROUP_CAPACITY) {
+async function createCustomGroupRoom(socketId, maxMembers = MAX_GROUP_CAPACITY, customCode = null) {
   if (!socketId) return null
   leaveGroupRoom(socketId)
 
+  let roomCode
+  if (customCode && normalizeCode(customCode)) {
+    const norm = normalizeCode(customCode)
+    roomCode = norm.startsWith('GRP-') ? norm : `GRP-${norm}`
+  } else {
+    roomCode = generateGroupCode()
+  }
+
+  // Check if room with this code already exists
+  const existingRoom = findRoomByCode(roomCode)
+  if (existingRoom) {
+    if (existingRoom.members.size >= maxMembers && !existingRoom.members.has(socketId)) {
+      // If full, generate a unique one
+      roomCode = generateGroupCode()
+    } else {
+      const existingMembers = Array.from(existingRoom.members).filter((id) => id !== socketId)
+      existingRoom.members.add(socketId)
+      socketToGroupRoom.set(socketId, existingRoom.roomId)
+      return {
+        roomId: existingRoom.roomId,
+        roomCode: existingRoom.roomCode,
+        members: existingMembers,
+        isNew: false,
+      }
+    }
+  }
+
   const roomId = randomUUID()
-  const roomCode = generateGroupCode()
   const room = {
     roomId,
     roomCode,
@@ -161,8 +225,7 @@ async function createCustomGroupRoom(socketId, maxMembers = MAX_GROUP_CAPACITY) 
     createdAt: Date.now(),
   }
 
-  allGroupRoomsByCode.set(normalizeCode(roomCode), room)
-  allGroupRoomsByCode.set(normalizeCode(roomId), room)
+  registerRoomInIndex(room)
   socketToGroupRoom.set(socketId, roomId)
 
   return {
@@ -177,8 +240,7 @@ async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_
   if (!socketId || !codeOrId) return { success: false, reason: 'Invalid room code.' }
   leaveGroupRoom(socketId)
 
-  const normalized = normalizeCode(codeOrId)
-  let room = allGroupRoomsByCode.get(normalized)
+  let room = findRoomByCode(codeOrId)
 
   if (room) {
     if (room.members.size >= maxMembers && !room.members.has(socketId)) {
@@ -198,6 +260,7 @@ async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_
 
   // If code doesn't exist yet, automatically initialize it with the requested code
   const roomId = randomUUID()
+  const normalized = normalizeCode(codeOrId)
   const roomCode = normalized.startsWith('GRP-') ? normalized : `GRP-${normalized}`
   room = {
     roomId,
@@ -207,8 +270,7 @@ async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_
     createdAt: Date.now(),
   }
 
-  allGroupRoomsByCode.set(normalizeCode(roomCode), room)
-  allGroupRoomsByCode.set(normalizeCode(roomId), room)
+  registerRoomInIndex(room)
   socketToGroupRoom.set(socketId, roomId)
 
   return {
@@ -242,8 +304,7 @@ function leaveGroupRoom(socketId) {
     const remainingMembers = Array.from(room.members)
     if (room.members.size === 0) {
       publicGroupRooms.delete(roomId)
-      allGroupRoomsByCode.delete(normalizeCode(room.roomCode))
-      allGroupRoomsByCode.delete(normalizeCode(room.roomId))
+      unregisterRoomFromIndex(room)
     }
     return {
       roomId: room.roomId,
