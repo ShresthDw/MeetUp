@@ -24,6 +24,7 @@ export function useGroupRoom() {
   const [status, setStatus] = useState('idle') // 'idle' | 'matching' | 'connected'
   const [roomId, setRoomId] = useState('')
   const [roomCode, setRoomCode] = useState('')
+  const [hostSocketId, setHostSocketId] = useState('')
   const [messages, setMessages] = useState([])
   const [error, setError] = useState('')
   const [isMicMuted, setIsMicMuted] = useState(false)
@@ -38,12 +39,15 @@ export function useGroupRoom() {
   const localStreamRef = useRef(null)
   const screenStreamRef = useRef(null)
   const peersMapRef = useRef(new Map()) // socketId -> RTCPeerConnection
+  const peerStreamsRef = useRef(new Map()) // socketId -> MediaStream (aggregated tracks)
   const iceCandidatesMapRef = useRef(new Map()) // socketId -> Array<candidate>
   const roomIdRef = useRef('')
   const statusRef = useRef('idle')
   const themeRef = useRef(theme)
   const setThemeRef = useRef(setTheme)
   setThemeRef.current = setTheme
+
+  const isHost = Boolean(hostSocketId && socket.id && hostSocketId === socket.id)
 
   useEffect(() => {
     themeRef.current = theme
@@ -65,11 +69,30 @@ export function useGroupRoom() {
     }
   }, [])
 
+  const syncLocalTracksToAllPeers = useCallback(() => {
+    const stream = screenStreamRef.current || localStreamRef.current
+    if (!stream) return
+    peersMapRef.current.forEach((pc) => {
+      const senders = pc.getSenders()
+      stream.getTracks().forEach((track) => {
+        const alreadySending = senders.some((s) => s.track && s.track.id === track.id)
+        if (!alreadySending) {
+          try {
+            pc.addTrack(track, stream)
+          } catch (err) {
+            console.warn('Track sync warning:', err.message)
+          }
+        }
+      })
+    })
+  }, [])
+
   const initializeMedia = useCallback(async () => {
     if (localStreamRef.current) {
       const activeTracks = localStreamRef.current.getTracks().filter((t) => t.readyState === 'live')
       if (activeTracks.length > 0) {
         attachLocalStream()
+        syncLocalTracksToAllPeers()
         return localStreamRef.current
       }
     }
@@ -86,6 +109,7 @@ export function useGroupRoom() {
       localStreamRef.current = stream
       setStreamReady((prev) => prev + 1)
       attachLocalStream()
+      syncLocalTracksToAllPeers()
       return stream
     } catch (err) {
       console.warn('Group media init error, trying fallback:', err.message)
@@ -97,13 +121,14 @@ export function useGroupRoom() {
         localStreamRef.current = fallbackStream
         setStreamReady((prev) => prev + 1)
         attachLocalStream()
+        syncLocalTracksToAllPeers()
         return fallbackStream
       } catch (fallbackErr) {
         setError('Could not access camera/microphone. Please allow camera and mic permissions.')
         return null
       }
     }
-  }, [attachLocalStream])
+  }, [attachLocalStream, syncLocalTracksToAllPeers])
 
   const closePeer = useCallback((peerSocketId) => {
     const pc = peersMapRef.current.get(peerSocketId)
@@ -114,6 +139,7 @@ export function useGroupRoom() {
       pc.close()
       peersMapRef.current.delete(peerSocketId)
     }
+    peerStreamsRef.current.delete(peerSocketId)
     iceCandidatesMapRef.current.delete(peerSocketId)
     setPeers((prev) => prev.filter((p) => p.socketId !== peerSocketId))
   }, [])
@@ -126,6 +152,7 @@ export function useGroupRoom() {
       pc.close()
     })
     peersMapRef.current.clear()
+    peerStreamsRef.current.clear()
     iceCandidatesMapRef.current.clear()
     setPeers([])
   }, [])
@@ -159,26 +186,59 @@ export function useGroupRoom() {
       }
 
       pc.ontrack = (event) => {
-        const stream = (event.streams && event.streams[0]) || (event.track ? new MediaStream([event.track]) : null)
-        if (stream) {
-          setPeers((prev) => {
-            const exists = prev.some((p) => p.socketId === targetSocketId)
-            if (exists) {
-              return prev.map((p) => (p.socketId === targetSocketId ? { ...p, stream } : p))
+        let peerStream = peerStreamsRef.current.get(targetSocketId)
+        if (!peerStream) {
+          peerStream = new MediaStream()
+          peerStreamsRef.current.set(targetSocketId, peerStream)
+        }
+
+        if (event.track) {
+          if (!peerStream.getTracks().some((t) => t.id === event.track.id)) {
+            peerStream.addTrack(event.track)
+          }
+        }
+        if (event.streams && event.streams[0]) {
+          event.streams[0].getTracks().forEach((t) => {
+            if (!peerStream.getTracks().some((existing) => existing.id === t.id)) {
+              peerStream.addTrack(t)
             }
-            return [...prev, { socketId: targetSocketId, stream, isCameraOff: false, isMuted: false }]
           })
         }
+
+        // Create a new stream wrapper containing all received tracks so React state updates
+        const freshStream = new MediaStream(peerStream.getTracks())
+
+        setPeers((prev) => {
+          const exists = prev.some((p) => p.socketId === targetSocketId)
+          if (exists) {
+            return prev.map((p) =>
+              p.socketId === targetSocketId ? { ...p, stream: freshStream } : p
+            )
+          }
+          return [
+            ...prev,
+            {
+              socketId: targetSocketId,
+              stream: freshStream,
+              isCameraOff: false,
+              isMuted: false,
+            },
+          ]
+        })
       }
 
       // Add local media tracks
       const currentStream = screenStreamRef.current || localStreamRef.current
       if (currentStream) {
+        const senders = pc.getSenders()
         currentStream.getTracks().forEach((track) => {
-          try {
-            pc.addTrack(track, currentStream)
-          } catch (err) {
-            console.warn('Track add warning:', err.message)
+          const alreadySending = senders.some((s) => s.track && s.track.id === track.id)
+          if (!alreadySending) {
+            try {
+              pc.addTrack(track, currentStream)
+            } catch (err) {
+              console.warn('Track add warning:', err.message)
+            }
           }
         })
       }
@@ -196,6 +256,7 @@ export function useGroupRoom() {
     setStatus('matching')
     setRoomId('')
     setRoomCode('')
+    setHostSocketId('')
     setMessages([])
     setConnectedTime(0)
 
@@ -211,6 +272,7 @@ export function useGroupRoom() {
       setStatus('matching')
       setRoomId('')
       setRoomCode(customCode || '')
+      setHostSocketId(socket.id)
       setMessages([])
       setConnectedTime(0)
 
@@ -228,6 +290,7 @@ export function useGroupRoom() {
       setStatus('matching')
       setRoomId('')
       setRoomCode(codeOrId || '')
+      setHostSocketId('')
       setMessages([])
       setConnectedTime(0)
 
@@ -260,6 +323,7 @@ export function useGroupRoom() {
     setStatus('matching')
     setRoomId('')
     setRoomCode('')
+    setHostSocketId('')
     setConnectedTime(0)
 
     await initializeMedia()
@@ -272,6 +336,7 @@ export function useGroupRoom() {
     setStatus('idle')
     setRoomId('')
     setRoomCode('')
+    setHostSocketId('')
     setMessages([])
     setConnectedTime(0)
     socket.emit('leave-group-room')
@@ -381,11 +446,11 @@ export function useGroupRoom() {
       socket.emit('send-group-message', {
         roomId: roomIdRef.current,
         message: text.trim(),
-        senderLabel: customSenderLabel || 'You',
+        senderLabel: customSenderLabel || (isHost ? 'Host' : 'You'),
       })
       return true
     },
-    [socket]
+    [isHost, socket]
   )
 
   const createPeerConnectionRef = useRef(createPeerConnection)
@@ -401,33 +466,51 @@ export function useGroupRoom() {
   useEffect(() => {
     initializeMedia()
 
-    socket.on('group-matched', async ({ roomId: matchedRoomId, roomCode: matchedRoomCode, members: existingMembers = [] }) => {
+    socket.on('group-matched', async ({ roomId: matchedRoomId, roomCode: matchedRoomCode, members: existingMembers = [], hostSocketId: roomHostId }) => {
       setRoomId(matchedRoomId)
       setRoomCode(matchedRoomCode)
+      if (roomHostId) {
+        setHostSocketId(roomHostId)
+      }
       roomIdRef.current = matchedRoomId
       statusRef.current = 'connected'
       setStatus('connected')
       setConnectedTime(0)
 
-      // Initiator for each existing member in the room
-      for (const memberSocketId of existingMembers) {
-        if (memberSocketId && memberSocketId !== socket.id) {
-          const pc = createPeerConnectionRef.current(memberSocketId)
-          try {
-            const offer = await pc.createOffer({
-              offerToReceiveAudio: true,
-              offerToReceiveVideo: true,
-            })
-            await pc.setLocalDescription(offer)
-            socket.emit('relay-group-offer', { to: memberSocketId, offer })
-          } catch (err) {
-            console.error('Error creating group WebRTC offer for member:', memberSocketId, err)
+      // Add placeholders for existing members immediately
+      const otherMembers = existingMembers.filter((id) => id && id !== socket.id)
+      if (otherMembers.length > 0) {
+        setPeers((prev) => {
+          const updated = [...prev]
+          for (const memberId of otherMembers) {
+            if (!updated.some((p) => p.socketId === memberId)) {
+              updated.push({ socketId: memberId, stream: null, isCameraOff: false, isMuted: false })
+            }
           }
+          return updated
+        })
+      }
+
+      // Initiator for each existing member in the room
+      for (const memberSocketId of otherMembers) {
+        const pc = createPeerConnectionRef.current(memberSocketId)
+        try {
+          const offer = await pc.createOffer({
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: true,
+          })
+          await pc.setLocalDescription(offer)
+          socket.emit('relay-group-offer', { to: memberSocketId, offer })
+        } catch (err) {
+          console.error('Error creating group WebRTC offer for member:', memberSocketId, err)
         }
       }
     })
 
-    socket.on('group-peer-joined', ({ peerSocketId }) => {
+    socket.on('group-peer-joined', ({ peerSocketId, hostSocketId: currentHostId }) => {
+      if (currentHostId) {
+        setHostSocketId(currentHostId)
+      }
       // A new peer joined the group. Ensure placeholder is created so grid updates
       if (peerSocketId && peerSocketId !== socket.id) {
         setPeers((prev) => {
@@ -480,7 +563,10 @@ export function useGroupRoom() {
       }
     })
 
-    socket.on('group-peer-left', ({ peerSocketId }) => {
+    socket.on('group-peer-left', ({ peerSocketId, hostSocketId: updatedHostId }) => {
+      if (updatedHostId) {
+        setHostSocketId(updatedHostId)
+      }
       if (peerSocketId) {
         closePeerRef.current(peerSocketId)
       }
@@ -557,6 +643,8 @@ export function useGroupRoom() {
     status,
     roomId,
     roomCode,
+    hostSocketId,
+    isHost,
     messages,
     error,
     isMicMuted,
@@ -582,3 +670,4 @@ export function useGroupRoom() {
     attachLocalStream,
   }
 }
+

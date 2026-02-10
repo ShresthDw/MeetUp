@@ -21,6 +21,7 @@ import {
   Share2,
   Maximize2,
   Minimize2,
+  Crown,
 } from 'lucide-react'
 import PendantThemeToggle from '../../components/PendantThemeToggle'
 import { useTheme } from '../../context/ThemeContext'
@@ -43,32 +44,73 @@ const EXPANDED_EMOJIS = [
   '😎', '🥳', '🙌', '✨', '⚡', '👀', '🤯', '🍕', '☕', '💡'
 ]
 
-function RemotePeerVideo({ peer, index, isSpotlight, onToggleSpotlight }) {
+function RemotePeerVideo({ peer, isHost, index, isSpotlight, onToggleSpotlight }) {
   const videoRef = useRef(null)
   const [aspectRatio, setAspectRatio] = useState(null)
 
   useEffect(() => {
-    if (videoRef.current && peer.stream) {
-      videoRef.current.srcObject = peer.stream
-      videoRef.current.play().catch(() => {})
-    }
-  }, [peer.stream])
+    const videoEl = videoRef.current
+    if (!videoEl || !peer.stream) return
 
-  const label = `Stranger #${index + 1}`
+    videoEl.srcObject = peer.stream
+
+    const playVideo = () => {
+      videoEl.play().catch((err) => {
+        console.warn('Remote peer video play warning:', err.message)
+      })
+    }
+
+    playVideo()
+
+    const handleTrackUpdate = () => {
+      if (videoEl && videoEl.srcObject !== peer.stream) {
+        videoEl.srcObject = peer.stream
+      }
+      playVideo()
+    }
+
+    peer.stream.addEventListener('addtrack', handleTrackUpdate)
+    peer.stream.addEventListener('removetrack', handleTrackUpdate)
+
+    return () => {
+      peer.stream.removeEventListener('addtrack', handleTrackUpdate)
+      peer.stream.removeEventListener('removetrack', handleTrackUpdate)
+    }
+  }, [peer.stream, peer.isCameraOff])
+
+  const label = isHost ? 'Host' : `Stranger #${index + 1}`
+
+  const hasLiveVideoTrack =
+    peer.stream &&
+    peer.stream.getVideoTracks().length > 0 &&
+    peer.stream.getVideoTracks().some((t) => t.enabled && t.readyState === 'live')
+
+  const isCameraDisabled = peer.isCameraOff || !peer.stream || !hasLiveVideoTrack
 
   return (
     <div
       onClick={onToggleSpotlight}
-      className={`relative group flex items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-[#243c47] bg-[#0d171d] shadow-xl transition-all duration-300 ${
+      className={`relative group flex items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border ${
+        isHost
+          ? 'border-amber-500/50 shadow-amber-500/10'
+          : 'border-slate-300 dark:border-[#243c47]'
+      } bg-[#0d171d] shadow-xl transition-all duration-300 ${
         isSpotlight ? 'h-full w-full' : 'h-full w-full cursor-pointer hover:border-[#964f26]/70 hover:scale-[1.01]'
       }`}
     >
-      {peer.isCameraOff || !peer.stream ? (
+      {isCameraDisabled ? (
         <div className="flex h-full w-full flex-col items-center justify-center bg-slate-900/90 text-slate-400 p-4 space-y-2">
-          <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#15252e] text-slate-300 border border-[#243c47] shadow-inner">
-            <Users className="h-6 w-6 sm:h-7 sm:w-7 text-slate-400" />
+          <div className={`flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl ${
+            isHost
+              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+              : 'bg-[#15252e] text-slate-300 border border-[#243c47]'
+          } shadow-inner`}>
+            {isHost ? <Crown className="h-6 w-6 sm:h-7 sm:w-7 text-amber-400" /> : <Users className="h-6 w-6 sm:h-7 sm:w-7 text-slate-400" />}
           </div>
-          <span className="text-xs sm:text-sm font-semibold text-slate-300">{label}</span>
+          <div className="flex items-center gap-1.5">
+            {isHost && <Crown className="h-3.5 w-3.5 text-amber-400" />}
+            <span className={`text-xs sm:text-sm font-bold ${isHost ? 'text-amber-300' : 'text-slate-300'}`}>{label}</span>
+          </div>
           <span className="text-[10px] text-slate-500">Camera is off</span>
         </div>
       ) : (
@@ -91,9 +133,22 @@ function RemotePeerVideo({ peer, index, isSpotlight, onToggleSpotlight }) {
       )}
 
       {/* Top Overlay Badge */}
-      <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-white border border-white/10">
-        <span className="h-1.5 w-1.5 rounded-full bg-[#964f26] animate-pulse" />
-        <span>{label}</span>
+      <div className={`absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 rounded-lg ${
+        isHost
+          ? 'bg-amber-950/85 text-amber-300 border border-amber-500/40'
+          : 'bg-black/75 text-white border border-white/10'
+      } backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold`}>
+        {isHost ? (
+          <>
+            <Crown className="h-3 w-3 text-amber-400 shrink-0" />
+            <span className="font-bold tracking-wide">Host</span>
+          </>
+        ) : (
+          <>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#964f26] animate-pulse shrink-0" />
+            <span>{label}</span>
+          </>
+        )}
         {peer.isMuted && <MicOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-slate-400 ml-1" />}
       </div>
 
@@ -130,6 +185,8 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
     status,
     roomId,
     roomCode,
+    hostSocketId,
+    isHost,
     messages,
     error,
     isMicMuted,
@@ -331,6 +388,12 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
               <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                 {totalParticipants} {totalParticipants === 1 ? 'PERSON' : 'PEOPLE'}
               </span>
+              {isHost && (
+                <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                  <Crown className="h-2.5 w-2.5" />
+                  <span>HOST</span>
+                </span>
+              )}
             </div>
 
             {roomCode && (
@@ -411,7 +474,9 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                       <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#15252e] text-slate-300 border border-[#243c47] shadow-inner">
                         <CameraOff className="h-6 w-6 sm:h-7 sm:w-7 text-slate-400" />
                       </div>
-                      <span className="text-xs sm:text-sm font-semibold text-slate-300">You</span>
+                      <span className="text-xs sm:text-sm font-semibold text-slate-300">
+                        {isHost ? 'You (Host)' : 'You'}
+                      </span>
                       <span className="text-[10px] text-slate-500">Camera is off</span>
                     </div>
                   ) : (
@@ -427,9 +492,17 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                   )}
 
                   {/* Top Badge */}
-                  <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-white border border-white/10">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                    <span>{isScreenSharing ? 'Your Screen' : 'You (Host)'}</span>
+                  <div className={`absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 rounded-lg ${
+                    isHost
+                      ? 'bg-amber-950/85 text-amber-300 border border-amber-500/40'
+                      : 'bg-black/75 text-white border border-white/10'
+                  } backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold`}>
+                    {isHost ? (
+                      <Crown className="h-3 w-3 text-amber-400 shrink-0" />
+                    ) : (
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    )}
+                    <span>{isScreenSharing ? 'Your Screen' : isHost ? 'You (Host)' : 'You'}</span>
                     {isMicMuted && <MicOff className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-slate-400 ml-1" />}
                   </div>
 
@@ -451,10 +524,12 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
               {/* Remote Peer Video Tiles */}
               {peers.map((peer, idx) => {
                 if (spotlightPeerId && spotlightPeerId !== peer.socketId) return null
+                const peerIsHost = Boolean(hostSocketId && peer.socketId === hostSocketId)
                 return (
                   <RemotePeerVideo
                     key={peer.socketId}
                     peer={peer}
+                    isHost={peerIsHost}
                     index={idx}
                     isSpotlight={spotlightPeerId === peer.socketId}
                     onToggleSpotlight={() =>

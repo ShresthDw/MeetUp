@@ -113,7 +113,10 @@ function registerSocketHandlers(io, redis) {
     const leftInfo = leaveGroupRoom(socket.id)
     if (leftInfo) {
       socket.leave(leftInfo.roomId)
-      io.to(leftInfo.roomId).emit('group-peer-left', { peerSocketId: socket.id })
+      io.to(leftInfo.roomId).emit('group-peer-left', {
+        peerSocketId: socket.id,
+        hostSocketId: leftInfo.hostSocketId,
+      })
     }
   }
 
@@ -201,15 +204,24 @@ function registerSocketHandlers(io, redis) {
       }
     })
 
-    socket.on('sync-theme', (payload) => {
-      const activeRoomId = payload?.roomId || socketToRoom.get(socket.id)
+    socket.on('relay-media-status', ({ roomId, isCameraOff, isMicMuted }) => {
+      const activeRoomId = roomId || socketToRoom.get(socket.id)
       const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
-      const theme = payload?.theme
+      if (activeRoomId) {
+        socket.to(activeRoomId).emit('peer-status-update', { isCameraOff, isMicMuted })
+      } else if (partnerId) {
+        io.to(partnerId).emit('peer-status-update', { isCameraOff, isMicMuted })
+      }
+    })
+
+    socket.on('sync-theme', ({ roomId, theme }) => {
+      const activeRoomId = roomId || socketToRoom.get(socket.id)
+      const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
       if (theme === 'dark' || theme === 'light') {
         if (activeRoomId) {
-          socket.to(activeRoomId).emit('theme-synced', { theme, sender: socket.id })
+          socket.to(activeRoomId).emit('theme-synced', { theme })
         } else if (partnerId) {
-          io.to(partnerId).emit('theme-synced', { theme, sender: socket.id })
+          io.to(partnerId).emit('theme-synced', { theme })
         }
       }
     })
@@ -218,7 +230,7 @@ function registerSocketHandlers(io, redis) {
     // GROUP LOUNGE HANDLERS (Mesh WebRTC)
     // ==========================================
     socket.on('join-group-queue', async () => {
-      await leaveCurrentRoom(socket)
+      handleLeaveGroupRoom(socket)
       const match = await enqueueOrJoinPublicGroup(socket.id)
       if (!match) return
 
@@ -228,12 +240,14 @@ function registerSocketHandlers(io, redis) {
         roomCode: match.roomCode,
         members: match.members,
         isNew: match.isNew,
+        hostSocketId: match.hostSocketId,
       })
 
       // Notify other group members in the room that a new peer joined
       socket.to(match.roomId).emit('group-peer-joined', {
         peerSocketId: socket.id,
         roomId: match.roomId,
+        hostSocketId: match.hostSocketId,
       })
       broadcastLiveStats()
     })
@@ -250,6 +264,7 @@ function registerSocketHandlers(io, redis) {
         roomCode: match.roomCode,
         members: match.members || [],
         isNew: true,
+        hostSocketId: match.hostSocketId,
       })
       broadcastLiveStats()
     })
@@ -268,11 +283,13 @@ function registerSocketHandlers(io, redis) {
         roomCode: result.roomCode,
         members: result.members,
         isNew: result.isNew,
+        hostSocketId: result.hostSocketId,
       })
 
       socket.to(result.roomId).emit('group-peer-joined', {
         peerSocketId: socket.id,
         roomId: result.roomId,
+        hostSocketId: result.hostSocketId,
       })
       broadcastLiveStats()
     })
@@ -293,11 +310,13 @@ function registerSocketHandlers(io, redis) {
         roomCode: match.roomCode,
         members: match.members,
         isNew: match.isNew,
+        hostSocketId: match.hostSocketId,
       })
 
       socket.to(match.roomId).emit('group-peer-joined', {
         peerSocketId: socket.id,
         roomId: match.roomId,
+        hostSocketId: match.hostSocketId,
       })
       broadcastLiveStats()
     })

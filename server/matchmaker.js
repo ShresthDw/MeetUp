@@ -152,12 +152,16 @@ async function enqueueOrJoinPublicGroup(socketId, maxMembers = MAX_GROUP_CAPACIT
     if (room.members.size > 0 && room.members.size < maxMembers && !room.members.has(socketId)) {
       const existingMembers = Array.from(room.members)
       room.members.add(socketId)
+      if (!room.hostSocketId) {
+        room.hostSocketId = existingMembers[0] || socketId
+      }
       socketToGroupRoom.set(socketId, roomId)
       return {
         roomId: room.roomId,
         roomCode: room.roomCode,
         members: existingMembers,
         isNew: false,
+        hostSocketId: room.hostSocketId,
       }
     }
   }
@@ -169,6 +173,7 @@ async function enqueueOrJoinPublicGroup(socketId, maxMembers = MAX_GROUP_CAPACIT
     roomId,
     roomCode,
     isPublic: true,
+    hostSocketId: socketId,
     members: new Set([socketId]),
     createdAt: Date.now(),
   }
@@ -182,6 +187,7 @@ async function enqueueOrJoinPublicGroup(socketId, maxMembers = MAX_GROUP_CAPACIT
     roomCode,
     members: [],
     isNew: true,
+    hostSocketId: socketId,
   }
 }
 
@@ -206,12 +212,16 @@ async function createCustomGroupRoom(socketId, maxMembers = MAX_GROUP_CAPACITY, 
     } else {
       const existingMembers = Array.from(existingRoom.members).filter((id) => id !== socketId)
       existingRoom.members.add(socketId)
+      if (!existingRoom.hostSocketId) {
+        existingRoom.hostSocketId = existingMembers[0] || socketId
+      }
       socketToGroupRoom.set(socketId, existingRoom.roomId)
       return {
         roomId: existingRoom.roomId,
         roomCode: existingRoom.roomCode,
         members: existingMembers,
         isNew: false,
+        hostSocketId: existingRoom.hostSocketId,
       }
     }
   }
@@ -221,6 +231,7 @@ async function createCustomGroupRoom(socketId, maxMembers = MAX_GROUP_CAPACITY, 
     roomId,
     roomCode,
     isPublic: false,
+    hostSocketId: socketId,
     members: new Set([socketId]),
     createdAt: Date.now(),
   }
@@ -233,6 +244,7 @@ async function createCustomGroupRoom(socketId, maxMembers = MAX_GROUP_CAPACITY, 
     roomCode,
     members: [],
     isNew: true,
+    hostSocketId: socketId,
   }
 }
 
@@ -248,6 +260,9 @@ async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_
     }
     const existingMembers = Array.from(room.members).filter((id) => id !== socketId)
     room.members.add(socketId)
+    if (!room.hostSocketId) {
+      room.hostSocketId = existingMembers[0] || socketId
+    }
     socketToGroupRoom.set(socketId, room.roomId)
     return {
       success: true,
@@ -255,6 +270,7 @@ async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_
       roomCode: room.roomCode,
       members: existingMembers,
       isNew: false,
+      hostSocketId: room.hostSocketId,
     }
   }
 
@@ -266,6 +282,7 @@ async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_
     roomId,
     roomCode,
     isPublic: false,
+    hostSocketId: socketId,
     members: new Set([socketId]),
     createdAt: Date.now(),
   }
@@ -279,6 +296,7 @@ async function joinSpecificGroupRoom(codeOrId, socketId, maxMembers = MAX_GROUP_
     roomCode,
     members: [],
     isNew: true,
+    hostSocketId: socketId,
   }
 }
 
@@ -305,11 +323,15 @@ function leaveGroupRoom(socketId) {
     if (room.members.size === 0) {
       publicGroupRooms.delete(roomId)
       unregisterRoomFromIndex(room)
+    } else if (room.hostSocketId === socketId) {
+      // Reassign host to next oldest member in the room
+      room.hostSocketId = remainingMembers[0]
     }
     return {
       roomId: room.roomId,
       roomCode: room.roomCode,
       remainingMembers,
+      hostSocketId: room.hostSocketId,
     }
   }
 
