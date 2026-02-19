@@ -1,10 +1,28 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { UserPlus, Video, LogOut, Zap } from 'lucide-react'
 import PendantThemeToggle from './PendantThemeToggle'
 
 export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, onNavigate }) {
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15)
+    }
+
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-[#223640]/80 bg-white/80 dark:bg-[#142229]/80 backdrop-blur-xl">
+    <header
+      className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-300 ${
+        isScrolled
+          ? 'border-b border-slate-200/80 dark:border-[#223640]/80 bg-white/80 dark:bg-[#142229]/80 backdrop-blur-xl shadow-xs'
+          : 'border-b border-transparent bg-transparent backdrop-blur-none shadow-none'
+      }`}
+    >
       <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 relative">
         {/* Brand */}
         <div className="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0 z-10" onClick={() => onNavigate?.('home')}>

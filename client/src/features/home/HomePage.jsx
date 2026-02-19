@@ -220,7 +220,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
         />
       )}
 
-      <main className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pt-2 sm:pt-3 pb-16">
+      <main className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-16">
         {/* Hero Section */}
         <section className="pt-0 sm:pt-1 pb-6 space-y-3 sm:space-y-4">
           {/* Top Editorial Headline Block */}

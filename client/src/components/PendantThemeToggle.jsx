@@ -190,9 +190,6 @@ export default function PendantThemeToggle({ className = '' }) {
       ref={trackRef}
       className={`relative w-full h-full flex items-center select-none overflow-visible touch-none ${className}`}
     >
-      {/* Ceiling Track Line Across Navbar */}
-      <div className="pointer-events-none absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-slate-300/60 dark:via-[#243c47]/80 to-transparent" />
-
       {/* Movable Lamp Unit */}
       <div
         ref={containerRef}
