@@ -611,42 +611,42 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="rounded-3xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3 shadow-sm">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
-                <Zap className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+                <Zap className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">Instant Matching</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Instant Matching</h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Powered by distributed Redis queues for rapid sub-second pairings without waiting in queues.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3 shadow-sm">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
-                <Lock className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+                <Lock className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">Direct WebRTC</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Direct WebRTC</h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Direct browser-to-browser media streaming ensures zero lag, high definition, and complete privacy.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3 shadow-sm">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
-                <Compass className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+                <Compass className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">Topic Filters</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Topic Filters</h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Select topics to match with people who love the exact same games, music, shows, or coding stacks.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-6 glass-card-hover space-y-3 shadow-sm">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
-                <Shield className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+                <Shield className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">Instant Skip & Safety</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Instant Skip & Safety</h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Easily disconnect with one click (or Spacebar) and report inappropriate behavior instantly.
               </p>
             </div>
