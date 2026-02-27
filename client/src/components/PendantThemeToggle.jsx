@@ -393,15 +393,11 @@ export default function PendantThemeToggle({ className = '' }) {
 
         {/* Floating Tooltip Helper Badge */}
         <div
-          className={`pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 z-50 shadow-md border ${
+          className={`pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 z-50 ${
             isHovered && !isDragging
               ? 'opacity-100 translate-y-0 scale-100'
               : 'opacity-0 -translate-y-1 scale-95'
-          } ${
-            isDark
-              ? 'bg-slate-900/95 text-amber-300 border-amber-500/30'
-              : 'bg-white/95 text-slate-700 border-slate-200'
-          }`}
+          } ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
         >
           {isDark ? 'Tap to Light • Drag to Slide' : 'Tap to Dark • Drag to Slide'}
         </div>
