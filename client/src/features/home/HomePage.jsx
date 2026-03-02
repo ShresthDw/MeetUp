@@ -610,9 +610,9 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-y border-slate-200 dark:border-[#243c47]">
+            <div className="space-y-2.5 py-5 sm:pr-5 lg:pr-5">
+              <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Zap className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
               <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Instant Matching</h3>
@@ -621,8 +621,8 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+            <div className="space-y-2.5 py-5 sm:pl-5 lg:border-l lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5">
+              <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Lock className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
               <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Direct WebRTC</h3>
@@ -631,8 +631,8 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+            <div className="space-y-2.5 border-t border-slate-200 dark:border-[#243c47] py-5 sm:pr-5 lg:border-l lg:border-t-0 lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5 lg:pr-5">
+              <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Compass className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
               <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Topic Filters</h3>
@@ -641,8 +641,8 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/85 dark:bg-[#1a2d36]/80 p-5 glass-card-hover space-y-2.5 shadow-sm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#122027] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#243c47]">
+            <div className="space-y-2.5 border-t border-slate-200 dark:border-[#243c47] py-5 sm:pl-5 lg:border-l lg:border-t-0 lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5">
+              <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Shield className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
               <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Instant Skip & Safety</h3>
