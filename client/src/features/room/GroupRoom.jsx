@@ -376,7 +376,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
       {/* Group Room Top Bar */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#142229]/80 px-3 sm:px-6 backdrop-blur-md z-30">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
-          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-lamp-badge text-white shadow-md">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-slate-700 dark:bg-[#243c47] text-slate-200 border border-slate-600/60 shadow-sm">
             <Users className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
 
@@ -389,8 +389,8 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                 {totalParticipants} {totalParticipants === 1 ? 'PERSON' : 'PEOPLE'}
               </span>
               {isHost && (
-                <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                  <Crown className="h-2.5 w-2.5" />
+                <span className="inline-flex items-center gap-1 rounded-md bg-slate-700/70 px-1.5 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-600/70">
+                  <Crown className="h-2.5 w-2.5 text-slate-400" />
                   <span>HOST</span>
                 </span>
               )}
@@ -398,7 +398,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
 
             {roomCode && (
               <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                Code: <strong className="text-[#964f26] dark:text-amber-400">{roomCode}</strong>
+                Code: <strong className="text-slate-400 dark:text-slate-300">{roomCode}</strong>
               </span>
             )}
           </div>
@@ -494,11 +494,11 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
                   {/* Top Badge */}
                   <div className={`absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 rounded-lg ${
                     isHost
-                      ? 'bg-amber-950/85 text-amber-300 border border-amber-500/40'
+                    ? 'bg-slate-800/90 text-slate-200 border border-slate-600/70'
                       : 'bg-black/75 text-white border border-white/10'
                   } backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold`}>
                     {isHost ? (
-                      <Crown className="h-3 w-3 text-amber-400 shrink-0" />
+                      <Crown className="h-3 w-3 text-slate-400 shrink-0" />
                     ) : (
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                     )}
