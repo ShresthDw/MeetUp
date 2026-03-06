@@ -610,9 +610,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
               >
                 <RotateCw className="h-3.5 w-3.5 text-white" />
                 <span className="text-white font-bold">Next</span>
-                <span className="hidden md:inline-block rounded bg-black/25 px-1.5 py-0.5 text-[10px] font-mono text-white">
-                  Space
-                </span>
               </button>
 
               <div className="h-5 w-px bg-slate-200 dark:bg-[#243c47]" />
