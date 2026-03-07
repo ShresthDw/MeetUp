@@ -601,11 +601,11 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
             </div>
 
             {/* Floating In-Room Media Controls Bar */}
-            <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-slate-300 dark:border-[#243c47] bg-white/95 dark:bg-[#101e25]/95 p-1 sm:p-1.5 shadow-2xl backdrop-blur-xl whitespace-nowrap">
+            <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-300 dark:border-[#243c47] bg-white/95 dark:bg-[#101e25]/95 p-1 sm:p-1.5 shadow-2xl backdrop-blur-xl whitespace-nowrap">
               <button
                 type="button"
                 onClick={nextPeer}
-                className="btn-lamp-primary flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-xs font-bold text-white shadow-md transition active:scale-95 cursor-pointer"
+                className="btn-lamp-primary flex h-9 sm:h-10 items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 text-xs font-bold text-white shadow-md transition active:scale-95 cursor-pointer"
                 title="Next (Space)"
               >
                 <RotateCw className="h-3.5 w-3.5 text-white" />

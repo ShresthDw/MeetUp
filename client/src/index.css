@@ -50,6 +50,12 @@
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
   }
+
+  /* Consistent, less-rounded button edges across the interface */
+  button,
+  [role='button'] {
+    border-radius: 0.5rem !important;
+  }
 }
 
 /* Hanging Pendant Lamp Hover Sway (Left-Right Pendulum Motion) */
@@ -564,4 +570,3 @@ video {
 .object-cover {
   object-fit: cover !important;
 }
-
