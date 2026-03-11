@@ -89,7 +89,6 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
               >
                 <UserPlus className="h-3.5 w-3.5 text-white" />
                 <span className="text-white font-bold">Sign Up</span>
-                <span className="hidden sm:inline text-white font-bold">Free</span>
               </button>
             </div>
           )}
