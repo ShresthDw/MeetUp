@@ -51,9 +51,10 @@
     font-family: var(--font-display);
   }
 
-  /* Consistent, less-rounded button edges across the interface */
-  button,
-  [role='button'] {
+  /* Consistent, less-rounded corners across the interface */
+  *,
+  *::before,
+  *::after {
     border-radius: 0.5rem !important;
   }
 }

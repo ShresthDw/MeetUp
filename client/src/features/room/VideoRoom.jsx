@@ -447,15 +447,6 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                       </p>
                     </div>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleExit()
-                      }}
-                      className="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white transition cursor-pointer"
-                    >
-                      Cancel
-                    </button>
                   </div>
                 )
               )}
