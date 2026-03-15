@@ -151,7 +151,8 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('send-message', ({ roomId, message }) => {
-      const activeRoomId = roomId || socketToRoom.get(socket.id)
+      const activeRoomId = socketToRoom.get(socket.id)
+      if (roomId && roomId !== activeRoomId) return
       if (!activeRoomId || typeof message !== 'string') return
       if (!isAllowedMessage(message)) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
@@ -375,5 +376,4 @@ function registerSocketHandlers(io, redis) {
 }
 
 module.exports = { registerSocketHandlers }
-
 
