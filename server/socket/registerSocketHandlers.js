@@ -352,7 +352,7 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('send-group-message', ({ roomId, message, senderLabel }) => {
-      if (!roomId || typeof message !== 'string') return
+      if (!roomId || !socket.rooms.has(roomId) || typeof message !== 'string') return
       if (!isAllowedMessage(message)) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
         return
@@ -376,4 +376,3 @@ function registerSocketHandlers(io, redis) {
 }
 
 module.exports = { registerSocketHandlers }
-
