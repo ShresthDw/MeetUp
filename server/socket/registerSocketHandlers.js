@@ -36,6 +36,15 @@ function registerSocketHandlers(io, redis) {
     return [...room].find((memberId) => memberId !== socketId) || null
   }
 
+  const sharesGroupRoom = (socket, targetSocketId) => {
+    const targetSocket = io.sockets.sockets.get(targetSocketId)
+    if (!targetSocket) return false
+
+    return [...socket.rooms].some((roomId) => (
+      roomId !== socket.id && targetSocket.rooms.has(roomId)
+    ))
+  }
+
   async function joinQueue(socket) {
     if (!socket || !socket.connected) return
 
@@ -324,19 +333,19 @@ function registerSocketHandlers(io, redis) {
 
     // Targeted Group Mesh Signaling
     socket.on('relay-group-offer', ({ to, offer }) => {
-      if (to && offer) {
+      if (to && offer && sharesGroupRoom(socket, to)) {
         io.to(to).emit('group-webrtc-offer', { from: socket.id, offer })
       }
     })
 
     socket.on('relay-group-answer', ({ to, answer }) => {
-      if (to && answer) {
+      if (to && answer && sharesGroupRoom(socket, to)) {
         io.to(to).emit('group-webrtc-answer', { from: socket.id, answer })
       }
     })
 
     socket.on('relay-group-ice-candidate', ({ to, candidate }) => {
-      if (to && candidate) {
+      if (to && candidate && sharesGroupRoom(socket, to)) {
         io.to(to).emit('group-webrtc-ice-candidate', { from: socket.id, candidate })
       }
     })
