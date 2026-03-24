@@ -342,7 +342,7 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('relay-group-status', ({ roomId, isCameraOff, isMicMuted }) => {
-      if (roomId) {
+      if (roomId && socket.rooms.has(roomId)) {
         socket.to(roomId).emit('group-peer-status-update', {
           peerSocketId: socket.id,
           isCameraOff,
