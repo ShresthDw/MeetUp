@@ -8,6 +8,7 @@ const {
 } = require('../matchmaker')
 
 const blockedTerms = [/spam/i, /scam/i]
+const MAX_CHAT_MESSAGE_LENGTH = 2000
 
 function registerSocketHandlers(io, redis) {
   const socketToRoom = new Map()
@@ -162,7 +163,7 @@ function registerSocketHandlers(io, redis) {
     socket.on('send-message', ({ roomId, message }) => {
       const activeRoomId = socketToRoom.get(socket.id)
       if (roomId && roomId !== activeRoomId) return
-      if (!activeRoomId || typeof message !== 'string') return
+      if (!activeRoomId || typeof message !== 'string' || message.length > MAX_CHAT_MESSAGE_LENGTH) return
       if (!isAllowedMessage(message)) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
         return
@@ -361,7 +362,7 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('send-group-message', ({ roomId, message, senderLabel }) => {
-      if (!roomId || !socket.rooms.has(roomId) || typeof message !== 'string') return
+      if (!roomId || !socket.rooms.has(roomId) || typeof message !== 'string' || message.length > MAX_CHAT_MESSAGE_LENGTH) return
       if (!isAllowedMessage(message)) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
         return
