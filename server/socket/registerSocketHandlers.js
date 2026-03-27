@@ -9,6 +9,7 @@ const {
 
 const blockedTerms = [/spam/i, /scam/i]
 const MAX_CHAT_MESSAGE_LENGTH = 2000
+const MAX_SENDER_LABEL_LENGTH = 60
 
 function registerSocketHandlers(io, redis) {
   const socketToRoom = new Map()
@@ -368,9 +369,13 @@ function registerSocketHandlers(io, redis) {
         return
       }
 
+      const safeSenderLabel = typeof senderLabel === 'string'
+        ? senderLabel.trim().slice(0, MAX_SENDER_LABEL_LENGTH) || 'Stranger'
+        : 'Stranger'
+
       io.to(roomId).emit('group-chat-message', {
         sender: socket.id,
-        senderLabel: senderLabel || 'Stranger',
+        senderLabel: safeSenderLabel,
         text: message.trim(),
         createdAt: Date.now(),
       })
