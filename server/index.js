@@ -18,7 +18,7 @@ app.use(cors({
   origin: (origin, callback) => callback(null, !origin || clientOrigins.includes(origin)),
   credentials: true,
 }))
-app.use(express.json())
+app.use(express.json({ limit: '32kb' }))
 
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
 app.get('/api/stats', (_, res) => {
