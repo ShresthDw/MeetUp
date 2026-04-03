@@ -220,7 +220,8 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('relay-media-status', ({ roomId, isCameraOff, isMicMuted }) => {
-      const activeRoomId = roomId || socketToRoom.get(socket.id)
+      const activeRoomId = socketToRoom.get(socket.id)
+      if (roomId && roomId !== activeRoomId) return
       const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
       if (activeRoomId) {
         socket.to(activeRoomId).emit('peer-status-update', { isCameraOff, isMicMuted })
