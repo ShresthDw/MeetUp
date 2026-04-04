@@ -231,7 +231,8 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('sync-theme', ({ roomId, theme }) => {
-      const activeRoomId = roomId || socketToRoom.get(socket.id)
+      const activeRoomId = socketToRoom.get(socket.id)
+      if (roomId && roomId !== activeRoomId) return
       const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
       if (theme === 'dark' || theme === 'light') {
         if (activeRoomId) {
