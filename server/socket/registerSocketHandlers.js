@@ -156,8 +156,8 @@ function registerSocketHandlers(io, redis) {
     // 1-on-1 DUO ROOM HANDLERS
     // ==========================================
     socket.on('join-queue', async () => {
+      await leaveCurrentRoom(socket)
       handleLeaveGroupRoom(socket)
-      await removeFromQueue(redis, socket.id)
       await joinQueue(socket)
     })
 
@@ -247,6 +247,7 @@ function registerSocketHandlers(io, redis) {
     // GROUP LOUNGE HANDLERS (Mesh WebRTC)
     // ==========================================
     socket.on('join-group-queue', async () => {
+      await leaveCurrentRoom(socket)
       handleLeaveGroupRoom(socket)
       const match = await enqueueOrJoinPublicGroup(socket.id)
       if (!match) return
