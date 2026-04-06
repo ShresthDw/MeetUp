@@ -318,6 +318,7 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('next-group', async () => {
+      await leaveCurrentRoom(socket)
       handleLeaveGroupRoom(socket)
       const match = await enqueueOrJoinPublicGroup(socket.id)
       if (!match) return
