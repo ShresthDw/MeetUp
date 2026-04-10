@@ -47,6 +47,11 @@ function registerSocketHandlers(io, redis) {
     ))
   }
 
+  const getAuthorizedDuoRoom = (socket, requestedRoomId) => {
+    const activeRoomId = socketToRoom.get(socket.id)
+    return requestedRoomId && requestedRoomId !== activeRoomId ? null : activeRoomId
+  }
+
   async function joinQueue(socket) {
     if (!socket || !socket.connected) return
 
@@ -162,8 +167,7 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('send-message', ({ roomId, message }) => {
-      const activeRoomId = socketToRoom.get(socket.id)
-      if (roomId && roomId !== activeRoomId) return
+      const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
       if (!activeRoomId || typeof message !== 'string' || message.length > MAX_CHAT_MESSAGE_LENGTH) return
       if (!isAllowedMessage(message)) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
@@ -181,9 +185,10 @@ function registerSocketHandlers(io, redis) {
     socket.on('next-peer', () => leaveCurrentRoom(socket, true))
 
     socket.on('relay-offer', ({ roomId, offer }) => {
-      const activeRoomId = socketToRoom.get(socket.id)
-      if (roomId && roomId !== activeRoomId) return
-      const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
+      const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
+      const partnerId = activeRoomId
+        ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
+        : null
       if (offer) {
         if (activeRoomId) {
           socket.to(activeRoomId).emit('webrtc-offer', { offer })
@@ -194,9 +199,10 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('relay-answer', ({ roomId, answer }) => {
-      const activeRoomId = socketToRoom.get(socket.id)
-      if (roomId && roomId !== activeRoomId) return
-      const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
+      const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
+      const partnerId = activeRoomId
+        ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
+        : null
       if (answer) {
         if (activeRoomId) {
           socket.to(activeRoomId).emit('webrtc-answer', { answer })
@@ -207,9 +213,10 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('relay-ice-candidate', ({ roomId, candidate }) => {
-      const activeRoomId = socketToRoom.get(socket.id)
-      if (roomId && roomId !== activeRoomId) return
-      const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
+      const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
+      const partnerId = activeRoomId
+        ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
+        : null
       if (candidate) {
         if (activeRoomId) {
           socket.to(activeRoomId).emit('webrtc-ice-candidate', { candidate })
@@ -220,9 +227,10 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('relay-media-status', ({ roomId, isCameraOff, isMicMuted }) => {
-      const activeRoomId = socketToRoom.get(socket.id)
-      if (roomId && roomId !== activeRoomId) return
-      const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
+      const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
+      const partnerId = activeRoomId
+        ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
+        : null
       if (activeRoomId) {
         socket.to(activeRoomId).emit('peer-status-update', { isCameraOff, isMicMuted })
       } else if (partnerId) {
@@ -231,9 +239,10 @@ function registerSocketHandlers(io, redis) {
     })
 
     socket.on('sync-theme', ({ roomId, theme }) => {
-      const activeRoomId = socketToRoom.get(socket.id)
-      if (roomId && roomId !== activeRoomId) return
-      const partnerId = socketToPartner.get(socket.id) || (activeRoomId ? getPartnerSocketId(activeRoomId, socket.id) : null)
+      const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
+      const partnerId = activeRoomId
+        ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
+        : null
       if (theme === 'dark' || theme === 'light') {
         if (activeRoomId) {
           socket.to(activeRoomId).emit('theme-synced', { theme })
