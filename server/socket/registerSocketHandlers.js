@@ -173,10 +173,12 @@ function registerSocketHandlers(io, redis) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
         return
       }
+      const text = message.trim()
+      if (!text) return
 
       io.to(activeRoomId).emit('chat-message', {
         sender: socket.id,
-        text: message.trim(),
+        text,
         createdAt: Date.now(),
       })
     })
@@ -384,6 +386,8 @@ function registerSocketHandlers(io, redis) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
         return
       }
+      const text = message.trim()
+      if (!text) return
 
       const safeSenderLabel = typeof senderLabel === 'string'
         ? senderLabel.trim().slice(0, MAX_SENDER_LABEL_LENGTH) || 'Stranger'
@@ -392,7 +396,7 @@ function registerSocketHandlers(io, redis) {
       io.to(roomId).emit('group-chat-message', {
         sender: socket.id,
         senderLabel: safeSenderLabel,
-        text: message.trim(),
+        text,
         createdAt: Date.now(),
       })
     })
