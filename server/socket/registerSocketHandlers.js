@@ -166,7 +166,7 @@ function registerSocketHandlers(io, redis) {
       await joinQueue(socket)
     })
 
-    socket.on('send-message', ({ roomId, message }) => {
+    socket.on('send-message', ({ roomId, message } = {}) => {
       const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
       if (!activeRoomId || typeof message !== 'string' || message.length > MAX_CHAT_MESSAGE_LENGTH) return
       if (!isAllowedMessage(message)) {
@@ -380,7 +380,7 @@ function registerSocketHandlers(io, redis) {
       }
     })
 
-    socket.on('send-group-message', ({ roomId, message, senderLabel }) => {
+    socket.on('send-group-message', ({ roomId, message, senderLabel } = {}) => {
       if (!roomId || !socket.rooms.has(roomId) || typeof message !== 'string' || message.length > MAX_CHAT_MESSAGE_LENGTH) return
       if (!isAllowedMessage(message)) {
         socket.emit('message-blocked', { reason: 'Message failed moderation.' })
