@@ -186,7 +186,7 @@ function registerSocketHandlers(io, redis) {
     socket.on('leave-room', () => leaveCurrentRoom(socket))
     socket.on('next-peer', () => leaveCurrentRoom(socket, true))
 
-    socket.on('relay-offer', ({ roomId, offer }) => {
+    socket.on('relay-offer', ({ roomId, offer } = {}) => {
       const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
       const partnerId = activeRoomId
         ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
@@ -200,7 +200,7 @@ function registerSocketHandlers(io, redis) {
       }
     })
 
-    socket.on('relay-answer', ({ roomId, answer }) => {
+    socket.on('relay-answer', ({ roomId, answer } = {}) => {
       const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
       const partnerId = activeRoomId
         ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
@@ -214,7 +214,7 @@ function registerSocketHandlers(io, redis) {
       }
     })
 
-    socket.on('relay-ice-candidate', ({ roomId, candidate }) => {
+    socket.on('relay-ice-candidate', ({ roomId, candidate } = {}) => {
       const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
       const partnerId = activeRoomId
         ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
@@ -228,7 +228,7 @@ function registerSocketHandlers(io, redis) {
       }
     })
 
-    socket.on('relay-media-status', ({ roomId, isCameraOff, isMicMuted }) => {
+    socket.on('relay-media-status', ({ roomId, isCameraOff, isMicMuted } = {}) => {
       const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
       const partnerId = activeRoomId
         ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
@@ -240,7 +240,7 @@ function registerSocketHandlers(io, redis) {
       }
     })
 
-    socket.on('sync-theme', ({ roomId, theme }) => {
+    socket.on('sync-theme', ({ roomId, theme } = {}) => {
       const activeRoomId = getAuthorizedDuoRoom(socket, roomId)
       const partnerId = activeRoomId
         ? socketToPartner.get(socket.id) || getPartnerSocketId(activeRoomId, socket.id)
@@ -352,25 +352,25 @@ function registerSocketHandlers(io, redis) {
     })
 
     // Targeted Group Mesh Signaling
-    socket.on('relay-group-offer', ({ to, offer }) => {
+    socket.on('relay-group-offer', ({ to, offer } = {}) => {
       if (to && offer && sharesGroupRoom(socket, to)) {
         io.to(to).emit('group-webrtc-offer', { from: socket.id, offer })
       }
     })
 
-    socket.on('relay-group-answer', ({ to, answer }) => {
+    socket.on('relay-group-answer', ({ to, answer } = {}) => {
       if (to && answer && sharesGroupRoom(socket, to)) {
         io.to(to).emit('group-webrtc-answer', { from: socket.id, answer })
       }
     })
 
-    socket.on('relay-group-ice-candidate', ({ to, candidate }) => {
+    socket.on('relay-group-ice-candidate', ({ to, candidate } = {}) => {
       if (to && candidate && sharesGroupRoom(socket, to)) {
         io.to(to).emit('group-webrtc-ice-candidate', { from: socket.id, candidate })
       }
     })
 
-    socket.on('relay-group-status', ({ roomId, isCameraOff, isMicMuted }) => {
+    socket.on('relay-group-status', ({ roomId, isCameraOff, isMicMuted } = {}) => {
       if (roomId && socket.rooms.has(roomId)) {
         socket.to(roomId).emit('group-peer-status-update', {
           peerSocketId: socket.id,
