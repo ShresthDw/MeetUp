@@ -298,7 +298,7 @@ function registerSocketHandlers(io, redis) {
       broadcastLiveStats()
     })
 
-    socket.on('join-specific-group', async ({ roomCode }) => {
+    socket.on('join-specific-group', async ({ roomCode } = {}) => {
       await leaveCurrentRoom(socket)
       const result = await joinSpecificGroupRoom(roomCode, socket.id)
       if (!result.success) {

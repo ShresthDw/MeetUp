@@ -14,7 +14,9 @@ async function register(req, res) {
     if (!name?.trim() || !normalizedEmail || !password) {
       return res.status(400).json({ message: 'Name, email, and password are required.' })
     }
-    if (password.length < 8) return res.status(400).json({ message: 'Password must be at least 8 characters.' })
+    if (typeof password !== 'string' || password.length < 8 || password.length > 128) {
+      return res.status(400).json({ message: 'Password must be between 8 and 128 characters.' })
+    }
     if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) return res.status(400).json({ message: 'Enter a valid email address.' })
     if (await User.exists({ email: normalizedEmail })) return res.status(409).json({ message: 'An account with that email already exists.' })
 
@@ -28,8 +30,12 @@ async function register(req, res) {
 async function login(req, res) {
   try {
     const email = String(req.body.email || '').trim().toLowerCase()
+    const password = req.body.password
+    if (typeof password !== 'string' || password.length > 128) {
+      return res.status(401).json({ message: 'Email or password is incorrect.' })
+    }
     const user = await User.findOne({ email })
-    const validPassword = user && await verifyPassword(req.body.password || '', user.passwordHash)
+    const validPassword = user && await verifyPassword(password, user.passwordHash)
 
     if (!validPassword) return res.status(401).json({ message: 'Email or password is incorrect.' })
     return res.json({ token: createToken(user), user: serializeUser(user) })
