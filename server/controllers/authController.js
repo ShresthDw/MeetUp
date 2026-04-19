@@ -9,9 +9,10 @@ function serializeUser(user) {
 async function register(req, res) {
   try {
     const { name, email, password } = req.body
+    const normalizedName = typeof name === 'string' ? name.trim() : ''
     const normalizedEmail = String(email || '').trim().toLowerCase()
 
-    if (!name?.trim() || !normalizedEmail || !password) {
+    if (!normalizedName || normalizedName.length > 60 || !normalizedEmail || normalizedEmail.length > 254 || !password) {
       return res.status(400).json({ message: 'Name, email, and password are required.' })
     }
     if (typeof password !== 'string' || password.length < 8 || password.length > 128) {
@@ -20,7 +21,7 @@ async function register(req, res) {
     if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) return res.status(400).json({ message: 'Enter a valid email address.' })
     if (await User.exists({ email: normalizedEmail })) return res.status(409).json({ message: 'An account with that email already exists.' })
 
-    const user = await User.create({ name: name.trim(), email: normalizedEmail, passwordHash: await hashPassword(password) })
+    const user = await User.create({ name: normalizedName, email: normalizedEmail, passwordHash: await hashPassword(password) })
     return res.status(201).json({ token: createToken(user), user: serializeUser(user) })
   } catch {
     return res.status(503).json({ message: 'Account service is unavailable. Check your MongoDB connection.' })
@@ -31,7 +32,7 @@ async function login(req, res) {
   try {
     const email = String(req.body.email || '').trim().toLowerCase()
     const password = req.body.password
-    if (typeof password !== 'string' || password.length > 128) {
+    if (email.length > 254 || typeof password !== 'string' || password.length > 128) {
       return res.status(401).json({ message: 'Email or password is incorrect.' })
     }
     const user = await User.findOne({ email })
