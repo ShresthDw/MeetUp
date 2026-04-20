@@ -23,7 +23,10 @@ async function register(req, res) {
 
     const user = await User.create({ name: normalizedName, email: normalizedEmail, passwordHash: await hashPassword(password) })
     return res.status(201).json({ token: createToken(user), user: serializeUser(user) })
-  } catch {
+  } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ message: 'An account with that email already exists.' })
+    }
     return res.status(503).json({ message: 'Account service is unavailable. Check your MongoDB connection.' })
   }
 }
