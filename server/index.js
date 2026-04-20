@@ -9,7 +9,6 @@ const redis = require('./redisClient')
 const { connectMongo } = require('./mongo')
 const { clientOrigins, port } = require('./config/env')
 const authRoutes = require('./routes/authRoutes')
-const { WAITING_QUEUE_KEY } = require('./matchmaker')
 const { registerSocketHandlers } = require('./socket/registerSocketHandlers')
 
 const app = express()
@@ -40,5 +39,4 @@ registerSocketHandlers(io, redis)
 server.listen(port, () => {
   console.log(`Server listening on port ${port}`)
   connectMongo()
-  redis.del(WAITING_QUEUE_KEY).catch(() => {})
 })
