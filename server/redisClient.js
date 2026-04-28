@@ -5,6 +5,8 @@ const redisUrl =
 
 const redis = new Redis(redisUrl, {
   maxRetriesPerRequest: 3,
+  connectTimeout: 5000,
+  enableOfflineQueue: false,
 })
 
 redis.on('connect', () => {
