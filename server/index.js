@@ -25,6 +25,12 @@ app.get('/api/stats', (_, res) => {
   res.json({ onlineCount, timestamp: Date.now() })
 })
 app.use('/api/auth', authRoutes)
+app.use((error, _req, res, next) => {
+  if (error?.type === 'entity.too.large') {
+    return res.status(413).json({ message: 'Request body is too large.' })
+  }
+  return next(error)
+})
 
 const server = http.createServer(app)
 const io = new Server(server, {
