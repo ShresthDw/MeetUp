@@ -292,7 +292,7 @@ function registerSocketHandlers(io, redis) {
         roomId: match.roomId,
         roomCode: match.roomCode,
         members: match.members || [],
-        isNew: true,
+        isNew: match.isNew,
         hostSocketId: match.hostSocketId,
       })
       broadcastLiveStats()

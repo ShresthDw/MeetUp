@@ -12,6 +12,7 @@ const authRoutes = require('./routes/authRoutes')
 const { registerSocketHandlers } = require('./socket/registerSocketHandlers')
 
 const app = express()
+app.disable('x-powered-by')
 
 app.use(cors({
   origin: (origin, callback) => callback(null, !origin || clientOrigins.includes(origin)),
@@ -34,6 +35,7 @@ app.use((error, _req, res, next) => {
 
 const server = http.createServer(app)
 const io = new Server(server, {
+  maxHttpBufferSize: 1e6,
   cors: {
     origin: clientOrigins,
     methods: ['GET', 'POST'],
