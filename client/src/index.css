@@ -57,6 +57,17 @@
   *::after {
     border-radius: 0.5rem !important;
   }
+
+  /* Preserve intentionally circular indicators and radar waves */
+  .rounded-full {
+    border-radius: 9999px !important;
+  }
+
+  .rounded-none,
+  .w-px,
+  .h-px {
+    border-radius: 0 !important;
+  }
 }
 
 /* Hanging Pendant Lamp Hover Sway (Left-Right Pendulum Motion) */

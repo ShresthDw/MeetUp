@@ -290,7 +290,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
       )}
 
       {/* Top Floating Header */}
-      <header className="z-30 flex h-13 sm:h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#101e25]/80 px-2.5 sm:px-4 backdrop-blur-xl shrink-0">
+      <header className="rounded-none z-30 flex h-13 sm:h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#101e25]/80 px-2.5 sm:px-4 backdrop-blur-xl shrink-0">
         {/* Left: Exit & Room status */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
           <button
@@ -677,10 +677,10 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           isMobileChatOpen
             ? 'flex fixed inset-x-0 bottom-0 top-14 z-50'
             : 'hidden md:flex'
-        } w-full md:w-80 lg:w-96 flex-col border-l border-slate-200 dark:border-[#243c47] bg-white/98 dark:bg-[#101e25]/98 backdrop-blur-2xl transition-all duration-300 shadow-2xl`}>
+        } rounded-none w-full md:w-80 lg:w-96 flex-col border-l border-slate-200 dark:border-[#243c47] bg-white/98 dark:bg-[#101e25]/98 backdrop-blur-2xl transition-all duration-300 shadow-2xl`}>
           
           {/* Chat Header */}
-          <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] px-4">
+          <div className="rounded-none flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] px-4">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Encrypted Chat</span>
@@ -763,7 +763,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
 
           {/* Quick Emoji Reaction Bar */}
-          <div className="flex items-center justify-between border-t border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-2 py-1.5 overflow-x-auto no-scrollbar">
+          <div className="rounded-none flex items-center justify-between border-t border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-2 py-1.5 overflow-x-auto no-scrollbar">
             <div className="flex items-center gap-1 w-full justify-between">
               {EMOJI_REACTIONS.map((emoji) => (
                 <button
@@ -781,7 +781,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
 
           {/* Emoji Picker Popover */}
           {showEmojiPicker && (
-            <div className="border-t border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#15252e] p-2 backdrop-blur-xl">
+            <div className="rounded-none border-t border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#15252e] p-2 backdrop-blur-xl">
               <div className="grid grid-cols-5 gap-1 max-h-36 overflow-y-auto p-1">
                 {EXPANDED_EMOJIS.map((emoji) => (
                   <button
@@ -801,7 +801,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
           )}
 
           {/* Chat Input Form */}
-          <form onSubmit={handleSendMessage} className="border-t border-slate-200 dark:border-[#243c47] p-3 flex gap-2 items-center bg-white dark:bg-[#101e25]">
+          <form onSubmit={handleSendMessage} className="rounded-none border-t border-slate-200 dark:border-[#243c47] p-3 flex gap-2 items-center bg-white dark:bg-[#101e25]">
             <button
               type="button"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}

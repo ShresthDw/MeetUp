@@ -606,7 +606,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-y border-slate-200 dark:border-[#243c47]">
+          <div className="rounded-none grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-y border-slate-200 dark:border-[#243c47]">
             <div className="space-y-2.5 py-5 sm:pr-5 lg:pr-5">
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Zap className="h-4 w-4 text-slate-700 dark:text-slate-300" />
@@ -617,7 +617,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               </p>
             </div>
 
-            <div className="space-y-2.5 py-5 sm:pl-5 lg:border-l lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5">
+            <div className="rounded-none space-y-2.5 py-5 sm:pl-5 lg:border-l lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5">
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Lock className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
@@ -627,7 +627,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               </p>
             </div>
 
-            <div className="space-y-2.5 border-t border-slate-200 dark:border-[#243c47] py-5 sm:pr-5 lg:border-l lg:border-t-0 lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5 lg:pr-5">
+            <div className="rounded-none space-y-2.5 border-t border-slate-200 dark:border-[#243c47] py-5 sm:pr-5 lg:border-l lg:border-t-0 lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5 lg:pr-5">
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Compass className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
@@ -637,7 +637,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               </p>
             </div>
 
-            <div className="space-y-2.5 border-t border-slate-200 dark:border-[#243c47] py-5 sm:pl-5 lg:border-l lg:border-t-0 lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5">
+            <div className="rounded-none space-y-2.5 border-t border-slate-200 dark:border-[#243c47] py-5 sm:pl-5 lg:border-l lg:border-t-0 lg:border-slate-200 lg:dark:border-[#243c47] lg:pl-5">
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Shield className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
@@ -651,7 +651,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
 
         {/* Safety & Guidelines Section */}
         <section className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-[#243c47] pb-5">
+          <div className="rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-[#243c47] pb-5">
             <div>
               <h3 className="font-display text-xl font-black text-slate-950 dark:text-white uppercase">
                 Community Safety & Guidelines<span className="text-[#964f26]">.</span>

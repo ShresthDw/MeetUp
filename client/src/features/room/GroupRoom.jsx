@@ -374,7 +374,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
       )}
 
       {/* Group Room Top Bar */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#142229]/80 px-3 sm:px-6 backdrop-blur-md z-30">
+      <header className="rounded-none flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#142229]/80 px-3 sm:px-6 backdrop-blur-md z-30">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
           <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-slate-700 dark:bg-[#243c47] text-slate-200 border border-slate-600/60 shadow-sm">
             <Users className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -667,10 +667,10 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
         <div
           className={`${
             isMobileChatOpen ? 'flex fixed inset-x-0 bottom-0 top-14 z-50' : 'hidden md:flex'
-          } w-full md:w-80 lg:w-96 flex-col border-l border-slate-200 dark:border-[#243c47] bg-white/98 dark:bg-[#101e25]/98 backdrop-blur-2xl transition-all duration-300 shadow-2xl`}
+          } rounded-none w-full md:w-80 lg:w-96 flex-col border-l border-slate-200 dark:border-[#243c47] bg-white/98 dark:bg-[#101e25]/98 backdrop-blur-2xl transition-all duration-300 shadow-2xl`}
         >
           {/* Chat Header */}
-          <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] px-4">
+          <div className="rounded-none flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#243c47] px-4">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Group Chat</span>
@@ -752,7 +752,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
           </div>
 
           {/* Quick Reaction Bar */}
-          <div className="flex items-center justify-between border-t border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-2 py-1.5 overflow-x-auto no-scrollbar">
+          <div className="rounded-none flex items-center justify-between border-t border-slate-200 dark:border-[#243c47] bg-slate-50 dark:bg-[#122027] px-2 py-1.5 overflow-x-auto no-scrollbar">
             <div className="flex items-center gap-1 w-full justify-between">
               {EMOJI_REACTIONS.map((emoji) => (
                 <button
@@ -770,7 +770,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
 
           {/* Emoji Drawer */}
           {showEmojiPicker && (
-            <div className="border-t border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#15252e] p-2 backdrop-blur-xl">
+            <div className="rounded-none border-t border-slate-200 dark:border-[#243c47] bg-slate-100 dark:bg-[#15252e] p-2 backdrop-blur-xl">
               <div className="grid grid-cols-5 gap-1 max-h-36 overflow-y-auto p-1">
                 {EXPANDED_EMOJIS.map((emoji) => (
                   <button
@@ -790,7 +790,7 @@ export default function GroupRoom({ user, preferences, room, onLeaveRoom }) {
           )}
 
           {/* Input Form */}
-          <form onSubmit={handleSendMessage} className="border-t border-slate-200 dark:border-[#243c47] p-3 flex gap-2 items-center bg-white dark:bg-[#101e25]">
+          <form onSubmit={handleSendMessage} className="rounded-none border-t border-slate-200 dark:border-[#243c47] p-3 flex gap-2 items-center bg-white dark:bg-[#101e25]">
             <button
               type="button"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
