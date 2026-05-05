@@ -31,7 +31,7 @@ export default function Navbar({ user, onlineCount = 1, onLogout, onOpenAuth, on
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-display text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+              <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
                 MeetUp<span className="text-[#964f26]">.</span>
               </span>
             </div>

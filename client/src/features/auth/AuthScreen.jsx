@@ -41,7 +41,7 @@ export default function AuthScreen({ onAuthenticated }) {
       <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white/95 p-8 shadow-xl">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-2xl text-white">M</div>
-          <h1 className="font-serif text-3xl font-bold">Welcome to MeetUp</h1>
+          <h1 className="text-3xl font-bold">Welcome to MeetUp</h1>
           <p className="mt-2 text-sm text-slate-500">Meet someone new, safely and instantly.</p>
         </div>
 

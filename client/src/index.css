@@ -6,7 +6,6 @@
 @layer base {
   :root {
     --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-display: 'Space Grotesk', 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
     /* Light Theme Palette Defaults */
@@ -47,8 +46,16 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, .font-display {
-    font-family: var(--font-display);
+  /* Use one shared interface font throughout the app. */
+  body,
+  body * {
+    font-family: var(--font-sans) !important;
+  }
+
+  /* Keep technical values and keyboard hints monospace. */
+  .font-mono,
+  kbd {
+    font-family: var(--font-mono) !important;
   }
 
   /* Consistent, less-rounded corners across the interface */
@@ -67,6 +74,14 @@
   .w-px,
   .h-px {
     border-radius: 0 !important;
+  }
+
+  /* Keep button typography consistent across all controls */
+  button,
+  [role='button'] {
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    letter-spacing: normal;
   }
 }
 

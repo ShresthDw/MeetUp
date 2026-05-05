@@ -439,7 +439,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                     </div>
 
                     <div className="space-y-1 max-w-xs px-2">
-                      <h4 className="font-display text-sm sm:text-base md:text-lg font-black text-white uppercase tracking-wide">
+                      <h4 className="text-sm sm:text-base md:text-lg font-black text-white uppercase tracking-wide">
                         Searching for a stranger…
                       </h4>
                       <p className="text-[11px] sm:text-xs text-slate-400">
@@ -466,7 +466,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                       <X className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="font-display text-sm sm:text-base font-bold text-white">Stranger disconnected</h4>
+                      <h4 className="text-sm sm:text-base font-bold text-white">Stranger disconnected</h4>
                       <p className="text-xs text-slate-400">Press Space to connect with someone new.</p>
                     </div>
                     <button
@@ -498,7 +498,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
                       <Users className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="font-display text-sm sm:text-base font-bold text-white">Ready to Connect</h4>
+                      <h4 className="text-sm sm:text-base font-bold text-white">Ready to Connect</h4>
                       <p className="text-xs text-slate-400">Click below to start matchmaking.</p>
                     </div>
                     <button
@@ -836,7 +836,7 @@ export default function VideoRoom({ user, preferences, room, onLeaveRoom }) {
       {reportModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
           <div className="w-full max-w-sm rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
-            <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Flag className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               <span>Report Stranger</span>
             </h3>

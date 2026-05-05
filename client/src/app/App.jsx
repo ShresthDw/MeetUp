@@ -77,7 +77,7 @@ function AppContent() {
   }, [currentView])
 
   return (
-    <div className={`bg-slate-50 dark:bg-[#142229] text-slate-900 dark:text-slate-100 flex flex-col font-sans ${currentView === 'home' ? 'min-h-screen' : 'h-screen h-[100dvh] overflow-hidden'}`}>
+    <div className={`bg-slate-50 dark:bg-[#142229] text-slate-900 dark:text-slate-100 flex flex-col ${currentView === 'home' ? 'min-h-screen' : 'h-screen h-[100dvh] overflow-hidden'}`}>
       {/* Navbar is visible on Home view */}
       {currentView === 'home' && (
         <Navbar

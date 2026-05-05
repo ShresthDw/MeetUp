@@ -232,7 +232,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                 </span>
               </div>
 
-              <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-950 dark:text-white uppercase leading-none">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-950 dark:text-white uppercase leading-none">
                 Meet Strangers
               </h1>
             </div>
@@ -547,8 +547,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
                     onClick={handleLaunch}
                     className="btn-lamp-primary group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl py-2.5 px-4 text-xs sm:text-sm font-bold text-white shadow-lg active:scale-[0.98] transition-all duration-150 cursor-pointer"
                   >
-                    <Zap className="h-3.5 w-3.5 fill-white text-white group-hover:scale-110 transition-transform" />
-                    <span className="tracking-wide text-white font-bold">
+                    <span className="tracking-normal text-white font-medium">
                       {chatMode === 'duo'
                         ? 'Start 1-on-1 Video Chat'
                         : groupAction === 'create'
@@ -586,7 +585,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
         <div className="mb-14 flex items-center justify-center">
           <div className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-[#243c47] bg-white/80 dark:bg-[#1a2d36]/80 px-6 py-3 backdrop-blur-xl shadow-sm">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
+            <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
               {Number(onlineCount).toLocaleString()}
             </span>
             <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
@@ -598,7 +597,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
         {/* Bento Grid Feature Showcase */}
         <section className="mb-14 space-y-6">
           <div className="text-center space-y-1.5 max-w-xl mx-auto">
-            <h2 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-slate-950 dark:text-white uppercase">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950 dark:text-white uppercase">
               Instant, Safe Connections
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
@@ -611,7 +610,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Zap className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Instant Matching</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Instant Matching</h3>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Powered by distributed Redis queues for rapid sub-second pairings without waiting in queues.
               </p>
@@ -621,7 +620,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Lock className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Direct WebRTC</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Direct WebRTC</h3>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Direct browser-to-browser media streaming ensures zero lag, high definition, and complete privacy.
               </p>
@@ -631,7 +630,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Compass className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Topic Filters</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Topic Filters</h3>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Select topics to match with people who love the exact same games, music, shows, or coding stacks.
               </p>
@@ -641,7 +640,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
               <div className="flex h-9 w-9 items-center justify-start text-slate-700 dark:text-slate-300">
                 <Shield className="h-4 w-4 text-slate-700 dark:text-slate-300" />
               </div>
-              <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Instant Skip & Safety</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Instant Skip & Safety</h3>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                 Easily disconnect with one click (or Spacebar) and report inappropriate behavior instantly.
               </p>
@@ -653,7 +652,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
         <section className="space-y-6">
           <div className="rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-[#243c47] pb-5">
             <div>
-              <h3 className="font-display text-xl font-black text-slate-950 dark:text-white uppercase">
+              <h3 className="text-xl font-black text-slate-950 dark:text-white uppercase">
                 Community Safety & Guidelines<span className="text-[#964f26]">.</span>
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Keep MeetUp friendly, welcoming, and safe for everyone.</p>
@@ -685,7 +684,7 @@ export default function HomePage({ user, onlineCount = 1, localStream, onInitial
       <footer className="border-t border-slate-200 dark:border-[#243c47] bg-slate-100/90 dark:bg-[#101e25] py-8 text-center text-xs text-slate-600 dark:text-slate-400">
         <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-display font-black text-slate-900 dark:text-white text-sm uppercase tracking-wide">
+            <span className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-wide">
               MeetUp<span className="text-[#964f26]">.</span>
             </span>
             <span className="text-slate-500">— An editorial encrypted video chat experience</span>

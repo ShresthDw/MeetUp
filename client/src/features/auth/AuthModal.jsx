@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, initialMode = 'login', onClose, onAu
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-lamp-badge text-white shadow-md">
             {mode === 'login' ? <User className="h-6 w-6 text-white" /> : <UserPlus className="h-6 w-6 text-white" />}
           </div>
-          <h2 className="font-display text-2xl font-black tracking-tight text-slate-950 dark:text-white uppercase">
+          <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white uppercase">
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}<span className="text-[#964f26]">.</span>
           </h2>
           <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
